@@ -9,8 +9,8 @@ If you have written Paper plugins you already know the shapes: a plugin class wi
 ## What you need
 
 - The **.NET 10 SDK**.
-- The **`Ramjet.Api`** NuGet package: the plugin API as a reference assembly. It is what your plugin compiles against; the server supplies the real API at run time. Until the package is on nuget.org you add the folder that holds `Ramjet.Api.<version>.nupkg` as a local NuGet source (see [create a plugin](create-a-plugin.md)).
-- The **`ramjet-plugin` template** (`dotnet new install Ramjet.Templates`).
+- The **`Ramjet.Api`** NuGet package: the plugin API as a reference assembly. It is what your plugin compiles against; the server supplies the real API at run time. It comes from nuget.org: projects made from the template restore it with no extra setup.
+- The **`ramjet-plugin` template**, also on nuget.org (`dotnet new install Ramjet.Templates`, see [create a plugin](create-a-plugin.md)).
 - A **Ramjet server to test on**: a hosted server (you upload your plugin into its `plugins/` folder through the panel or SFTP) or one that somebody gives you access to. You do not need the server's source code and you cannot build the server yourself; you only need to be able to put a file into its `plugins/` folder and read its log.
 
 Use a test server, not one people play on. A plugin that throws is isolated, but a plugin that blocks the tick thread slows every player down.

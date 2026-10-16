@@ -6,12 +6,12 @@ This is a C# plugin for **Ramjet** (a C++23, vanilla-compatible Minecraft Java s
 
 - `MyPlugin.csproj`: net10.0 class library. References the `Ramjet.Api` package (the API as a reference assembly, compile-time only; never copy a `Mc.Scripting.Api.dll` next to the plugin). Keep `EnableDynamicLoading=true`.
 - `PluginMain.cs`: the plugin class (`Plugin` subclass, `[PluginInfo]`, `OnEnable` / `OnDisable`). One public plugin class per assembly; no work in its constructor.
-- `plugin.json`: manifest for Plugin API v1 (ignored by servers that do not read it yet). Keep `id`, `name`, `version`, `main` consistent with `[PluginInfo]` and the class.
+- `plugin.json`: the manifest the server's loader reads (id, version, `api`, dependencies, permissions). Keep `id`, `name`, `version`, `main` consistent with `[PluginInfo]` and the class.
 
 ## Build, run, reload
 
 ```bash
-# Ramjet.Api comes from NuGet; until it is published: dotnet nuget add source <folder with Ramjet.Api.*.nupkg> -n ramjet
+# the Ramjet.Api package is restored from nuget.org (no extra source needed)
 export RAMJET_PLUGINS=/path/to/run/plugins     # optional: each build copies the plugin there; the server hot-reloads it
 dotnet build -c Release
 ```
@@ -27,8 +27,8 @@ For a small plugin you can skip the project: a single `.cs` file (or a folder of
 2. Event handlers receive the event by ref and must not allocate: no LINQ, no string formatting or interpolation on the common path, no closures created per call.
 3. Utf8String / NativeBytes event fields are borrowed for the duration of the dispatch; call ToString()/ToArray() to keep a copy.
 4. Entity is a handle (flecs id), not an object: check IsAlive, never store the ref returned by Get<T>() across calls that can add or remove components or destroy entities.
-5. Component types are plain unmanaged structs owned by exactly one plugin and registered with World.RegisterComponent<T>(key).
-6. Register everything through the plugin context (Events, Commands, Systems, Scheduler, World); it is released automatically on unload and hot reload.
+5. Component types are plain unmanaged structs owned by exactly one plugin and registered with Ecs.RegisterComponent<T>(key) (plugin.Ecs).
+6. Register everything through the plugin context (Events, Commands, Systems, Scheduler, Ecs, Permissions, ...); it is released automatically on unload and hot reload.
 <!-- END GENERATED:hard-rules -->
 
 Consequences you must respect:
@@ -55,7 +55,7 @@ in `OnEnable`, `ResourcePackBuilder` and `ResourcePackHost`. Everything is tick-
 - `plugin.json` manifest read by the loader: yes.
 <!-- END GENERATED:status -->
 
-Exact signatures of every public type are in `.claude/skills/ramjet-plugin/references/api.md`: do not guess the API.
+Do not guess API names: check `.claude/skills/ramjet-plugin/references/api.md`. If a member is not listed there, it does not exist.
 
 ## Events (catalogue)
 

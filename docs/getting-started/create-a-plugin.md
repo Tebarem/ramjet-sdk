@@ -1,6 +1,6 @@
 # Create a plugin from the template
 
-Install the ramjet-plugin dotnet template, add the API package source, create a project, point it at your test server and build it.
+Install the ramjet-plugin dotnet template from nuget.org, create a project, point it at your test server and build it.
 
 The `ramjet-plugin` template creates a ready-to-build class library with the right project settings, a small plugin class, a `plugin.json`, and an `AGENTS.md` for AI coding agents.
 
@@ -10,23 +10,13 @@ The `ramjet-plugin` template creates a ready-to-build class library with the rig
 dotnet new install Ramjet.Templates
 ```
 
-Until the template package is on nuget.org, install it from the `.nupkg` file you were given:
+To update it later, run the same command again; to remove it: `dotnet new uninstall Ramjet.Templates`.
 
-```bash
-dotnet new install <path to Ramjet.Templates.*.nupkg>
-```
+## The API package
 
-To remove it again: `dotnet new uninstall Ramjet.Templates`.
+The project references **[`Ramjet.Api`](https://www.nuget.org/packages/Ramjet.Api)**, the plugin API as a NuGet package from nuget.org (no extra package source needed). It holds a reference assembly: every public type and member of the API, with its documentation (IntelliSense), and no code. Your plugin compiles against it, and the server supplies the real API when it loads the plugin, so nothing from the package is copied next to your dll. You do not need a server to compile a plugin.
 
-## Add the API package source
-
-The project references **`Ramjet.Api`**, the plugin API as a NuGet package. It holds a reference assembly: every public type and member of the API, with its documentation (IntelliSense), and no code. Your plugin compiles against it, and the server supplies the real API when it loads the plugin, so nothing from the package is copied next to your dll. You do not need a server to compile a plugin.
-
-Until the package is on nuget.org, add the folder that holds `Ramjet.Api.<version>.nupkg` as a package source, once:
-
-```bash
-dotnet nuget add source /path/to/folder-with-the-nupkg -n ramjet
-```
+To move a project to a newer API version, change the `Version` of its `PackageReference` (or `dotnet add package Ramjet.Api --prerelease`).
 
 The package also gives your project sensible defaults: `EnableDynamicLoading`, implicit usings, and global usings for the API namespaces (`Mc.Scripting`, `Mc.Scripting.Commands`, `Mc.Scripting.Events`, `Mc.Scripting.Text`, `Mc.Scripting.Worlds`, ...), which is why the code in these docs needs few `using` lines. Set `<RamjetGlobalUsings>false</RamjetGlobalUsings>` in the project file to turn the global usings off.
 

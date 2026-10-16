@@ -1,0 +1,23 @@
+<Project>
+  <!-- Ramjet.Api: plugin project defaults (imported before the project body, so the project can override any of them).
+       EnableDynamicLoading: the server loads each plugin into its own collectible context. RamjetGlobalUsings=false drops the
+       global usings of the API namespaces. -->
+  <PropertyGroup>
+    <EnableDynamicLoading Condition="'$(EnableDynamicLoading)' == ''">true</EnableDynamicLoading>
+    <ImplicitUsings Condition="'$(ImplicitUsings)' == ''">enable</ImplicitUsings>
+    <RamjetGlobalUsings Condition="'$(RamjetGlobalUsings)' == ''">true</RamjetGlobalUsings>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(RamjetGlobalUsings)' == 'true'">
+    <Using Include="Mc.Scripting" />
+    <Using Include="Mc.Scripting.Commands" />
+    <Using Include="Mc.Scripting.Configuration" />
+    <Using Include="Mc.Scripting.Services" />
+    <Using Include="Mc.Scripting.Events" />
+    <Using Include="Mc.Scripting.Permissions" />
+    <Using Include="Mc.Scripting.Text" />
+    <Using Include="Mc.Scripting.Worlds" />
+    <Using Include="Mc.Scripting.Nbt" />
+    <Using Include="Mc.Scripting.Inventories" />
+    <Using Include="Mc.Scripting.Content" />
+  </ItemGroup>
+</Project>

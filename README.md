@@ -10,9 +10,13 @@ This repository holds everything plugin developers need:
 | [`docs/`](docs/README.md) | getting started, concepts (events, commands, permissions, config, scheduler, ECS), guides and reference |
 | [`templates/`](templates/) | the `ramjet-plugin` project template (`dotnet new ramjet-plugin`), with an `AGENTS.md` and a Claude Code skill for AI coding agents |
 | [`samples/`](samples/) | complete example plugins: commands, GUIs, boss bars, sidebars, homes, kits, custom items and blocks, webhooks |
+| [`src/Ramjet.Api/`](src/Ramjet.Api/) | the `Ramjet.Api` package: the API's reference assembly and docs, and a text listing of its public surface (API changes show up as diffs of [`Mc.Scripting.Api.surface.txt`](src/Ramjet.Api/Mc.Scripting.Api.surface.txt)) |
+| [`tools/ApiCheck/`](tools/ApiCheck/) | the check every pack runs: the reference assembly may only hold public API, with no code |
 
-The plugin API itself ships as the **`Ramjet.Api`** NuGet package: a reference assembly with every public type and its documentation
-(IntelliSense), and no server code. Your plugin compiles against it, and the server supplies the real API when it loads the plugin.
+The plugin API itself ships as the **[`Ramjet.Api`](https://www.nuget.org/packages/Ramjet.Api)** NuGet package: a reference assembly
+with every public type and its documentation (IntelliSense), and no server code. Your plugin compiles against it, and the server supplies
+the real API when it loads the plugin. The project template is [`Ramjet.Templates`](https://www.nuget.org/packages/Ramjet.Templates).
+Both come from nuget.org: no extra package source is needed.
 
 ## Quick start
 
@@ -37,14 +41,20 @@ dotnet build -c Release
 
 Server operators can list and restart plugins with `/plugins` and `/plugins reload`.
 
-> **Preview:** `Ramjet.Api` and `Ramjet.Templates` are `1.0.0-preview.1`. Until they are on nuget.org, download the `.nupkg` files from the
-> [releases](../../releases), add their folder as a package source once (`dotnet nuget add source <folder> -n ramjet`), and install
-> the template from the file: `dotnet new install <folder>/Ramjet.Templates.1.0.0-preview.1.nupkg`.
+> **Preview:** both packages are `1.0.0-preview.1`. The API can still change before 1.0; breaking changes will be listed in the release
+> notes of this repository.
 
 ## Samples
 
 Each folder under [`samples/`](samples/) is a complete plugin that builds with `dotnet build`. Start with
 [`HelloPlugin`](samples/HelloPlugin/) and [`Greeter`](samples/Greeter/).
+
+## Releases
+
+Pushing a version tag (`v1.0.0-preview.2`) runs [the publish workflow](.github/workflows/publish-nuget.yml): CI packs `Ramjet.Api` (after
+the API check) and `Ramjet.Templates`, builds every sample and a fresh template project against them, and publishes both to nuget.org
+with a GitHub release. The reference assembly is updated together with the server, so changes to `src/Ramjet.Api/ref/` come from
+there; pull requests for docs, samples and the template are welcome.
 
 ## Questions, bugs, ideas
 

@@ -1,12 +1,17 @@
-# Packs Ramjet.Templates and pushes it to nuget.org with trusted publishing (no long-lived API key).
+# Publishes Ramjet.Api and Ramjet.Templates to nuget.org with trusted publishing (no long-lived API key).
 #
-# Release: bump <Version> in templates/Ramjet.Templates.csproj, then push a matching tag:
+# Release: bump <Version> in src/Ramjet.Api/Ramjet.Api.csproj (and templates/Ramjet.Templates.csproj when the template changed), then
+# push a tag that names the Ramjet.Api version:
 #   git tag v1.0.0-preview.2 && git push origin v1.0.0-preview.2
-# Manual runs (workflow_dispatch) pack and publish whatever version the csproj holds.
+# Manual runs (workflow_dispatch) publish whatever versions the csproj files hold. A version already on nuget.org is skipped.
 #
-# One-time setup on nuget.org (Account > Trusted Publishing): add a GitHub Actions policy with
+# The CI workflow runs first: it verifies the reference assembly (tools/ApiCheck), packs both packages and builds the samples and a
+# template project against them. The packages it built are the ones published.
+#
+# One-time setup on nuget.org (Account > Trusted Publishing): a GitHub Actions policy with
 #   owner: Tebarem, repository: ramjet-sdk, workflow file: publish-nuget.yml, environment: production
-# and add the repository secret NUGET_USER = the nuget.org profile name (not the email) that owns the policy.
+# and the repository secret NUGET_USER = the nuget.org profile name (not the email) that owns the policy. The policy names this file:
+# keep its name.
 
 name: Publish to NuGet
 
@@ -23,55 +28,32 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  pack:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v5
-
-      - uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Read package version
-        id: version
-        run: |
-          version="$(dotnet msbuild templates/Ramjet.Templates.csproj -getProperty:Version)"
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "Ramjet.Templates $version"
-          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "$GITHUB_REF_NAME" != "v$version" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME does not match the csproj version (expected v$version)"
-            exit 1
-          fi
-
-      - name: Pack
-        run: dotnet pack templates/Ramjet.Templates.csproj -c Release -o artifacts
-
-      - name: Smoke test the template
-        run: |
-          dotnet new install "artifacts/Ramjet.Templates.${{ steps.version.outputs.version }}.nupkg"
-          dotnet new ramjet-plugin -n SmokePlugin -o "$RUNNER_TEMP/SmokePlugin"
-          test -f "$RUNNER_TEMP/SmokePlugin/SmokePlugin.csproj"
-          test -f "$RUNNER_TEMP/SmokePlugin/plugin.json"
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: nupkg
-          path: artifacts/*.nupkg
-          if-no-files-found: error
+  ci:
+    uses: ./.github/workflows/ci.yml
 
   publish:
-    needs: pack
+    needs: ci
     runs-on: ubuntu-latest
     environment: production
     permissions:
+      contents: write # the GitHub release with the packages
       id-token: write # lets NuGet/login exchange the GitHub OIDC token for a short-lived nuget.org API key
     steps:
       - uses: actions/download-artifact@v5
         with:
-          name: nupkg
+          name: packages
           path: artifacts
+
+      - name: The tag names the packed Ramjet.Api version
+        run: |
+          ls artifacts
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            version="${GITHUB_REF_NAME#v}"
+            if [ ! -f "artifacts/Ramjet.Api.$version.nupkg" ]; then
+              echo "::error::Tag $GITHUB_REF_NAME does not match the Ramjet.Api version (src/Ramjet.Api/Ramjet.Api.csproj)"
+              exit 1
+            fi
+          fi
 
       - uses: actions/setup-dotnet@v5
         with:
@@ -89,3 +71,12 @@ jobs:
           --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
+
+      - name: GitHub release with the packages
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prerelease=""
+          case "$GITHUB_REF_NAME" in *-*) prerelease="--prerelease";; esac
+          gh release create "$GITHUB_REF_NAME" artifacts/*.nupkg --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes $prerelease

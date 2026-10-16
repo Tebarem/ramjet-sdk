@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Ramjet.Api: the compile-time plugin API package.
+         dotnet pack src/Ramjet.Api -c Release -o artifacts
+
+       It ships the reference assembly in ref/net10.0 (Mc.Scripting.Api.dll and its XML docs): the public types and members of the plugin
+       API, with no code. Those two files and the listing of the public surface (Mc.Scripting.Api.surface.txt) are produced where the
+       server is built and committed here as they are; every pack first runs tools/ApiCheck in verify mode, which refuses anything but
+       public API (no method bodies, no non-public types or members, no build traces) and any difference from the listing.
+
+       The server supplies the real API at run time, so the package has no runtime asset (lib/net10.0/_._): nothing is copied next to a
+       plugin. build/ holds the plugin project defaults. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <PackageId>Ramjet.Api</PackageId>
+    <Version>1.0.0-preview.1</Version>
+    <Authors>Ramjet</Authors>
+    <Title>Ramjet plugin API</Title>
+    <Description>Compile-time API for C# plugins of the Ramjet Minecraft server (net10.0). Reference assembly only: the server supplies the API at run time.</Description>
+    <PackageTags>minecraft;ramjet;plugin;sdk</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Tebarem/ramjet-sdk</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Tebarem/ramjet-sdk</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- the layout is intentional: ref/net10.0 holds the reference assembly, lib/net10.0 only _._, no dependencies, no sources -->
+    <NoWarn>$(NoWarn);NU5128;NU5131;CS2008</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="ref/net10.0/Mc.Scripting.Api.dll;ref/net10.0/Mc.Scripting.Api.xml" Pack="true" PackagePath="ref/net10.0/" />
+    <None Include="_._" Pack="true" PackagePath="lib/net10.0/" />
+    <None Include="build/Ramjet.Api.props;build/Ramjet.Api.targets" Pack="true" PackagePath="build/" />
+    <None Include="README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+  <!-- the leak and consistency check of the committed files, before every pack -->
+  <Target Name="RamjetApiVerify" BeforeTargets="GenerateNuspec">
+    <Exec Command="dotnet run --project &quot;$(MSBuildThisFileDirectory)../../tools/ApiCheck/ApiCheck.csproj&quot; -c Release -- --verify --stub &quot;$(MSBuildThisFileDirectory)ref/net10.0/Mc.Scripting.Api.dll&quot; --xml &quot;$(MSBuildThisFileDirectory)ref/net10.0/Mc.Scripting.Api.xml&quot; --surface &quot;$(MSBuildThisFileDirectory)Mc.Scripting.Api.surface.txt&quot;" />
+  </Target>
+
+</Project>

@@ -2,7 +2,7 @@
 
 Signatures of every public type of the plugin API (namespace `Mc.Scripting`) except the event structs, which are in events.md.json. Do not edit by hand.
 
-## ApiVersion (struct, other)
+## ApiVersion (struct, plugins)
 
 ```csharp
 public readonly struct ApiVersion : IComparable<ApiVersion>, IEquatable<ApiVersion>
@@ -19,7 +19,7 @@ The version of the plugin API (semantic: a minor increase is additive, a major i
 - `public override string ToString()`
 - `public static bool TryParse(string? text, out ApiVersion version)`: Parses "1.0", "1" or "1.x".
 
-## Belowname (class, other)
+## Belowname (class, display)
 
 ```csharp
 public sealed class Belowname
@@ -30,7 +30,7 @@ Text (and optionally a number) shown under a player's name, per viewer. It uses 
 - `public void Clear(Player viewer, Player target)`: Removes the text under one player's name for one viewer.
 - `public void Set(Player viewer, Player target, Component text, int? number)`: Shows text under one player's name for one viewer, with a number when given (hidden when null).
 
-## BlockFace (enum, other)
+## BlockFace (enum, worlds)
 
 ```csharp
 public enum BlockFace : byte
@@ -62,7 +62,7 @@ Integer block coordinates.
 - `public override int GetHashCode()`: Hash code.
 - `public override string ToString()`: Text form.
 
-## BossBar (class, other)
+## BossBar (class, display)
 
 ```csharp
 public sealed class BossBar : IDisposable, IPluginResource
@@ -86,7 +86,7 @@ A boss bar at the top of the screen, shown to the players who were added as view
 - `public BossBar RemoveViewer(Player player)`: Hides the bar from a player.
 - `public BossBar RemoveViewer(Uuid player)`: Hides the bar from a player (by profile id).
 
-## BossBarColor (enum, other)
+## BossBarColor (enum, display)
 
 ```csharp
 public enum BossBarColor : int
@@ -102,7 +102,7 @@ The colour of a boss bar.
 - `Purple` = 5: Purple.
 - `White` = 6: White.
 
-## BossBarFlags (enum, other)
+## BossBarFlags (enum, display)
 
 ```csharp
 public enum BossBarFlags : int
@@ -115,7 +115,7 @@ Extra behaviour of a boss bar.
 - `PlayMusic` = 2: Plays the boss music.
 - `CreateFog` = 4: Creates fog.
 
-## BossBarStyle (enum, other)
+## BossBarStyle (enum, display)
 
 ```csharp
 public enum BossBarStyle : int
@@ -129,7 +129,7 @@ How a boss bar is divided.
 - `Segmented12` = 3: Twelve segments.
 - `Segmented20` = 4: Twenty segments.
 
-## BossBars (class, other)
+## BossBars (class, display)
 
 ```csharp
 public sealed class BossBars
@@ -139,7 +139,7 @@ Creates boss bars owned by a plugin (`plugin.BossBars`).
 
 - `public BossBar Create(string name, Component title, BossBarColor color = BossBarColor.Pink, BossBarStyle style = BossBarStyle.Solid, float progress = 1f)`: Creates a boss bar with nobody watching; add viewers to show it.
 
-## ChannelRegistry (class, other)
+## ChannelRegistry (class, chat)
 
 ```csharp
 public sealed class ChannelRegistry
@@ -151,7 +151,7 @@ Refused: the minecraft:* channels (a client's own registrations are read through
 
 - `public ChannelSubscription On(string channel, PluginMessageHandler handler)`: Listens on a channel. The first listener of a channel makes the engine announce it to the clients (minecraft:register).
 
-## ChannelSubscription (class, other)
+## ChannelSubscription (class, chat)
 
 ```csharp
 public sealed class ChannelSubscription : IDisposable, IPluginResource
@@ -163,7 +163,7 @@ A listener on a plugin messaging channel (`ChannelRegistry.On`). Dispose it to s
 - `public bool IsActive { get; }`: Whether the subscription still listens (false after Dispose).
 - `public void Dispose()`: Stops listening. When it was the last listener of its channel, the engine stops announcing the channel to the clients.
 
-## Chat (class, other)
+## Chat (class, chat)
 
 ```csharp
 public static class Chat
@@ -173,7 +173,7 @@ Chat lines that no player signed: the disguised chat the console's `/say` sends.
 
 - `public static int SendTo(IEnumerable<Player> recipients, ChatKind kind, Component name, Component? target, Component message)`: Sends an unsigned chat line to some players. The line is formatted from `kind` and `name` (the sender's name as the line shows it) and `message`. The message kinds (`ChatKind.MsgCommandIncoming`, `ChatKind.MsgCommandOutgoing`, `ChatKind.TeamMsgCommandIncoming`, `ChatKind.TeamMsgCommandOutgoing`) need `target` (the other side's name, as the vanilla format shows it); without one the call returns -1. Players who do not accept chat are skipped.
 
-## ChatFilterKind (enum, other)
+## ChatFilterKind (enum, chat)
 
 ```csharp
 public enum ChatFilterKind : byte
@@ -185,7 +185,7 @@ How the recipients who filter text see a chat message (vanilla FilterMask).
 - `FullyFiltered` = 1: Filtering recipients get nothing of the message.
 - `PartiallyFiltered` = 2: Filtering recipients see the text with the characters of filter_bits hidden.
 
-## ChatKind (enum, other)
+## ChatKind (enum, chat)
 
 ```csharp
 public enum ChatKind : byte
@@ -201,7 +201,7 @@ The chat type of a line: the vanilla minecraft:chat_type entries the server uses
 - `TeamMsgCommandIncoming` = 5: A team message received (minecraft:team_msg_command_incoming). Needs a target.
 - `TeamMsgCommandOutgoing` = 6: A team message sent (minecraft:team_msg_command_outgoing). Needs a target.
 
-## ChatMute (class, other)
+## ChatMute (class, chat)
 
 ```csharp
 public static class ChatMute
@@ -214,7 +214,7 @@ Chat mutes. The engine keeps the mute table itself (it survives plugin reloads a
 - `public static IReadOnlyList<ChatMuteEntry> List()`: All active chat mutes, in profile id order: a snapshot, read from the engine in pages when this is called.
 - `public static bool Set(Uuid player, DateTimeOffset? expires, string? reason)`: Mutes a player's chat. A mute already in force is replaced by this one; the same mute again changes nothing.
 
-## ChatMuteEntry (class, other)
+## ChatMuteEntry (class, chat)
 
 ```csharp
 public sealed class ChatMuteEntry : IEquatable<ChatMuteEntry>
@@ -227,7 +227,7 @@ An active chat mute: the muted player, when the mute ends and the reason it was 
 - `public Uuid Player { get; init; }`: The muted player's profile id.
 - `public string? Reason { get; init; }`: The reason the mute was given; null when none.
 
-## ChatRoute (class, other)
+## ChatRoute (class, chat)
 
 ```csharp
 public static class ChatRoute
@@ -237,7 +237,7 @@ Restricts who gets a chat message while its handler runs. Signed chat stays sign
 
 - `public static int Restrict(IEnumerable<Player> recipients)`: Restricts the recipients of the chat message of the running handler. Only the listed players get the line. Works in a `PlayerChatEvent` or a `PrivateMessageEvent` handler; the restriction applies to that one message only and ends when the dispatch is over. A second call replaces the list. An empty list means nobody gets the line. Offline handles are left out.
 
-## ClickType (enum, other)
+## ClickType (enum, inventories)
 
 ```csharp
 public enum ClickType : byte
@@ -260,7 +260,7 @@ How an inventory slot was clicked (vanilla ContainerInput folded with the button
 - `Unknown` = 12: Anything else.
 - `Drag` = 13: The end of a drag over several slots (only delivered to MenuClick, which has no InventoryDrag counterpart for locked menus).
 
-## Arg (class, other)
+## Arg (class, commands)
 
 ```csharp
 public static class Arg
@@ -336,7 +336,7 @@ Factories for the argument types of the vanilla command engine. Values are read 
 - `public static ArgType Vec3()`: A position with decimals.
 - `public static ArgType Word()`: A single word (letters, digits, `_ - . +`).
 
-## ArgType (class, other)
+## ArgType (class, commands)
 
 ```csharp
 public sealed class ArgType
@@ -347,7 +347,7 @@ The type of a command argument: what the client's command tree shows (parser id 
 - `public string RegistryName { get; }`: The vanilla argument type id, e.g. "brigadier:integer" or "minecraft:entity".
 - `public override string ToString()`
 
-## AsyncSuggestionProvider (delegate, other)
+## AsyncSuggestionProvider (delegate, commands)
 
 ```csharp
 public delegate Task<IReadOnlyList<string>> AsyncSuggestionProvider(SuggestionContext context, string typed)
@@ -458,7 +458,7 @@ public sealed class CommandRegistry
 
 Command registration, scoped to a plugin (`plugin.Commands`). Plugin commands are nodes of the server's real command tree: they appear in the client's command tree with argument types and suggestions, and run through the same dispatcher as vanilla commands. Everything registered here is removed again when the plugin unloads (the clients' trees are refreshed once per tick).
 
-Commands are flat today: the name is one word, and the arguments arrive as raw strings split on spaces. A Brigadier-style tree API (typed arguments, suggestions, permissions) is part of Plugin API v1; see [Commands](/concepts/commands/).
+Two forms. The tree form `Register(root, aliases, description)` takes a literal built with `Command.Literal` and `Command.Argument`: typed arguments, suggestions, permissions and aliases, shown in the client's command tree. The flat form `Register(name, handler, description)` is a shortcut for a `name` literal followed by a greedy text argument; the handler reads `CommandContext.Args`. Plugin commands are removed when the plugin unloads. See [Commands](/concepts/commands/).
 
 - `public RegisteredCommand Register(CommandNode root, string[]? aliases = null, string description = "")`: Registers a command tree.
 - `public RegisteredCommand Register(string name, CommandHandler handler, string description = "")`: Registers a flat command: the word `name` followed by anything. The handler reads `CommandContext.Args`. Prefer `CommandRegistry.Register` for typed arguments, suggestions and permissions.
@@ -469,6 +469,18 @@ Commands.Register("hello", ctx =>
     ctx.Reply($"Hello, {(ctx.Args.Length > 0 ? ctx.Args[0] : "world")}!");
     ctx.Result = ctx.Args.Length;
 }, "Says hello");
+```
+
+```csharp
+Commands.Register(Command.Literal("greet").Permission("hello.greet")
+    .Then(Command.Argument("name", Arg.Word())
+        .Suggests(ctx => new[] { "world", "steve" })
+        .Executes(ctx =>
+        {
+            ctx.Reply($"Hello, {ctx.GetString("name")}!");
+            return 1;
+        })),
+    description: "Greets someone");
 ```
 
 ## CommandSource (class, commands)
@@ -488,7 +500,7 @@ Who runs a command: a player or the console, with a permission level, a position
 - `public void Failure(string message)`: Sends a red failure message to the source (the command is not aborted).
 - `public void Success(string message, bool broadcastToOps = false)`: Sends feedback to the source (and, like vanilla, to operators when `broadcastToOps` is set).
 
-## DetachedCommand (class, other)
+## DetachedCommand (class, commands)
 
 ```csharp
 public sealed class DetachedCommand
@@ -505,7 +517,7 @@ What a command needed, copied out of a `CommandContext` so that it can be used a
 - `public void Reply(string message)`: Sends a plain message to whoever ran the command (nothing happens when the player left; call on the tick thread).
 - `public void Reply(Component message)`: Sends a rich message to whoever ran the command.
 
-## RegisteredCommand (class, other)
+## RegisteredCommand (class, commands)
 
 ```csharp
 public sealed class RegisteredCommand : IDisposable, IPluginResource
@@ -514,9 +526,9 @@ public sealed class RegisteredCommand : IDisposable, IPluginResource
 A command registered through `CommandRegistry`. Dispose to unregister (plugin unload does it automatically).
 
 - `public IReadOnlyList<string> Names { get; }`: The names the command answers to (the main name first, then the aliases).
-- `public void Dispose()`
+- `public void Dispose()`: Unregisters the command. Calling it again does nothing.
 
-## SuggestionContext (class, other)
+## SuggestionContext (class, commands)
 
 ```csharp
 public sealed class SuggestionContext
@@ -530,7 +542,7 @@ What an asynchronous suggestion provider gets: a copy of the request (the native
 - `public Entity Sender { get; }`: The player (or entity) asking; `Entity.Null` for the console.
 - `public string Typed { get; }`: The text typed so far for the argument being completed.
 
-## SuggestionProvider (delegate, other)
+## SuggestionProvider (delegate, commands)
 
 ```csharp
 public delegate void SuggestionProvider(CommandContext context, SuggestionsBuilder builder)
@@ -538,7 +550,7 @@ public delegate void SuggestionProvider(CommandContext context, SuggestionsBuild
 
 A suggestion provider: fills the builder with completions for the argument being typed.
 
-## SuggestionsBuilder (class, other)
+## SuggestionsBuilder (class, commands)
 
 ```csharp
 public sealed class SuggestionsBuilder
@@ -558,12 +570,12 @@ public static class Component<T> where T : unmanaged
 
 Per-type component id cache. Set by `Ecs.RegisterComponent`.
 
-The cache is one slot per CLR type for the whole process, so a component type must be owned by a single plugin (declare your own struct; do not register a shared type such as `Vec3d` under different keys from different plugins). Registering a type that is already bound to another key throws. The binding is cleared when the registering plugin unloads. You rarely use this type directly: `World.RegisterComponent<T>(key)` fills it, and `Entity.Get<T>()` and friends read the cached id from it.
+The cache is one slot per CLR type for the whole process, so a component type must be owned by a single plugin (declare your own struct; do not register a shared type such as `Vec3d` under different keys from different plugins). Registering a type that is already bound to another key throws. The binding is cleared when the registering plugin unloads. You rarely use this type directly: `Ecs.RegisterComponent<T>(key)` fills it, and `Entity.Get<T>()` and friends read the cached id from it.
 
 - `public static ulong Id { get; }`: ECS component id, 0 if not registered.
 - `public static string? Key { get; }`: The key the component type is registered under, null if unregistered.
 
-## Config<T> (class, other)
+## Config<T> (class, config)
 
 ```csharp
 public sealed class Config<T> : IDisposable, IPluginResource where T : class, new()
@@ -587,7 +599,7 @@ var config = Config.Load(Json.Default.HomesConfig);   // config.Value.MaxHomes
 
 ```
 
-## PluginConfig (class, plugins)
+## PluginConfig (class, config)
 
 ```csharp
 public sealed class PluginConfig
@@ -600,7 +612,7 @@ Plugin-scoped access to configuration files (`plugin.Config`) and the data folde
 - `public string? ReadText(string fileName)`: Reads a text file of the data folder, null when it does not exist.
 - `public void WriteText(string fileName, string text)`: Writes a text file of the data folder atomically (temp file + rename).
 
-## BlockBreakContext (class, other)
+## BlockBreakContext (class, content)
 
 ```csharp
 public sealed class BlockBreakContext
@@ -616,7 +628,7 @@ What a custom block's break handler gets. Valid during the handler only.
 - `public ItemStack Tool { get; }`: The tool in the player's hand.
 - `public World World { get; }`: The dimension.
 
-## BlockInteractContext (class, other)
+## BlockInteractContext (class, content)
 
 ```csharp
 public sealed class BlockInteractContext
@@ -633,7 +645,7 @@ What a custom block's interact handler gets. Valid during the handler only.
 - `public BlockPos Position { get; }`: The position of the block.
 - `public World World { get; }`: The dimension.
 
-## BlockPlaceContext (class, other)
+## BlockPlaceContext (class, content)
 
 ```csharp
 public sealed class BlockPlaceContext
@@ -649,7 +661,7 @@ What a custom block's place handler gets. Valid during the handler only.
 - `public BlockPos Position { get; }`: Where the block is placed.
 - `public World World { get; }`: The dimension.
 
-## BlockRegistry (class, other)
+## BlockRegistry (class, content)
 
 ```csharp
 public sealed class BlockRegistry
@@ -663,7 +675,7 @@ Registers custom blocks.
 - `public CustomBlock? Of(BlockState state)`: The custom block a block state stands for.
 - `public void Register(CustomBlock block)`: Registers a block for the plugin whose code is running: picks its block state (the same one after a restart), marks it custom in the engine and starts listening for its breaking and clicking. Released when the plugin unloads.
 
-## Content (class, other)
+## Content (class, content)
 
 ```csharp
 public static class Content
@@ -674,7 +686,7 @@ Entry point of the custom content API: `Content.Items` and `Content.Blocks` (and
 - `public static BlockRegistry Blocks { get; }`: Custom blocks.
 - `public static ItemRegistry Items { get; }`: Custom items.
 
-## CustomBlock (class, other)
+## CustomBlock (class, content)
 
 ```csharp
 public sealed class CustomBlock
@@ -699,7 +711,7 @@ A custom block: a state of a vanilla block that vanilla play seldom produces (an
 - `public CustomBlock OnPlace(Action<BlockPlaceContext> handler)`: Sets what happens when a player places the block with a custom item (`CustomItem.Places`); cancel the context to refuse.
 - `public bool Place(World world, BlockPos pos)`: Puts the block into the world (registered blocks only).
 
-## CustomItem (class, other)
+## CustomItem (class, content)
 
 ```csharp
 public sealed class CustomItem
@@ -735,7 +747,7 @@ Choose an inert base item (`minecraft:paper`, `minecraft:stick`, `minecraft:amet
 - `public CustomItem Places(CustomBlock block)`: Makes the item place a custom block against the clicked face (and use up one item).
 - `public CustomItem WithRarity(ItemRarity rarity)`: Sets the rarity.
 
-## ItemRarity (enum, other)
+## ItemRarity (enum, content)
 
 ```csharp
 public enum ItemRarity : int
@@ -748,7 +760,7 @@ How rare an item is (the colour of its name).
 - `Rare` = 2: Aqua.
 - `Epic` = 3: Light purple.
 
-## ItemRegistry (class, other)
+## ItemRegistry (class, content)
 
 ```csharp
 public sealed class ItemRegistry
@@ -762,7 +774,7 @@ Registers custom items.
 - `public CustomItem? Of(ItemStack stack)`: The definition of a stack that is a registered custom item.
 - `public void Register(CustomItem item)`: Registers an item for the plugin whose code is running (released when the plugin unloads).
 
-## ItemUseContext (class, other)
+## ItemUseContext (class, content)
 
 ```csharp
 public sealed class ItemUseContext
@@ -781,7 +793,7 @@ What a custom item's use handler gets. Valid during the handler only.
 - `public World World { get; }`: The dimension the player is in.
 - `public void Consume(int count = 1)`: Uses up items of the stack that was used (nothing happens in creative mode).
 
-## PackImage (class, other)
+## PackImage (class, content)
 
 ```csharp
 public static class PackImage
@@ -793,7 +805,7 @@ Small generated textures for packs and tests: 8-bit RGBA PNG files made without 
 - `public static byte[] Create(int width, int height, Func<int, int, uint> pixel)`: A PNG from a pixel function.
 - `public static byte[] Solid(uint argb, int size = 16)`: A PNG of one colour.
 
-## ResourcePackBuilder (class, other)
+## ResourcePackBuilder (class, content)
 
 ```csharp
 public sealed class ResourcePackBuilder
@@ -828,7 +840,7 @@ pack.SendTo(player);   // hosted by ResourcePackHost (content.pack_host_port), o
 
 ```
 
-## ResourcePackFile (class, other)
+## ResourcePackFile (class, content)
 
 ```csharp
 public sealed class ResourcePackFile
@@ -846,7 +858,7 @@ A built resource pack: the zip, its SHA-1 and the id clients know it by.
 - `public ResourcePack ToResourcePack(string url, bool required = false, Component? prompt = null)`: The pack as the packet a client needs, for a URL you host yourself.
 - `public void WriteTo(string path)`: Writes the zip to a file.
 
-## ResourcePackHost (class, other)
+## ResourcePackHost (class, content)
 
 ```csharp
 public static class ResourcePackHost
@@ -862,7 +874,7 @@ A small built-in web server that hands out the resource packs plugins publish, s
 - `public static void Stop()`: Takes back the packs the calling plugin published, and stops the server when it was started by code (`ResourcePackHost.Start`) and no published pack of any plugin is left. Packs of other plugins stay available; a server started by the configuration keeps running.
 - `public static void Unpublish(ResourcePackFile pack)`: Stops handing out a pack the calling plugin published (it stays available while another plugin publishes the same pack).
 
-## DamageCause (enum, other)
+## DamageCause (enum, events)
 
 ```csharp
 public enum DamageCause : byte
@@ -899,7 +911,7 @@ Why an entity took damage (derived from the vanilla damage type).
 - `MaceSmash` = 26: Mace smash attack.
 - `Custom` = 27: Damage dealt by a plugin.
 
-## DisplaySlot (enum, other)
+## DisplaySlot (enum, display)
 
 ```csharp
 public enum DisplaySlot : int
@@ -911,7 +923,7 @@ Where an objective is displayed.
 - `Sidebar` = 1: The sidebar at the right of the screen.
 - `BelowName` = 2: Below the name tags of players.
 
-## DragType (enum, other)
+## DragType (enum, inventories)
 
 ```csharp
 public enum DragType : byte
@@ -923,7 +935,7 @@ Kind of inventory drag.
 - `Single` = 1: Right drag: one item per slot.
 - `Clone` = 2: Middle drag (creative).
 
-## Ecs (class, other)
+## Ecs (class, ecs)
 
 ```csharp
 public sealed class Ecs
@@ -931,12 +943,32 @@ public sealed class Ecs
 
 ECS access scoped to a plugin (`plugin.Ecs`): custom components, queries and raw entities. Entities are not owned (they survive plugin reloads); queries are, and are destroyed on unload. Game worlds (dimensions) are `World`.
 
+Game worlds (dimensions) are a different type, `Mc.Scripting.Worlds.World`, reached through `Server.Worlds` and `Server.Overworld`.
+
 - `public Entity GetEntity(ulong id)`: Wraps an entity id.
 - `public Query<T1> Query<T1>() where T1 : unmanaged`: Creates a cached query over one component type.
 - `public Query<T1, T2> Query<T1, T2>() where T1 : unmanaged where T2 : unmanaged`: Creates a cached query over two component types.
 - `public Query<T1, T2, T3> Query<T1, T2, T3>() where T1 : unmanaged where T2 : unmanaged where T3 : unmanaged`: Creates a cached query over three component types.
 - `public ulong RegisterComponent<T>(string key) where T : unmanaged`: Registers (or re-binds) a plain-data component backed by a flecs component. Keys are global ("myplugin:health"); registering the same key with the same layout (field types and offsets) after a hot reload keeps existing component values. A changed layout drops the values, but is refused while another plugin is also bound to the key. Engine components can be bound by their registered name as long as the layout matches.
 - `public Entity Spawn()`: Creates an empty ECS entity (not a game entity: it has no position and is never sent to clients).
+
+```csharp
+public struct Mana { public int Value; }
+
+private Query<Mana> _mana = null!;
+
+protected override void OnEnable()
+{
+    Ecs.RegisterComponent<Mana>("hello:mana");
+    _mana = Ecs.Query<Mana>();
+    Systems.Add("regen", Phase.Tick, _ =>
+    {
+        foreach (var chunk in _mana)
+            foreach (ref var m in chunk.Field<Mana>(0))
+                m.Value++;
+    });
+}
+```
 
 ## Entity (struct, ecs)
 
@@ -983,11 +1015,11 @@ Refs returned by `Entity.Get` point into ECS storage and are invalidated by stru
 public struct Mana { public int Value; }
 
 // in OnEnable:
-World.RegisterComponent<Mana>("hello:mana");
+Ecs.RegisterComponent<Mana>("hello:mana");
 
-// later, on the tick thread:
-Entity player = e.Player;
-player.Set(new Mana { Value = 10 });          // add or overwrite
+// in an event handler, where e is a PlayerJoinEvent:
+Entity player = e.Player;                             // a Player converts to its Entity
+player.Set(new Mana { Value = 10 });                  // add or overwrite
 if (player.Has<Mana>()) player.Get<Mana>().Value--;   // in-place edit through a ref
 if (player.TryGet<Mana>(out var copy)) Log.Info($"mana {copy.Value}");
 player.Remove<Mana>();
@@ -1081,7 +1113,7 @@ Resolved runtime id per event type.
 
 - `public static readonly ushort Id;`: The runtime event id.
 
-## LoginDeferral (class, server)
+## LoginDeferral (class, events)
 
 ```csharp
 public sealed class LoginDeferral : IDisposable, IPluginResource
@@ -1095,7 +1127,7 @@ A login held by a plugin (see `PlayerPreLoginEvent.Defer`). Completing it is thr
 - `public void Deny(Component? reason = null)`: Refuses the login. Callable from any thread.
 - `public void Dispose()`: The plugin unloaded with the deferral pending: the login is refused with `LoginDeferral.UnloadDenyMessage`. A check that never answered (a ban list lookup) must not turn into a pass; the player just reconnects. Complete the deferral yourself with `LoginDeferral.Allow` to decide otherwise.
 
-## Facing (enum, other)
+## Facing (enum, worlds)
 
 ```csharp
 public enum Facing : int
@@ -1110,7 +1142,7 @@ Values of the protocol enum Facing (the wire carries the ordinal).
 - `West` = 4: Facing west (ordinal 4).
 - `East` = 5: Facing east (ordinal 5).
 
-## GameMode (enum, other)
+## GameMode (enum, players)
 
 ```csharp
 public enum GameMode : byte
@@ -1123,7 +1155,7 @@ Vanilla game mode (the numbers are the protocol ids).
 - `Adventure` = 2: Adventure mode.
 - `Spectator` = 3: Spectator mode.
 
-## GameModeChangeCause (enum, other)
+## GameModeChangeCause (enum, events)
 
 ```csharp
 public enum GameModeChangeCause : byte
@@ -1136,7 +1168,7 @@ Why a game mode changed.
 - `Plugin` = 2: A plugin set the game mode.
 - `DefaultGameMode` = 3: The server default game mode was applied.
 
-## Hand (enum, other)
+## Hand (enum, players)
 
 ```csharp
 public enum Hand : byte
@@ -1147,7 +1179,7 @@ The hand an action was performed with.
 - `MainHand` = 0: The main hand.
 - `OffHand` = 1: The off hand.
 
-## Hologram (class, other)
+## Hologram (class, visuals)
 
 ```csharp
 public sealed class Hologram : IDisposable, IPluginResource
@@ -1167,7 +1199,7 @@ Text that floats in the world. The players see it (it is an entity on their side
 - `public Hologram ShowTo(Player player)`: Shows the hologram to one player (after `Hologram.HideFromAll`), or hides it from one player while it is shown to everybody.
 - `public Hologram ShowToAll()`: Shows the hologram to everybody again (clears the list of players it is shown to or hidden from).
 
-## HologramAlign (enum, other)
+## HologramAlign (enum, visuals)
 
 ```csharp
 public enum HologramAlign : int
@@ -1179,7 +1211,7 @@ How the lines of a hologram are aligned.
 - `Left` = 8: Left aligned.
 - `Right` = 16: Right aligned.
 
-## HologramBillboard (enum, other)
+## HologramBillboard (enum, visuals)
 
 ```csharp
 public enum HologramBillboard : int
@@ -1192,7 +1224,7 @@ How a hologram turns towards the players.
 - `Horizontal` = 2: Turns around the horizontal axis.
 - `Center` = 3: Always faces the player.
 
-## HologramOptions (class, other)
+## HologramOptions (class, visuals)
 
 ```csharp
 public sealed class HologramOptions
@@ -1214,7 +1246,7 @@ The look of a hologram (the fields of the client's text display; the defaults ar
 - `public int? TextOpacity { get; set; }`: The text opacity 0..255; null for the default.
 - `public float ViewRange { get; set; }`: The view distance multiplier (0..64).
 
-## Holograms (class, other)
+## Holograms (class, visuals)
 
 ```csharp
 public sealed class Holograms
@@ -1225,7 +1257,7 @@ Creates holograms for this plugin. Everything made here is removed when the plug
 - `public Hologram Create(World world, Vec3d position, Component text, HologramOptions? options = null)`: Creates a hologram that everybody sees.
 - `public Hologram Create(World world, Vec3d position, IEnumerable<string> lines, HologramOptions? options = null)`: Creates a hologram from plain lines (one per line of text).
 
-## Http (class, other)
+## Http (class, server)
 
 ```csharp
 public static class Http
@@ -1287,7 +1319,7 @@ Something owned by a plugin that must be released when it unloads.
 
 Implement it for your own objects and call `PluginContext.Track` so they are disposed on unload.
 
-## IgniteCause (enum, other)
+## IgniteCause (enum, events)
 
 ```csharp
 public enum IgniteCause : byte
@@ -1305,7 +1337,7 @@ What set a block on fire.
 - `Plugin` = 7: A plugin.
 - `Other` = 8: Anything else.
 
-## InteractAction (enum, other)
+## InteractAction (enum, events)
 
 ```csharp
 public enum InteractAction : byte
@@ -1318,7 +1350,7 @@ What a player clicked.
 - `RightClickAir` = 2: Right click without a block target.
 - `RightClickBlock` = 3: Right click on a block.
 
-## InteractionHand (enum, other)
+## InteractionHand (enum, players)
 
 ```csharp
 public enum InteractionHand : int
@@ -1329,7 +1361,7 @@ Values of the protocol enum InteractionHand (the wire carries the ordinal).
 - `MainHand` = 0: InteractionHand main_hand (ordinal 0).
 - `OffHand` = 1: InteractionHand off_hand (ordinal 1).
 
-## BlockInventory (class, other)
+## BlockInventory (class, inventories)
 
 ```csharp
 public sealed class BlockInventory : EngineInventory
@@ -1341,7 +1373,7 @@ The inventory of a block entity by position: chests, trapped chests, barrels, fu
 - `public World World { get; }`: The dimension.
 - `public static BlockInventory? At(World world, BlockPos pos)`: The inventory of the block entity at a position.
 
-## EngineInventory (class, other)
+## EngineInventory (class, inventories)
 
 ```csharp
 public abstract class EngineInventory : IInventory
@@ -1360,7 +1392,7 @@ Shared implementation of the inventories the engine owns: one native call per op
 - `public virtual int RemoveItem(ItemStack stack)`
 - `public virtual void Set(int slot, ItemStack stack)`
 
-## IInventory (interface, other)
+## IInventory (interface, inventories)
 
 ```csharp
 public interface IInventory
@@ -1376,7 +1408,7 @@ A list of item slots: a player's inventory, a chest, a plugin menu. Every read r
 - `int RemoveItem(ItemStack stack)`: Removes items of the stack's type (and components) from the slots.
 - `void Set(int slot, ItemStack stack)`: Replaces a slot.
 
-## ItemStack (struct, other)
+## ItemStack (struct, inventories)
 
 ```csharp
 public readonly struct ItemStack : IEquatable<ItemStack>
@@ -1422,7 +1454,7 @@ Components are addressed by their registry key (`"minecraft:custom_name"`) and c
 - `public static bool operator !=(ItemStack a, ItemStack b)`: Inequality.
 - `public static bool operator ==(ItemStack a, ItemStack b)`: Equality.
 
-## ItemView (struct, other)
+## ItemView (struct, inventories)
 
 ```csharp
 public readonly struct ItemView
@@ -1441,7 +1473,7 @@ Valid only during the dispatch it came from. `ItemView.ToStack` turns it into a 
 - `public ItemStack ToStack()`: A copy of the stack with all its data components (names, lore, custom data ...) that stays valid after the event. A view of a stack without components needs no call to the engine.
 - `public override string ToString()`
 
-## Menu (class, other)
+## Menu (class, inventories)
 
 ```csharp
 public sealed class Menu : IDisposable, IInventory, IPluginResource
@@ -1480,7 +1512,7 @@ A custom GUI: a container with icons and click handlers that the client shows li
 - `public static Menu Dispenser(Component title)`: Creates a dispenser-style menu (3 x 3 slots) for the plugin whose code is running.
 - `public static Menu Hopper(Component title)`: Creates a hopper menu (5 slots) for the plugin whose code is running.
 
-## MenuClick (class, other)
+## MenuClick (class, inventories)
 
 ```csharp
 public sealed class MenuClick
@@ -1505,7 +1537,7 @@ A click in a `MenuClick.Menu`. A menu is locked: a click that could move items o
 - `public void SetClicked(ItemStack stack)`: Replaces the stack in the clicked slot (a slot of the menu or one of the player's).
 - `public void SetCursor(ItemStack stack)`: Replaces the stack on the player's cursor (the client is resynced after the click).
 
-## MenuClickType (enum, other)
+## MenuClickType (enum, inventories)
 
 ```csharp
 public enum MenuClickType : int
@@ -1526,7 +1558,7 @@ The kind of a click in a menu.
 - `Outside` = 10: A click outside the window (drops the cursor stack).
 - `Unknown` = 11: Anything else.
 
-## MenuType (enum, other)
+## MenuType (enum, inventories)
 
 ```csharp
 public enum MenuType : int
@@ -1538,7 +1570,7 @@ The vanilla menu type a `Menu` uses (what the client draws).
 - `Hopper` = 1: A hopper: 5 slots in a row.
 - `Dispenser` = 2: A dispenser or dropper: 3 x 3 slots.
 
-## Menus (class, other)
+## Menus (class, inventories)
 
 ```csharp
 public sealed class Menus
@@ -1551,7 +1583,7 @@ Creates menus owned by a plugin (`plugin.Menus`).
 - `public Menu Dispenser(Component title)`: Creates a dispenser-style menu (3 x 3 slots).
 - `public Menu Hopper(Component title)`: Creates a hopper menu (5 slots).
 
-## PlayerInventory (class, other)
+## PlayerInventory (class, inventories)
 
 ```csharp
 public sealed class PlayerInventory : EngineInventory
@@ -1580,7 +1612,7 @@ The inventory of a player: 41 slots numbered like the game's own inventory conta
 - `public ItemStack Hotbar(int index)`: The stack in a hotbar slot.
 - `public static PlayerInventory Of(Player player)`: The inventory of a player.
 
-## InventoryKind (enum, other)
+## InventoryKind (enum, inventories)
 
 ```csharp
 public enum InventoryKind : byte
@@ -1612,7 +1644,7 @@ The kind of container a player has open.
 - `Custom` = 21: A plugin-created menu.
 - `Unknown` = 22: Anything else.
 
-## Location (struct, other)
+## Location (struct, primitives)
 
 ```csharp
 public readonly struct Location : IEquatable<Location>
@@ -1675,7 +1707,7 @@ Writes to the server log (native logger), prefixed with the plugin name.
 - `public void Warn(string message)`: Writes a warning.
 - `public void Write(LogLevel level, string message)`: Writes a message at `level`.
 
-## McPermissionAttribute (class, other)
+## McPermissionAttribute (class, permissions)
 
 ```csharp
 public sealed class McPermissionAttribute : Attribute
@@ -1688,7 +1720,7 @@ Declares a permission node of a source plugin (the `permissions` array of `plugi
 - `public string? Description { get; init; }`: What the permission allows.
 - `public string Node { get; }`: The permission node.
 
-## McPluginAttribute (class, other)
+## McPluginAttribute (class, plugins)
 
 ```csharp
 public sealed class McPluginAttribute : Attribute
@@ -1711,7 +1743,7 @@ The attribute is ignored on a compiled plugin (it has a `plugin.json` or `Plugin
 - `public string? Version { get; }`: The plugin version.
 - `public string? Website { get; }`: The website.
 
-## MenuCloseReason (enum, other)
+## MenuCloseReason (enum, inventories)
 
 ```csharp
 public enum MenuCloseReason : byte
@@ -1726,7 +1758,7 @@ Why a plugin menu was closed for a player.
 - `Replaced` = 4: Another container was opened for the player.
 - `Invalid` = 5: The server closed it (death, dimension change, the menu no longer valid).
 
-## NametagCollision (enum, other)
+## NametagCollision (enum, display)
 
 ```csharp
 public enum NametagCollision : int
@@ -1739,7 +1771,7 @@ Who a player collides with (bumps into).
 - `PushOtherTeams` = 2: Pushes the players of other teams only.
 - `PushOwnTeam` = 3: Pushes the players of its own team only.
 
-## NametagStyle (class, other)
+## NametagStyle (class, display)
 
 ```csharp
 public sealed class NametagStyle
@@ -1756,7 +1788,7 @@ The look of a nametag for one viewer (see `Nametags.Set`).
 - `public Component? Suffix { get; init; }`: The text after the name, or null for none. The prefix and the suffix together are at most 8000 bytes.
 - `public NametagVisibility Visibility { get; init; }`: Who sees the nametag.
 
-## NametagVisibility (enum, other)
+## NametagVisibility (enum, display)
 
 ```csharp
 public enum NametagVisibility : int
@@ -1769,7 +1801,7 @@ Who sees a nametag.
 - `HideForOtherTeams` = 2: Only the players of the same team see it.
 - `HideForOwnTeam` = 3: Only the players of other teams see it.
 
-## Nametags (class, other)
+## Nametags (class, display)
 
 ```csharp
 public sealed class Nametags
@@ -1793,7 +1825,7 @@ Borrowed byte buffer (McBytes). Only valid during the dispatch that provided it.
 - `public ReadOnlySpan<byte> Span { get; }`: The bytes (borrowed).
 - `public byte[] ToArray()`: Copies the bytes.
 
-## NbtByte (class, other)
+## NbtByte (class, nbt)
 
 ```csharp
 public sealed class NbtByte : NbtValueTag
@@ -1806,7 +1838,7 @@ Signed 8 bit integer (also the game's boolean).
 - `public sbyte Value { get; set; }`: The value.
 - `public override NbtTag Clone()`
 
-## NbtByteArray (class, other)
+## NbtByteArray (class, nbt)
 
 ```csharp
 public sealed class NbtByteArray : NbtTag
@@ -1819,7 +1851,7 @@ An array of bytes.
 - `public sbyte[] Value { get; set; }`: The values (not copied).
 - `public override NbtTag Clone()`
 
-## NbtCompound (class, other)
+## NbtCompound (class, nbt)
 
 ```csharp
 public sealed class NbtCompound : NbtTag, IEnumerable, IEnumerable<KeyValuePair<string, NbtTag>>
@@ -1857,7 +1889,7 @@ A compound: named tags (keys are unique; the enumeration order is the insertion 
 - `public bool Remove(string key)`: Removes an entry.
 - `public bool TryGet(string key, out NbtTag tag)`: Gets an entry.
 
-## NbtDouble (class, other)
+## NbtDouble (class, nbt)
 
 ```csharp
 public sealed class NbtDouble : NbtValueTag
@@ -1870,7 +1902,7 @@ public sealed class NbtDouble : NbtValueTag
 - `public double Value { get; set; }`: The value.
 - `public override NbtTag Clone()`
 
-## NbtFloat (class, other)
+## NbtFloat (class, nbt)
 
 ```csharp
 public sealed class NbtFloat : NbtValueTag
@@ -1883,7 +1915,7 @@ public sealed class NbtFloat : NbtValueTag
 - `public float Value { get; set; }`: The value.
 - `public override NbtTag Clone()`
 
-## NbtInt (class, other)
+## NbtInt (class, nbt)
 
 ```csharp
 public sealed class NbtInt : NbtValueTag
@@ -1896,7 +1928,7 @@ Signed 32 bit integer.
 - `public int Value { get; set; }`: The value.
 - `public override NbtTag Clone()`
 
-## NbtIntArray (class, other)
+## NbtIntArray (class, nbt)
 
 ```csharp
 public sealed class NbtIntArray : NbtTag
@@ -1909,7 +1941,7 @@ An array of 32 bit integers.
 - `public int[] Value { get; set; }`: The values (not copied).
 - `public override NbtTag Clone()`
 
-## NbtIo (class, other)
+## NbtIo (class, nbt)
 
 ```csharp
 public static class NbtIo
@@ -1922,7 +1954,7 @@ Binary NBT (the file form of the game: type byte, name, payload; big endian; str
 - `public static NbtTag Read(ReadOnlySpan<byte> data, long quota)`: Parses a named root tag with an explicit memory quota.
 - `public static byte[] Write(NbtTag tag)`: Serialises a tag as a named root with an empty name.
 
-## NbtList (class, other)
+## NbtList (class, nbt)
 
 ```csharp
 public sealed class NbtList : NbtTag, ICollection<NbtTag>, IEnumerable, IEnumerable<NbtTag>, IList<NbtTag>
@@ -1948,7 +1980,7 @@ A list of tags of one type.
 - `public bool Remove(NbtTag item)`
 - `public void RemoveAt(int index)`
 
-## NbtLong (class, other)
+## NbtLong (class, nbt)
 
 ```csharp
 public sealed class NbtLong : NbtValueTag
@@ -1961,7 +1993,7 @@ Signed 64 bit integer.
 - `public long Value { get; set; }`: The value.
 - `public override NbtTag Clone()`
 
-## NbtLongArray (class, other)
+## NbtLongArray (class, nbt)
 
 ```csharp
 public sealed class NbtLongArray : NbtTag
@@ -1974,7 +2006,7 @@ An array of 64 bit integers.
 - `public long[] Value { get; set; }`: The values (not copied).
 - `public override NbtTag Clone()`
 
-## NbtShort (class, other)
+## NbtShort (class, nbt)
 
 ```csharp
 public sealed class NbtShort : NbtValueTag
@@ -1987,7 +2019,7 @@ Signed 16 bit integer.
 - `public short Value { get; set; }`: The value.
 - `public override NbtTag Clone()`
 
-## NbtString (class, other)
+## NbtString (class, nbt)
 
 ```csharp
 public sealed class NbtString : NbtValueTag
@@ -2000,7 +2032,7 @@ A string.
 - `public string Value { get; set; }`: The value.
 - `public override NbtTag Clone()`
 
-## NbtTag (class, other)
+## NbtTag (class, nbt)
 
 ```csharp
 public abstract class NbtTag
@@ -2026,7 +2058,7 @@ An NBT value (the data format of block entities, entities, item components and l
 - `public static implicit operator NbtTag(string v)`: A string tag.
 - `public static implicit operator NbtTag(bool v)`: A byte tag holding 1 or 0 (the game stores booleans as bytes).
 
-## NbtType (enum, other)
+## NbtType (enum, nbt)
 
 ```csharp
 public enum NbtType : byte
@@ -2048,7 +2080,7 @@ The type of an NBT tag (the id byte of the binary format).
 - `IntArray` = 11: Array of 32 bit integers.
 - `LongArray` = 12: Array of 64 bit integers.
 
-## NbtValueTag (class, other)
+## NbtValueTag (class, nbt)
 
 ```csharp
 public abstract class NbtValueTag : NbtTag
@@ -2058,7 +2090,7 @@ A tag with a single numeric or text value.
 
 - `protected NbtValueTag()`
 
-## Snbt (class, other)
+## Snbt (class, nbt)
 
 ```csharp
 public static class Snbt
@@ -2069,7 +2101,7 @@ Stringified NBT (the text form of `/data` and `/summon`), through the game's own
 - `public static string Format(NbtTag tag)`: Formats a tag as SNBT.
 - `public static NbtTag Parse(string text)`: Parses SNBT.
 
-## Npc (class, other)
+## Npc (class, visuals)
 
 ```csharp
 public sealed class Npc : IDisposable, IPluginResource
@@ -2095,7 +2127,7 @@ A fake player that stands in the world: the players see it with a name, a skin, 
 - `public Npc ShowToAll()`: Shows the NPC to everybody again.
 - `public Npc Swing(bool offhand = false)`: Swings an arm.
 
-## NpcClick (enum, other)
+## NpcClick (enum, visuals)
 
 ```csharp
 public enum NpcClick : byte
@@ -2106,7 +2138,7 @@ What a player did to an NPC.
 - `Attack` = 0: A left click (an attack).
 - `Interact` = 1: A right click (an interaction).
 
-## NpcInteraction (struct, other)
+## NpcInteraction (struct, visuals)
 
 ```csharp
 public readonly struct NpcInteraction
@@ -2121,7 +2153,7 @@ A click on an NPC ({{cref:M:Mc.Scripting.Npcs.OnInteract(System.Action{Mc.Script
 - `public Player Player { get; }`: The player who clicked.
 - `public bool Sneaking { get; }`: Whether the player was sneaking.
 
-## NpcPose (enum, other)
+## NpcPose (enum, visuals)
 
 ```csharp
 public enum NpcPose : int
@@ -2132,7 +2164,7 @@ The pose of an NPC.
 - `Standing` = 0: Standing.
 - `Crouching` = 5: Sneaking.
 
-## NpcSkin (class, other)
+## NpcSkin (class, visuals)
 
 ```csharp
 public sealed class NpcSkin
@@ -2147,7 +2179,7 @@ The skin of an NPC: a texture (the value and signature of a "textures" profile p
 - `public static NpcSkin OfPlayer(Player player)`: The skin of a player.
 - `public static NpcSkin OfProfile(Uuid profile)`: The skin of a profile id (an online player's skin is copied; an offline one gives the default skin).
 
-## NpcSlot (enum, other)
+## NpcSlot (enum, visuals)
 
 ```csharp
 public enum NpcSlot : int
@@ -2162,7 +2194,7 @@ The equipment slots of an NPC.
 - `Chest` = 4: The chestplate.
 - `Head` = 5: The helmet.
 
-## Npcs (class, other)
+## Npcs (class, visuals)
 
 ```csharp
 public sealed class Npcs
@@ -2173,7 +2205,7 @@ Creates NPCs for this plugin and listens to the clicks on them. Everything made 
 - `public Npc Create(World world, Vec3d position, string name, NpcSkin? skin = null, bool showInTab = false, float yaw = 0f, float pitch = 0f)`: Creates an NPC that everybody sees.
 - `public Subscription OnInteract(Action<NpcInteraction> handler)`: Calls `handler` when a player clicks an NPC of this plugin's server (any NPC: check `NpcInteraction.Npc`).
 
-## Objective (class, other)
+## Objective (class, display)
 
 ```csharp
 public sealed class Objective
@@ -2188,7 +2220,7 @@ An objective of the server scoreboard (the one `/scoreboard` edits and the world
 - `public void SetScore(string holder, int value)`: Sets the score of a holder.
 - `public void SetTitle(Component title)`: Sets the title shown above the sidebar.
 
-## OfflinePlayers (class, other)
+## OfflinePlayers (class, players)
 
 ```csharp
 public static class OfflinePlayers
@@ -2199,7 +2231,7 @@ Players who are not online, looked up by name or uuid: the server's name cache (
 - `public static Uuid? Find(string name)`: The uuid of a player name (case-insensitive) that the server remembers; null when it does not know the name.
 - `public static OfflineProfile? Get(Uuid uuid)`: The profile of a uuid the server knows, online or not (online players have their newer state in the player's own handle).
 
-## OfflineProfile (class, other)
+## OfflineProfile (class, players)
 
 ```csharp
 public sealed class OfflineProfile : IEquatable<OfflineProfile>
@@ -2217,7 +2249,7 @@ What the server knows about a player who is not online: the name, the first join
 - `public Vec3d? Position { get; init; }`: The saved feet position; null without saved data.
 - `public float Yaw { get; init; }`: The saved yaw; 0 without saved data.
 
-## PacketBase (class, other)
+## PacketBase (class, packets)
 
 ```csharp
 public abstract class PacketBase
@@ -2228,7 +2260,7 @@ Base of every typed packet (the generated classes derive from it). The wire form
 - `protected PacketBase()`
 - `public abstract int PacketIndex { get; }`: The packet's index in the engine's catalogue (its class has the constant Index).
 
-## PacketEvent<T> (class, other)
+## PacketEvent<T> (class, packets)
 
 ```csharp
 public sealed class PacketEvent<T> where T : PacketBase
@@ -2241,7 +2273,7 @@ One packet handed to a handler. In intercept mode the handler may change `Packet
 - `public Player Player { get; }`: The player the packet is from (serverbound) or to (clientbound).
 - `public void Cancel()`: Stops the packet: a serverbound packet's handler does not run, a clientbound packet is not sent. Only in intercept mode; an observer's cancel is ignored.
 
-## PacketMode (enum, other)
+## PacketMode (enum, packets)
 
 ```csharp
 public enum PacketMode : int
@@ -2252,7 +2284,7 @@ How a packet handler is called (see `Packets.On`,Mc.Scripting.PacketMode,Mc.Scri
 - `Observe` = 0: A copy of the packet after the fact: the handler cannot change or cancel it, and nothing waits for it.
 - `Intercept` = 1: The handler runs before the packet goes on and may cancel it or change its fields. The engine waits for the answer within a small budget; when none comes in time the packet goes on unchanged.
 
-## PacketSendStatus (enum, other)
+## PacketSendStatus (enum, packets)
 
 ```csharp
 public enum PacketSendStatus : int
@@ -2266,13 +2298,13 @@ What `Packets.Send` did with the packet.
 - `OverBudget` = 3: The player's (or the server's) byte budget for plugin packets of this tick is spent (nothing was sent).
 - `NotAvailable` = 4: The engine does not carry packets here (the in-process runtime, a test fixture): nothing was sent.
 
-## Packets (class, other)
+## Packets (class, packets)
 
 ```csharp
 public static class Packets
 ```
 
-Typed packets: send a packet to a player, and observe, change or cancel the packets players send and the ones sent to them. The engine encodes every packet with its own codecs, so nothing malformed reaches a client. Remote mode only (the worker process). The Packets guide of the plugin docs lists the ProtocolLib / PacketEvents equivalents.
+Typed packets: send a packet to a player, and observe, change or cancel the packets players send and the ones sent to them. The engine encodes every packet with its own codecs, so nothing malformed reaches a client.
 
 - `public static int AllocateEntityId()`: A new entity id for a fake entity (an AddEntity of this plugin). The ids are reserved for plugins, so they never collide with a real entity. Release it with `Packets.ReleaseEntityId` when the client should forget it. 0 when none is available.
 - `public static IDisposable On<T>(Action<PacketEvent<T>> handler, PacketMode mode = PacketMode.Observe, EventPriority priority = EventPriority.Normal) where T : PacketBase, new()`: Subscribes to one packet type. In `PacketMode.Observe` the handler sees a copy of each packet; in `PacketMode.Intercept` it may cancel the packet or change its fields. Handlers run in priority order (lowest first). Returns the subscription: dispose it to unsubscribe (also done when the plugin unloads).
@@ -2280,7 +2312,7 @@ Typed packets: send a packet to a player, and observe, change or cancel the pack
 - `public static PacketSendStatus Send(Player player, PacketBase packet)`: Sends a packet to a player. The packet is encoded by the engine, after the engine checks its values (ranges, registry ids, entity ids: an entity a plugin creates needs `Packets.AllocateEntityId`). It is written in order with the engine's own packets of the tick.
 - `public static PacketSendStatus SendPacket(Player player, PacketBase packet)`: Shorthand for `Packets.Send`: `player.SendPacket(new Packets.Clientbound.AddEntity { ... })`.
 
-## Particle (class, other)
+## Particle (class, players)
 
 ```csharp
 public static class Particle
@@ -2292,7 +2324,7 @@ Helpers for the textual particle descriptions `Player.SpawnParticle` takes (the 
 - `public static string Dust(float red, float green, float blue, float scale = 1f)`: A coloured dust particle.
 - `public static string Of(string key)`: A particle by its registry key (`minecraft:flame`, `happy_villager`, ...).
 
-## FilePermissionProvider (class, other)
+## FilePermissionProvider (class, permissions)
 
 ```csharp
 public sealed class FilePermissionProvider : IPermissionProvider
@@ -2322,7 +2354,7 @@ The built-in backend: groups (weighted, inheriting, with prefix and suffix) and 
 - `public void SetPlayerPermission(Uuid player, string node, bool? value, string? name = null)`: Sets (true/false) or removes (null) a permission entry of a player.
 - `public event Action<Uuid?>? Changed;`
 
-## IPermissionProvider (interface, other)
+## IPermissionProvider (interface, permissions)
 
 ```csharp
 public interface IPermissionProvider
@@ -2335,7 +2367,7 @@ A permission backend: answers "does this player have this node?" with an explici
 - `IReadOnlyCollection<string> Groups(Uuid player)`: The names of the groups the player belongs to (for display and admin commands).
 - `public event Action<Uuid?>? Changed;`: Raised when permissions changed (the player's id, or null when a group or everything changed): the server refreshes the command trees.
 
-## NativePermissionTable (class, other)
+## NativePermissionTable (class, permissions)
 
 ```csharp
 public static class NativePermissionTable
@@ -2358,7 +2390,7 @@ Feeds the engine's permission table: declares node defaults, sets and changes th
 - `public static NativeTableStats? Stats()`: The table's counters (the engine's `perm_stats`).
 - `public static bool WriteBuiltin(string json)`: Writes the built-in backend's file (permissions.json) through the engine: the worker's own sandbox refuses the write.
 
-## NativeRule (struct, other)
+## NativeRule (struct, permissions)
 
 ```csharp
 public readonly struct NativeRule : IEquatable<NativeRule>
@@ -2372,7 +2404,7 @@ A rule of the engine's permission table: a node or pattern over a context patter
 - `public ushort Layer { get; init; }`: Lower layers win: 0 the player's own rules, then the groups by weight (highest first), then the default group.
 - `public string Node { get; init; }`: The node or a pattern: "homes.use", "homes.*", "*".
 
-## NativeTableStats (struct, other)
+## NativeTableStats (struct, permissions)
 
 ```csharp
 public readonly struct NativeTableStats : IEquatable<NativeTableStats>
@@ -2390,7 +2422,7 @@ The engine's permission table counters.
 - `public ulong Rules { get; init; }`: Rules over all subjects.
 - `public ulong Subjects { get; init; }`: Subjects with state.
 
-## Permission (class, other)
+## Permission (class, permissions)
 
 ```csharp
 public sealed class Permission : IEquatable<Permission>
@@ -2403,7 +2435,7 @@ A declared permission node: its name, default and description.
 - `public string Description { get; init; }`: What the permission allows (shown by admin tools).
 - `public string Node { get; init; }`: The dotted node, e.g. "homes.use".
 
-## PermissionDefault (struct, other)
+## PermissionDefault (struct, permissions)
 
 ```csharp
 public readonly struct PermissionDefault : IEquatable<PermissionDefault>
@@ -2420,7 +2452,7 @@ What a permission node is worth when no group or player entry decides it.
 - `public static PermissionDefault OpLevel(int level)`: Operators of at least vanilla level `level` (1 = bypass spawn protection, 2 = gamemaster, 3 = admin, 4 = owner).
 - `public static bool TryParse(string? text, out PermissionDefault value)`: Parses the text form (see `PermissionDefault.ToString`).
 
-## PermissionManager (class, other)
+## PermissionManager (class, permissions)
 
 ```csharp
 public static class PermissionManager
@@ -2442,7 +2474,7 @@ Resolution: the provider's explicit value (wildcards, groups and player override
 - `public static void Reload()`: Reloads the built-in backend's file and fires `PermissionsReloaded`.
 - `public static void SetProvider(IPermissionProvider provider)`: Replaces the backend. The previous one is restored when the owning plugin unloads (use the plugin-scoped overload from plugins).
 
-## PermissionValue (enum, other)
+## PermissionValue (enum, permissions)
 
 ```csharp
 public enum PermissionValue : int
@@ -2454,7 +2486,7 @@ The three-valued answer of a permission provider.
 - `True` = 1: Explicitly granted.
 - `False` = 2: Explicitly denied (beats a grant of the same specificity).
 
-## PluginPermissions (class, plugins)
+## PluginPermissions (class, permissions)
 
 ```csharp
 public sealed class PluginPermissions
@@ -2485,7 +2517,7 @@ Server tick phases in execution order (the engine's phases). Deferred changes (e
 - `NetworkSend` = 5: Build and encode outbound packets.
 - `AsyncIntegration` = 6: Integrate worker results (chunk loads, lighting).
 
-## Player (struct, other)
+## Player (struct, players)
 
 ```csharp
 public readonly struct Player : IEquatable<Player>
@@ -2580,7 +2612,7 @@ A handle stays valid only while the player is online: after he leaves it goes st
 - `public static bool operator ==(Player a, Player b)`: Equality (same entity id).
 - `public static implicit operator Entity(Player p)`: A player is the entity it wraps.
 
-## PlayerAction (enum, other)
+## PlayerAction (enum, events)
 
 ```csharp
 public enum PlayerAction : int
@@ -2598,7 +2630,7 @@ Values of the protocol enum PlayerAction (the wire carries the ordinal).
 - `SwapItemWithOffhand` = 7: PlayerAction swap_item_with_offhand (ordinal 7).
 - `Stab` = 8: PlayerAction stab (ordinal 8).
 
-## PlayerSnapshot (struct, other)
+## PlayerSnapshot (struct, players)
 
 ```csharp
 public readonly struct PlayerSnapshot : IEquatable<PlayerSnapshot>
@@ -2657,7 +2689,7 @@ public sealed class Hello : Plugin
 {
     protected override void OnEnable()
     {
-        Events.On((ref PlayerJoinEvent e) => Log.Info($"{e.Username} joined"));
+        Events.On((ref PlayerJoinEvent e) => Log.Info($"{e.Username.ToString()} joined"));
     }
 
     protected override void OnDisable() => Log.Info("bye");
@@ -2729,7 +2761,10 @@ Optional metadata for a plugin type.
 
 ```csharp
 [PluginInfo("Homes", Version = "1.2.0", Author = "you", Description = "Set and teleport to homes")]
-public sealed class HomesPlugin : Plugin { /* ... */ }
+public sealed class HomesPlugin : Plugin
+{
+    protected override void OnEnable() { /* ... */ }
+}
 ```
 
 ## PluginMessageHandler (delegate, plugins)
@@ -2777,7 +2812,7 @@ Read-only view of the loaded plugins: for admin tools (a `/plugins` command), fo
 - `public static PluginMetadata? Get(string id)`: The metadata of a loaded plugin, null when no plugin with this id is loaded.
 - `public static bool IsLoaded(string id)`: Whether a plugin is loaded.
 
-## PortalCreateReason (enum, other)
+## PortalCreateReason (enum, events)
 
 ```csharp
 public enum PortalCreateReason : byte
@@ -2789,7 +2824,7 @@ Why a portal is being created.
 - `NetherPair` = 1: The destination portal of a nether portal trip.
 - `Plugin` = 2: A plugin.
 
-## PotionEffect (struct, other)
+## PotionEffect (struct, players)
 
 ```csharp
 public readonly struct PotionEffect : IEquatable<PotionEffect>
@@ -2808,7 +2843,7 @@ A status effect to apply to a player (a potion effect in Bukkit terms).
 - `public bool ShowParticles { get; init; }`: Whether the effect shows particles around the player.
 - `public static PotionEffect For(string effect, TimeSpan duration, int amplifier = 0)`: Creates an effect lasting a number of seconds.
 
-## PresenceExtensions (class, other)
+## PresenceExtensions (class, display)
 
 ```csharp
 public static class PresenceExtensions
@@ -2895,6 +2930,11 @@ A query over one component type.
 
 - `public void Each(QueryAction<T1> action)`: Calls `action` for every matching entity.
 
+```csharp
+// _mana is a Query<Mana> created in OnEnable with Ecs.Query<Mana>()
+_mana.Each((Entity entity, ref Mana m) => m.Value++);
+```
+
 ## Query<T1, T2> (class, ecs)
 
 ```csharp
@@ -2915,7 +2955,7 @@ A query over three component types.
 
 - `public void Each(QueryAction<T1, T2, T3> action)`: Calls `action` for every matching entity.
 
-## ResourcePack (class, other)
+## ResourcePack (class, players)
 
 ```csharp
 public sealed class ResourcePack : IEquatable<ResourcePack>
@@ -2931,7 +2971,7 @@ A resource pack the server asks clients to download.
 - `public string Url { get; init; }`: The download address (http or https).
 - `public static ResourcePack FromUrl(string url, string? sha1 = null, bool required = false, Component? prompt = null)`: Creates a pack whose id is derived from its url, so pushing the same url twice replaces the first push.
 
-## ResourcePackStatus (enum, other)
+## ResourcePackStatus (enum, players)
 
 ```csharp
 public enum ResourcePackStatus : byte
@@ -2948,7 +2988,7 @@ Client report about a pushed resource pack (protocol order).
 - `FailedReload` = 6: Applying the pack failed.
 - `Discarded` = 7: The pack was discarded.
 
-## RespawnReason (enum, other)
+## RespawnReason (enum, events)
 
 ```csharp
 public enum RespawnReason : byte
@@ -2998,15 +3038,15 @@ Scheduler.RunLater(20, () => Server.Broadcast("one second later"));
 ScheduledTask autosave = Scheduler.RunEvery(20 * 60, SaveAll);   // every minute
 // autosave.Cancel();
 
-// from an async continuation or another thread:
+// from a thread-pool task: fetch off the tick thread, then apply on it
 _ = Task.Run(async () =>
 {
-    string json = await Http.GetStringAsync(url);
+    string json = await Http.Client.GetStringAsync(url);
     Scheduler.Post(() => Apply(json));     // back on the tick thread
 });
 ```
 
-## ScoreFormat (enum, other)
+## ScoreFormat (enum, display)
 
 ```csharp
 public enum ScoreFormat : int
@@ -3018,7 +3058,7 @@ How a score is shown next to its holder.
 - `Blank` = 1: The number is hidden.
 - `Fixed` = 2: A fixed text is shown instead of the number.
 
-## Scoreboard (class, other)
+## Scoreboard (class, display)
 
 ```csharp
 public static class Scoreboard
@@ -3061,7 +3101,7 @@ Everything here except `Server.IsTickThread` and `Server.CurrentTick` must be ca
 - `public static void SendMessage(Entity target, string message)`: Sends a system chat message to `target` (Entity.Null = console).
 - `public static TickTimes TickTimes(int ticks = 20)`: The engine's own tick time over the last `ticks` ticks (1 to 6000), as `/tick query` reports it: the busy time of each tick. Prefer it to timing your own systems: plugins run in a separate worker process, and a Stopwatch there also counts the round trips to the engine. Values are -1 when the engine cannot tell.
 
-## ServiceUnavailableException (class, other)
+## ServiceUnavailableException (class, services)
 
 ```csharp
 public sealed class ServiceUnavailableException : InvalidOperationException
@@ -3071,7 +3111,7 @@ A plugin-to-plugin service that was registered is no longer available (its provi
 
 - `public ServiceUnavailableException(Type serviceType)`: Creates the exception.
 
-## Affix (class, other)
+## Affix (class, services)
 
 ```csharp
 public sealed class Affix : IEquatable<Affix>
@@ -3084,7 +3124,7 @@ One prefix or suffix of a player: its text, its weight (the highest weight comes
 - `public string Text { get; init; }`: The text, as the provider stores it (the chat and tab plugins decorate it).
 - `public int Weight { get; init; }`: The rank among the affixes of the same kind; a higher weight comes first.
 
-## AffixKind (enum, other)
+## AffixKind (enum, services)
 
 ```csharp
 public enum AffixKind : int
@@ -3095,7 +3135,7 @@ Whether an affix goes before the player's name (a prefix) or after it (a suffix)
 - `Prefix` = 0: Before the name, as in "[Admin] Steve".
 - `Suffix` = 1: After the name, as in "Steve [AFK]".
 
-## BanEntry (class, other)
+## BanEntry (class, services)
 
 ```csharp
 public sealed class BanEntry : IEquatable<BanEntry>
@@ -3112,7 +3152,7 @@ One ban: a player (uuid and the name it was banned under) or an address. `BanEnt
 - `public string? Reason { get; init; }`: The reason shown on the disconnect screen; null for the default text.
 - `public string Source { get; init; }`: Who wrote it ("(Unknown)" when nobody said).
 
-## Currency (class, other)
+## Currency (class, services)
 
 ```csharp
 public sealed class Currency : IEquatable<Currency>
@@ -3127,7 +3167,7 @@ A currency. Amounts are long minor units (cents when `Currency.FractionDigits` i
 - `public string Symbol { get; init; }`: The symbol written before the amount ("$").
 - `public string Format(long minor)`: The amount as text: the symbol, the major units and the minor units after a point ("$12.05"). Negative amounts start with a minus sign.
 
-## EconomyResult (enum, other)
+## EconomyResult (enum, services)
 
 ```csharp
 public enum EconomyResult : int
@@ -3141,7 +3181,7 @@ The outcome of a money operation.
 - `OverMax` = 3: The deposit would go over the provider's maximum balance.
 - `Refused` = 4: Refused: a zero or negative amount, a frozen account, or another rule of the provider.
 
-## IBanList (interface, other)
+## IBanList (interface, services)
 
 ```csharp
 public interface IBanList
@@ -3157,7 +3197,7 @@ The server's ban lists: the vanilla files banned-players.json and banned-ips.jso
 - `bool RemoveAddress(string address)`: Removes an address ban.
 - `bool RemovePlayer(Uuid player)`: Removes a player's ban.
 
-## IEconomy (interface, other)
+## IEconomy (interface, services)
 
 ```csharp
 public interface IEconomy
@@ -3174,7 +3214,7 @@ An economy: balances of players (online or offline, by uuid), the transfers betw
 - `EconomyResult Withdraw(Uuid player, long minor, string reason)`: Takes money from an account, refusing to go below zero.
 - `public event Action<Uuid?>? Changed;`: Raised when an account's balance changed (tick thread). A null uuid means many accounts may have changed.
 
-## IPlaceholders (interface, other)
+## IPlaceholders (interface, services)
 
 ```csharp
 public interface IPlaceholders
@@ -3187,7 +3227,7 @@ The placeholder registry: text templates such as "Online: %server_online%" are r
 - `IPluginResource Register(string id, PlaceholderScope scope, TimeSpan cacheFor, PlaceholderValue value)`: Adds a placeholder. The id is lowercase letters, digits and underscores ("charter_prefix"); "%charter_prefix%" renders it. A registration with the same id replaces the earlier one (a hot-reload successor). Disposing the result (or unloading the owning plugin, when it registered from a plugin's enable or event handler) removes it.
 - `string Resolve(Player subject, string text)`: Renders a template for a subject. "%%" is a literal percent sign; a token that is not a registered placeholder is left as written. Text without a percent sign comes back unchanged.
 
-## IPlayerMeta (interface, other)
+## IPlayerMeta (interface, services)
 
 ```csharp
 public interface IPlayerMeta
@@ -3201,7 +3241,7 @@ Ramjet's first-party permissions plugin implements it; without one, a built-in p
 - `bool TryGet<T>(Uuid player, MetaKey<T?> key, out T? value)`: The value of a meta key for a player, from the provider's highest layer that has it.
 - `public event Action<Uuid?>? Changed;`: Raised when a player's meta or affixes changed (tick thread). A null uuid means every player may have changed.
 
-## MetaKey<T> (class, other)
+## MetaKey<T> (class, services)
 
 ```csharp
 public sealed class MetaKey<T>
@@ -3213,7 +3253,7 @@ A typed key of player meta, declared by the plugin that owns the value (`new Met
 - `public string Name { get; }`: The key.
 - `public override string ToString()`
 
-## PlaceholderScope (enum, other)
+## PlaceholderScope (enum, services)
 
 ```csharp
 public enum PlaceholderScope : int
@@ -3224,7 +3264,7 @@ Whether a placeholder has one value for everybody (`PlaceholderScope.Global`) or
 - `Global` = 0: One value for everybody; the subject passed to the value is `Player.None`.
 - `Player` = 1: One value per subject player.
 
-## PlaceholderValue (delegate, other)
+## PlaceholderValue (delegate, services)
 
 ```csharp
 public delegate string PlaceholderValue(Player subject, string[] args)
@@ -3232,7 +3272,7 @@ public delegate string PlaceholderValue(Player subject, string[] args)
 
 Computes a placeholder's value for a subject from the arguments written after its name: "%id:arg1:arg2%" passes ["arg1", "arg2"]. Throwing leaves the last good value in place (or the token as written) and logs the error once a minute.
 
-## PlayerMetaExtensions (class, other)
+## PlayerMetaExtensions (class, services)
 
 ```csharp
 public static class PlayerMetaExtensions
@@ -3242,7 +3282,7 @@ Helpers over `IPlayerMeta` for the plugins that only need text.
 
 - `public static string AffixText(IPlayerMeta meta, Uuid player, AffixKind kind, string separator = " ")`: The affixes of one kind joined into one text, highest weight first.
 
-## ServiceManager (class, other)
+## ServiceManager (class, services)
 
 ```csharp
 public sealed class ServiceManager
@@ -3257,7 +3297,7 @@ Plugin-to-plugin services: a plugin registers an implementation of an interface 
 - `public T? TryGet<T>() where T : class`: The highest-priority provider of `T`, null when none is registered. Thread-safe.
 - `public bool Unregister<T>() where T : class`: Removes this plugin's registration of `T`.
 
-## ServicePriority (enum, other)
+## ServicePriority (enum, services)
 
 ```csharp
 public enum ServicePriority : int
@@ -3271,7 +3311,7 @@ How a provider ranks when several plugins register the same service type (the hi
 - `High` = 1: Preferred over normal providers.
 - `Highest` = 2: Preferred over everything else.
 
-## ServiceRegistration<T> (class, other)
+## ServiceRegistration<T> (class, services)
 
 ```csharp
 public sealed class ServiceRegistration<T> : IEquatable<ServiceRegistration<T>> where T : class
@@ -3284,7 +3324,7 @@ One registered service: the implementation, who provided it and how it ranks.
 - `public ServicePriority Priority { get; init; }`: Its rank.
 - `public string Provider { get; init; }`: The id of the registering plugin.
 
-## Sidebar (class, other)
+## Sidebar (class, display)
 
 ```csharp
 public sealed class Sidebar : IDisposable, IPluginResource
@@ -3305,7 +3345,7 @@ A sidebar scoreboard (the list of lines at the right of the screen) shown to cho
 - `public void SetLines(IReadOnlyList<Component> lines)`: Replaces all lines: the first text becomes line 0, lines beyond the given ones are removed.
 - `public void Show(Player player)`: Shows the sidebar to a player (replacing any sidebar of the server scoreboard on his screen).
 
-## Sidebars (class, other)
+## Sidebars (class, display)
 
 ```csharp
 public sealed class Sidebars
@@ -3315,7 +3355,7 @@ Creates sidebars owned by a plugin (`plugin.Sidebars`).
 
 - `public Sidebar Create(Component title)`: Creates a sidebar nobody sees yet.
 
-## SoundCategory (enum, other)
+## SoundCategory (enum, players)
 
 ```csharp
 public enum SoundCategory : int
@@ -3335,7 +3375,7 @@ Where a sound is mixed in the client's volume sliders.
 - `Voice` = 9: Voice (narration).
 - `Ui` = 10: User interface sounds.
 
-## SpawnReason (enum, other)
+## SpawnReason (enum, events)
 
 ```csharp
 public enum SpawnReason : byte
@@ -3425,7 +3465,7 @@ var h = Systems.Replace("vanilla:ai", "my_ai", dt => { });   // disables vanilla
 h.Dispose();                                                   // restores it
 ```
 
-## TabEntry (class, other)
+## TabEntry (class, display)
 
 ```csharp
 public sealed class TabEntry
@@ -3440,7 +3480,7 @@ The fields of one player's tab entry for one viewer. A null field keeps what it 
 - `public bool? Listed { get; init; }`: Whether the player is listed, or null to keep it.
 - `public int? Order { get; init; }`: The order in the list (lower first), or null to keep it.
 
-## Tablist (class, other)
+## Tablist (class, display)
 
 ```csharp
 public sealed class Tablist
@@ -3458,7 +3498,7 @@ The tab list as one viewer sees it: the name, order, latency and game mode of ea
 - `public void SetObjective(Player viewer, int slot, string name, Component title)`: Defines an objective for one viewer: slot 0 is the tab list (the value after each name), slot 2 is below the name.
 - `public void SetScore(Player viewer, string objective, string holder, int score, Component? display, ScoreFormat format, Component? fixedFormat)`: Sets one holder's score on an objective of one viewer.
 
-## TeleportCause (enum, other)
+## TeleportCause (enum, events)
 
 ```csharp
 public enum TeleportCause : byte
@@ -3478,7 +3518,7 @@ Why a player is being teleported.
 - `Respawn` = 9: Respawning.
 - `Dismount` = 10: Dismounting a vehicle.
 
-## ClickAction (enum, other)
+## ClickAction (enum, chat)
 
 ```csharp
 public enum ClickAction : int
@@ -3492,7 +3532,7 @@ What happens when a player clicks a text component.
 - `CopyToClipboard` = 3: Copies the value to the clipboard.
 - `ChangePage` = 4: Changes the page of a book.
 
-## ClickEvent (struct, other)
+## ClickEvent (struct, chat)
 
 ```csharp
 public readonly struct ClickEvent : IEquatable<ClickEvent>
@@ -3553,7 +3593,7 @@ Strings convert implicitly to a literal text component (no formatting codes are 
 - `public static Component Translatable(string key, params Component[] args)`: A translatable component (resolved by the client's language).
 - `public static implicit operator Component(string text)`: Literal text converts implicitly.
 
-## HoverEvent (class, other)
+## HoverEvent (class, chat)
 
 ```csharp
 public sealed class HoverEvent
@@ -3565,7 +3605,7 @@ A hover event of a text component.
 - `public static HoverEvent ShowItem(string itemKey, int count = 1)`: Shows an item tooltip (item key and count; components are not part of v1).
 - `public static HoverEvent ShowText(Component text)`: Shows a text tooltip.
 
-## TextColor (struct, other)
+## TextColor (struct, chat)
 
 ```csharp
 public readonly struct TextColor : IEquatable<TextColor>
@@ -3601,7 +3641,7 @@ A named or RGB text colour.
 - `public static bool operator !=(TextColor a, TextColor b)`: Inequality.
 - `public static bool operator ==(TextColor a, TextColor b)`: Equality.
 
-## TickAwaitable (struct, other)
+## TickAwaitable (struct, scheduler)
 
 ```csharp
 public readonly struct TickAwaitable : ICriticalNotifyCompletion, INotifyCompletion
@@ -3615,7 +3655,7 @@ The awaitable returned by `Scheduler.ToTick` / `Scheduler.ToAsync`.
 - `public void OnCompleted(Action continuation)`: Awaiter protocol.
 - `public void UnsafeOnCompleted(Action continuation)`: Awaiter protocol.
 
-## TickTimes (struct, other)
+## TickTimes (struct, server)
 
 ```csharp
 public readonly struct TickTimes : IEquatable<TickTimes>
@@ -3631,7 +3671,7 @@ The engine's tick time over a window of ticks (`Server.TickTimes`): average (MSP
 - `public double P95Ms { get; init; }`
 - `public double Tps { get; init; }`
 
-## TimeSkipReason (enum, other)
+## TimeSkipReason (enum, events)
 
 ```csharp
 public enum TimeSkipReason : byte
@@ -3643,7 +3683,7 @@ Why the day time jumped.
 - `NightSkip` = 1: Players slept through the night.
 - `Custom` = 2: A plugin.
 
-## TitleTimes (struct, other)
+## TitleTimes (struct, display)
 
 ```csharp
 public readonly struct TitleTimes : IEquatable<TitleTimes>
@@ -3666,7 +3706,7 @@ public readonly ref struct Utf8String
 
 Borrowed UTF-8 string (McStr). Only valid during the call/dispatch that provided it: call `Utf8String.ToString` to keep a copy.
 
-Event string fields (`Message`, `Username`, ...) are this type: borrowed UTF-8 memory owned by the engine. No allocation happens until you call `ToString()`.
+Event string fields (`Message`, `Username`, ...) are this type: borrowed UTF-8 memory owned by the engine. Only `ToString()` and `Contains()` allocate.
 
 - `public Utf8String(byte* data, long size)`: Wraps native memory (the engine does this; plugins receive these in events).
 - `public ReadOnlySpan<byte> Bytes { get; }`: The UTF-8 bytes (borrowed).
@@ -3728,7 +3768,7 @@ A 3D vector of doubles (positions, velocities).
 - `public static Vec3d operator -(Vec3d a, Vec3d b)`: Component-wise difference.
 - `public static bool operator ==(Vec3d a, Vec3d b)`: Equality.
 
-## VersionConstraint (class, other)
+## VersionConstraint (class, plugins)
 
 ```csharp
 public static class VersionConstraint
@@ -3738,7 +3778,7 @@ Compares dotted versions against constraints (`>=`, `>`, `=`, `<`, `<=`, `^` = s
 
 - `public static bool Satisfies(string? constraint, string version)`: Whether a version satisfies a constraint.
 
-## BlockState (struct, other)
+## BlockState (struct, worlds)
 
 ```csharp
 public readonly struct BlockState : IEquatable<BlockState>
@@ -3761,7 +3801,7 @@ A block state: a block plus its properties, as the numeric id of the global pale
 - `public static bool operator !=(BlockState a, BlockState b)`: Inequality.
 - `public static bool operator ==(BlockState a, BlockState b)`: Equality.
 
-## BlockUpdateFlags (enum, other)
+## BlockUpdateFlags (enum, worlds)
 
 ```csharp
 public enum BlockUpdateFlags : int
@@ -3782,7 +3822,7 @@ How a block change is propagated, the update flags of the game's `Level.setBlock
 - `SkipBlockEntitySideEffects` = 256: The old block entity is replaced without its removal side effects (no contents drop).
 - `SkipOnPlace` = 512: The new block's placement logic (`onPlace`) does not run.
 
-## ChunkTicket (class, other)
+## ChunkTicket (class, worlds)
 
 ```csharp
 public sealed class ChunkTicket : IDisposable, IPluginResource
@@ -3798,7 +3838,7 @@ A hold on a chunk: while the ticket exists the chunk is kept loaded (and ticking
 - `public void Dispose()`: Same as `ChunkTicket.Release`.
 - `public void Release()`: Gives the chunk back (it may unload after a grace period). Does nothing a second time.
 
-## ChunkTickets (class, other)
+## ChunkTickets (class, worlds)
 
 ```csharp
 public sealed class ChunkTickets
@@ -3811,7 +3851,7 @@ Chunk tickets of one plugin (`plugin.ChunkTickets`): they are released automatic
 - `public ChunkTicket Add(World world, int chunkX, int chunkZ)`: Asks for a chunk to be loaded and kept.
 - `public IReadOnlyList<ChunkTicket> AddArea(World world, int centerX, int centerZ, int radius)`: Asks for the chunks of a square around a centre chunk (`radius` 0 is one chunk, 1 is 3 x 3).
 
-## HeightMap (enum, other)
+## HeightMap (enum, worlds)
 
 ```csharp
 public enum HeightMap : int
@@ -3824,7 +3864,7 @@ Which surface `World.HighestBlockY` looks for.
 - `MotionBlocking` = 2: The highest block that stops movement or holds a fluid (what rain and the sun see).
 - `MotionBlockingNoLeaves` = 3: Like `HeightMap.MotionBlocking` but leaves do not count.
 
-## WeatherType (enum, other)
+## WeatherType (enum, worlds)
 
 ```csharp
 public enum WeatherType : int
@@ -3836,7 +3876,7 @@ The weather of a dimension.
 - `Rain` = 1: Rain (snow in cold biomes).
 - `Thunder` = 2: Rain with thunderstorms and lightning.
 
-## World (struct, ecs)
+## World (struct, worlds)
 
 ```csharp
 public readonly struct World : IEquatable<World>
@@ -3895,25 +3935,7 @@ A handle to a dimension (overworld, nether, end ...). Blittable. Dimensions live
 - `public static bool operator !=(World a, World b)`: Inequality.
 - `public static bool operator ==(World a, World b)`: Equality.
 
-```csharp
-public struct Mana { public int Value; }
-
-private Query<Mana> _mana = null!;
-
-protected override void OnEnable()
-{
-    World.RegisterComponent<Mana>("hello:mana");
-    _mana = World.Query<Mana>();
-    Systems.Add("hello:regen", Phase.Tick, _ =>
-    {
-        foreach (var chunk in _mana)
-            foreach (ref var m in chunk.Field<Mana>(0))
-                m.Value++;
-    });
-}
-```
-
-## WrongThreadException (class, other)
+## WrongThreadException (class, scheduler)
 
 ```csharp
 public sealed class WrongThreadException : InvalidOperationException

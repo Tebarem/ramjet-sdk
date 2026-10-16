@@ -1,0 +1,22 @@
+<Project>
+  <!-- Ramjet.Api: copies the built plugin into a server's plugins folder after every build, which triggers the server's hot reload.
+       Set RAMJET_PLUGINS (or -p:RamjetPluginsDir=...) to the plugins folder of a server you run, or of a mounted / synced copy of a
+       hosted one. Unset: nothing is copied. -->
+  <PropertyGroup>
+    <RamjetPluginsDir Condition="'$(RamjetPluginsDir)' == ''">$(McPluginsDir)</RamjetPluginsDir>
+    <RamjetPluginsDir Condition="'$(RamjetPluginsDir)' == ''">$(RAMJET_PLUGINS)</RamjetPluginsDir>
+  </PropertyGroup>
+
+  <Target Name="RamjetDeployPlugin" AfterTargets="Build" Condition="'$(RamjetPluginsDir)' != ''">
+    <ItemGroup>
+      <_RamjetPluginSupport Include="$(OutDir)**/*.dll;$(OutDir)**/*.json" Exclude="$(OutDir)$(AssemblyName).dll;$(OutDir)Mc.Scripting.*.dll;$(OutDir)*.deps.json;$(OutDir)*.runtimeconfig.json" />
+      <_RamjetPluginPdb Include="$(OutDir)$(AssemblyName).pdb" />
+      <_RamjetPluginMain Include="$(OutDir)$(AssemblyName).dll" />
+    </ItemGroup>
+    <!-- main dll last: the server watches *.dll and reloads when it changes, so everything else must be in place first -->
+    <Copy SourceFiles="@(_RamjetPluginSupport)" DestinationFolder="$(RamjetPluginsDir)/$(AssemblyName)/%(RecursiveDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_RamjetPluginPdb)" DestinationFolder="$(RamjetPluginsDir)/$(AssemblyName)" ContinueOnError="true" />
+    <Copy SourceFiles="@(_RamjetPluginMain)" DestinationFolder="$(RamjetPluginsDir)/$(AssemblyName)" />
+    <Message Importance="high" Text="$(AssemblyName) deployed to $(RamjetPluginsDir)/$(AssemblyName)/" />
+  </Target>
+</Project>
