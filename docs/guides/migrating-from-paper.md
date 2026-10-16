@@ -72,6 +72,12 @@ If you have written Paper plugins you already know most of the concepts. This pa
 | `PersistentDataContainer`, `setMetadata` | your own component: `entity.Set(new Mana { ... })` |
 | `Player#getLocation`, `World`, `Location` | `player.Location`, `player.World` (a handle), `Location` |
 | `Block`, `BlockState`, `world.getBlockAt` | `world.GetBlock(pos)` returns a `BlockState` value |
+| `Bukkit.getWorld(name)`, `Bukkit.getWorlds()` | `Server.GetWorld("the_nether")`, `Server.Worlds` ([worlds](../concepts/worlds.md)) |
+| `block.setType` / `setBlockData` | `world.SetBlock(pos, "minecraft:stone")` (no `BlockPlaceEvent`; update flags choose the neighbour updates) |
+| `world.addPluginChunkTicket`, `chunk.load()` | `ChunkTickets.Add(world, cx, cz)` (asynchronous: wait for `IsLoaded`) |
+| `world.spawnEntity`, `world.dropItem` | `world.SpawnEntity("minecraft:zombie", pos, nbt)`, `world.DropItem(pos, stack)` |
+| `player.teleport(location)` to another world | `player.Teleport(new Location(world, x, y, z))` ([travelling between worlds](worlds-and-teleporting.md)) |
+| `WorldCreator`, `Bukkit.createWorld`, `unloadWorld`, Multiverse | not available: a server has the three dimensions of its world folder |
 | `Bukkit.getOnlinePlayers()` | `Server.Players` (snapshot) |
 | `ItemStack`, `Inventory`, GUI via `InventoryClickEvent` | `ItemStack` value, `player.Inventory`, `Menus.Chest(...)` ([custom GUIs](custom-guis.md)) |
 | `BossBar`, `Scoreboard` sidebar, `Title` | `BossBars.Create`, `Sidebars.Create`, `player.ShowTitle` ([boss bars](boss-bars-and-titles.md), [sidebar](scoreboard-sidebar.md)) |

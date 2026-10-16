@@ -350,6 +350,14 @@ Services.Changed<IHomeCount>(() => counts = Services.TryGet<IHomeCount>());
 - `/plugins reload` disables every plugin (`OnDisable` runs), restarts the plugin worker and loads everything again from disk. A crash does the same automatically.
 - Hard depend on the reloaded plugin: it is reloaded too.
 
+## Logs and build errors
+
+Read the plugin's own files, not the whole server log (paths relative to the server's working directory):
+
+- `logs/plugins/<plugin-id>/build.log`: the last build of a source plugin. A summary line, then every error and warning as `file(line,col): error CODE: message`. Fix these first; `build.jsonl` has the same as JSON lines.
+- `logs/plugins/<plugin-id>/latest.log`: this run of the plugin. Every line is `[time UTC] [LEVEL] [plugin-id] [source] message`, source `plugin` (its `Log`, `enabled` / `disabled`, exceptions its handlers threw), `runtime` (load and reload failures), `engine` (handlers past their time budget, mutes, dropped lines), `build` (each build's result). Stack traces keep the plugin's file and line. `latest.jsonl` is the same as JSON lines.
+- `logs/latest.log` is the whole server (the console). Write through the plugin's `Log`: `Console.WriteLine` and self-made `Logger`s do not reach the plugin's file.
+
 ## Testing on a server
 
 Never use a server people play on. Use a test server you control:

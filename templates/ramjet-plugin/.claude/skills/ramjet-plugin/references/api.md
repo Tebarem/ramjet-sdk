@@ -1696,7 +1696,7 @@ Log severity.
 public sealed class Logger
 ```
 
-Writes to the server log (native logger), prefixed with the plugin name.
+Writes to the server log (native logger), prefixed with the plugin name. A plugin's own logger (`Plugin.Log`) also writes to the plugin's log file, `logs/plugins/<plugin-id>/latest.log`.
 
 - `public Logger(string name)`: Creates a logger that prefixes `[name]`.
 - `public void Debug(string message)`: Writes a debug message.

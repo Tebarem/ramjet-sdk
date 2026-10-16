@@ -5397,7 +5397,8 @@
             <summary>An error.</summary>
         </member>
         <member name="T:Mc.Scripting.Logger">
-            <summary>Writes to the server log (native logger), prefixed with the plugin name.</summary>
+            <summary>Writes to the server log (native logger), prefixed with the plugin name. A plugin's own logger (<see cref="P:Mc.Scripting.Plugin.Log" />) also
+            writes to the plugin's log file, <c>logs/plugins/&lt;plugin-id&gt;/latest.log</c>.</summary>
         </member>
         <member name="M:Mc.Scripting.Logger.#ctor(System.String)">
             <summary>Creates a logger that prefixes <c>[name]</c>.</summary>

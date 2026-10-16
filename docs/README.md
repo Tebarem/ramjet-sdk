@@ -21,7 +21,9 @@ Guides and references for writing C# plugins for a Ramjet Minecraft server. Plug
 - [The scheduler](concepts/scheduler.md): tick-based delayed and repeating tasks, async helpers.
 - [The threading model](concepts/threading.md): the tick thread owns the world; what is thread-safe; async work.
 - [Hot reload](concepts/hot-reload.md): what survives a reload and the rules that keep it leak-free.
+- [Logs and debugging](concepts/logging.md): the per-plugin log folder, exceptions, the compiler output of source plugins, and reading them with an agent.
 - [Performance rules](concepts/performance.md): allocation-free hot paths and what each call costs.
+- [Worlds, blocks and chunks](concepts/worlds.md): the three dimensions, reading and changing blocks, chunk tickets, entities and effects, time and weather, teleporting between worlds, what is saved.
 
 ## Guides
 
@@ -32,6 +34,7 @@ Guides and references for writing C# plugins for a Ramjet Minecraft server. Plug
 - [Boss bars, titles and action bars](guides/boss-bars-and-titles.md): a countdown boss bar and a welcome title.
 - [A scoreboard sidebar](guides/scoreboard-sidebar.md): shared and per-player sidebars with live lines.
 - [Inter-plugin services](guides/inter-plugin-services.md): one plugin offering an API to another, with dependencies and hot reload.
+- [Travelling between worlds](guides/worlds-and-teleporting.md): a `/hop` command to another dimension on safe ground: chunk tickets, terrain checks, a platform, portal events.
 - [Migrating from Paper / Bukkit](guides/migrating-from-paper.md): a concept-by-concept mapping with side-by-side code.
 
 ## Reference
