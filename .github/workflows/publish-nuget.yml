@@ -5,7 +5,7 @@
 # Manual runs (workflow_dispatch) pack and publish whatever version the csproj holds.
 #
 # One-time setup on nuget.org (Account > Trusted Publishing): add a GitHub Actions policy with
-#   owner: Tebarem, repository: ramjet-sdk, workflow file: publish-nuget.yml, environment: nuget
+#   owner: Tebarem, repository: ramjet-sdk, workflow file: publish-nuget.yml, environment: production
 # and add the repository secret NUGET_USER = the nuget.org profile name (not the email) that owns the policy.
 
 name: Publish to NuGet
@@ -64,7 +64,7 @@ jobs:
   publish:
     needs: pack
     runs-on: ubuntu-latest
-    environment: nuget
+    environment: production
     permissions:
       id-token: write # lets NuGet/login exchange the GitHub OIDC token for a short-lived nuget.org API key
     steps:
