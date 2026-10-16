@@ -1,0 +1,13 @@
+{
+  "id": "homes",
+  "name": "Homes",
+  "version": "1.0.0",
+  "api": "1.0",
+  "authors": ["Ramjet"],
+  "description": "Set homes and teleport back to them",
+  "permissions": [
+    { "node": "homes.use", "default": "true", "description": "Use /sethome, /home, /delhome and /homes" },
+    { "node": "homes.unlimited", "default": "op:3", "description": "Set more homes than the configured maximum" },
+    { "node": "homes.cooldown.bypass", "default": "op:3", "description": "Teleport without waiting for the cooldown" }
+  ]
+}

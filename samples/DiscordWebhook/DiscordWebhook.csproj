@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- A Ramjet sample plugin: builds against the Ramjet.Api package (samples/Directory.Build.props). -->
+
+  <PropertyGroup>
+    <AssemblyName>DiscordWebhook</AssemblyName>
+    <RootNamespace>DiscordWebhook</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="plugin.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

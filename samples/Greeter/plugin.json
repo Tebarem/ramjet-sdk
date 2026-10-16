@@ -1,0 +1,11 @@
+{
+  "id": "greeter",
+  "name": "Greeter",
+  "version": "1.1.0",
+  "api": "1.0",
+  "authors": ["Ramjet"],
+  "description": "Join/quit messages and a server list MOTD",
+  "permissions": [
+    { "node": "greeter.reload", "default": "op:3", "description": "Reload the Greeter configuration" }
+  ]
+}

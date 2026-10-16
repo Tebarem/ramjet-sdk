@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- A Ramjet plugin: a class library that compiles against the Ramjet.Api package (the plugin API as a reference assembly: no
+       code, nothing copied next to your dll; the server supplies the real API when it loads the plugin).
+
+       Optional: RAMJET_PLUGINS=<a server's plugins folder> (or -p:RamjetPluginsDir=...) makes every build copy the plugin there,
+       which triggers the server's hot reload. -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>MyPlugin</AssemblyName>
+    <RootNamespace>MyPlugin</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <!-- required for the plugin to be loaded into a collectible, unloadable context (Ramjet.Api sets it too) -->
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ramjet.Api" Version="RAMJET_API_VERSION" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- the manifest travels with the dll -->
+    <None Include="plugin.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

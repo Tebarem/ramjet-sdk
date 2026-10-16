@@ -1,0 +1,15 @@
+<Solution>
+  <Project Path="BossBarTimer/BossBarTimer.csproj" />
+  <Project Path="DiscordWebhook/DiscordWebhook.csproj" />
+  <Project Path="Greeter/Greeter.csproj" />
+  <Project Path="HelloPlugin/HelloPlugin.csproj" />
+  <Project Path="Homes/Homes.csproj" />
+  <Project Path="Kits/Kits.csproj" />
+  <Project Path="PermissionAdmin/PermissionAdmin.csproj" />
+  <Project Path="RubyOre/RubyOre.csproj" />
+  <Project Path="RubyWand/RubyWand.csproj" />
+  <Project Path="ShopGui/ShopGui.csproj" />
+  <Project Path="SidebarStats/SidebarStats.csproj" />
+  <Project Path="SpawnProtect/SpawnProtect.csproj" />
+  <Project Path="WorldTools/WorldTools.csproj" />
+</Solution>

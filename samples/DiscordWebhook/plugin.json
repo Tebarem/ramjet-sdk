@@ -1,0 +1,8 @@
+{
+  "id": "discordwebhook",
+  "name": "DiscordWebhook",
+  "version": "1.0.0",
+  "api": "1.0",
+  "authors": ["Ramjet"],
+  "description": "Join and quit messages to a Discord webhook (set the URL in config.json)"
+}

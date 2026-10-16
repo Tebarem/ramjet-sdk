@@ -1,0 +1,17 @@
+name: Feature request
+description: An event, API or tool you need for your plugin.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you want to build?
+      description: The plugin feature you are working on and what is missing for it.
+    validations:
+      required: true
+  - type: textarea
+    id: api
+    attributes:
+      label: API you would like
+      description: How you would like to write it (a sketch is fine). If you are porting from Paper/Bukkit, name the equivalent there.
+      render: csharp

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Ramjet",
+  "classifications": ["Library", "Plugin", "Minecraft"],
+  "identity": "Ramjet.Plugin.CSharp",
+  "name": "ramjet plugin",
+  "shortName": "ramjet-plugin",
+  "description": "A C# plugin for the Ramjet Minecraft server (net10.0 class library, hot-reloadable).",
+  "tags": { "language": "C#", "type": "project" },
+  "sourceName": "MyPlugin",
+  "preferNameDirectory": true,
+  "defaultName": "MyPlugin",
+  "symbols": {
+    "Author": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Your Name",
+      "replaces": "AUTHOR_NAME",
+      "description": "Author shown in plugin metadata."
+    },
+    "PluginDescription": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "A plugin for ramjet.",
+      "replaces": "PLUGIN_DESCRIPTION",
+      "description": "One-line description."
+    },
+    "RamjetApiVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "1.0.0-preview.1",
+      "replaces": "RAMJET_API_VERSION",
+      "description": "Version of the Ramjet.Api package (the plugin API) to reference."
+    },
+    "PluginId": {
+      "type": "generated",
+      "generator": "casing",
+      "parameters": { "source": "name", "toLower": true },
+      "replaces": "my-plugin-id"
+    }
+  },
+  "primaryOutputs": [{ "path": "MyPlugin.csproj" }],
+  "postActions": []
+}

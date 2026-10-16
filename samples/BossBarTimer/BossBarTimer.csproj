@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- A Ramjet sample plugin: builds against the Ramjet.Api package (samples/Directory.Build.props). -->
+
+  <PropertyGroup>
+    <AssemblyName>BossBarTimer</AssemblyName>
+    <RootNamespace>BossBarTimer</RootNamespace>
+  </PropertyGroup>
+
+</Project>

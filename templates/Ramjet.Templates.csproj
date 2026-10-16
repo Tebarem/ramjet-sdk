@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Packs the `dotnet new` template(s) in this folder into a nupkg:
+         dotnet pack templates -c Release -o artifacts
+         dotnet new install artifacts/Ramjet.Templates.1.0.0-preview.1.nupkg
+       Installing straight from the folder works too (see install.ps1 / install.sh), no pack needed. -->
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageId>Ramjet.Templates</PackageId>
+    <Version>1.0.0-preview.1</Version>
+    <Title>ramjet plugin templates</Title>
+    <Authors>Ramjet</Authors>
+    <Description>dotnet new templates for Ramjet plugins (C#, net10.0).</Description>
+    <PackageTags>dotnet-new;templates;minecraft;ramjet</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Tebarem/ramjet-sdk</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Tebarem/ramjet-sdk</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <!-- no commit of the repository it is packed from in the nuspec (packed from the public SDK repository) -->
+    <EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+    <TargetFramework>net10.0</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoWarn>$(NoWarn);NU5128;NU5110;NU5111;CS2008</NoWarn>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="ramjet-plugin/**/*" Exclude="ramjet-plugin/**/bin/**;ramjet-plugin/**/obj/**" PackagePath="content/ramjet-plugin/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

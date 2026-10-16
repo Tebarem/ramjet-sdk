@@ -1,0 +1,16 @@
+<Project>
+  <!-- Shared settings of the sample plugins. RAMJET_PLUGINS=<a server's plugins folder> makes every build copy the plugin there. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <RamjetApiVersion Condition="'$(RamjetApiVersion)' == ''">1.0.0-preview.1</RamjetApiVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Ramjet.Api" Version="$(RamjetApiVersion)" />
+  </ItemGroup>
+</Project>
