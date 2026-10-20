@@ -44,7 +44,18 @@ Unloading a collectible context only completes when **nothing references it**. T
 - Build into the watched folder (`RAMJET_PLUGINS`, see [create a plugin](../getting-started/create-a-plugin.md)); the build copies dependencies and the pdb first and the main dll last, because the dll is what the watcher reacts to.
 - Copying a dll over the old one works the same way; deleting it unloads the plugin; adding a new `Name.dll` or `Name/Name.dll` loads it.
 - A source plugin (`.cs` files in the plugins folder) is recompiled and reloaded when its sources change.
-- An operator can run `/plugins reload` to restart all plugins.
+- Adding a new plugin loads it within a few seconds; the server restarts the plugin worker for it, which reloads every plugin (see [build and hot reload](../getting-started/build-and-hot-reload.md#plugins-added-while-the-server-runs)).
+- An operator (level 4, or the console) can run `/plugins reload` to restart all plugins, for example when hot reload is off or after changing a file the server does not watch.
+
+## The first run costs more
+
+The server gives the plugins a budget of **20 ms per tick** (`scripting.ipc.tick_budget_us` in `ramjet.toml`): the time it waits for the plugin worker to finish its part of a tick. A plugin that is **enabled or hot-reloaded while the server is running** is loaded inside a tick, so loading it, and the first run of its code (the runtime compiles each method the first time it runs), count against that budget. The first run can easily be slower than 20 ms, and then the log shows this warning (at most one a second):
+
+```
+[WARN] scripting: the plugins' tick took 63 ms (budget 20 ms)
+```
+
+That is expected after a reload or after adding a plugin, and harmless: the tick was only slow, and the next ticks are normal. Plugins loaded when the server starts are not counted, because they load before the first tick. Look into it only if the warning repeats on ticks where nothing was reloaded: then a handler or system of yours is slow, see [performance](performance.md). A tick that the worker does not finish within 250 ms (`scripting.ipc.tick_end_grace_us`) is treated as a stall: the worker is restarted and every plugin loads again.
 
 ## Dependents and the ownership table
 

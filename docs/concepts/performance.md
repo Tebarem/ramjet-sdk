@@ -56,6 +56,10 @@ Approximate figures, measured on a development machine with .NET 10:
 
 The numbers are for the plumbing. They say a handler that does nothing is free, and that what you do inside it is what you pay.
 
+## The plugins' tick budget
+
+The server waits for the plugin worker at the end of every tick, and allows it 20 ms (`scripting.ipc.tick_budget_us`). Past that the tick is only slow, and the log says `the plugins' tick took N ms (budget 20 ms)`, at most once a second. One such line right after a plugin was enabled or hot-reloaded while the server was running is expected: the first run of your code is compiled then, and that run counts against the budget (plugins loaded at server start do not). A line that keeps coming back is a real cost of your handlers and systems. See [hot reload](hot-reload.md#the-first-run-costs-more).
+
 ## Measure your own plugin
 
 - To check a handler for allocations in a test or while developing, wrap it:

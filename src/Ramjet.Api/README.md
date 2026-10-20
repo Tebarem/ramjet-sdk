@@ -3,7 +3,7 @@
 The compile-time API for C# plugins of the **Ramjet** Minecraft server (`net10.0`).
 
 ```xml
-<PackageReference Include="Ramjet.Api" Version="1.0.0-preview.1" />
+<PackageReference Include="Ramjet.Api" Version="1.0.0-preview.3" />
 ```
 
 The package holds a reference assembly: every public type and member of `Mc.Scripting.Api`, with its documentation, and no code. Your

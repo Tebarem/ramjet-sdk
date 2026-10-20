@@ -40,6 +40,7 @@ Guides and references for writing C# plugins for a Ramjet Minecraft server. Plug
 ## Reference
 
 - [Event catalogue](reference/events.md): every event with its fields, mutability and cancellability.
+- [Events compared with Paper](reference/events-compared-with-paper.md): which Paper events Ramjet covers, what is missing and what is planned.
 - [plugin.json reference](reference/plugin-json.md): every manifest field, dependencies, versions and load order.
 - [Command argument types](reference/command-arguments.md): the `Arg` factories and the vanilla argument types behind them.
 

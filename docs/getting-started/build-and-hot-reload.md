@@ -35,7 +35,7 @@ The edit-build-reload loop of a Ramjet plugin, and how to test it on your server
 
    The new version is enabled **before** the old one is released, so there is no window in which your commands or event handlers are missing. Edit, build, test again: a few seconds per cycle.
 
-An operator can list the loaded plugins with `/plugins` and restart every plugin with `/plugins reload`, for example after changing a file the server does not watch.
+`/plugins` (alias `/pl`) shows the state of the plugin worker, and `/plugins reload` restarts every plugin. Both need operator level 4 (the console always has it). When you need `/plugins reload`, and when you do not, is in [plugins added while the server runs](#plugins-added-while-the-server-runs).
 
 ## What survives a reload
 
@@ -45,12 +45,26 @@ An operator can list the loaded plugins with `/plugins` and restart every plugin
 
 ## A failed build changes nothing
 
-A compile error never produces a dll, so the server never sees it. If the new assembly reaches the server but cannot be loaded (for example an exception in the new `OnEnable`), the exception is logged and the previous version keeps running:
+A compile error never produces a dll, so the server never sees it. If the new assembly reaches the server but cannot be loaded (for example an exception in the new `OnEnable`), the exception is logged and the previous version keeps running. The warning names the reason after the colon:
 
 ```
-[ERROR] failed to load plugin .../Homes.dll ...
-[WARN] reload of .../Homes.dll failed; keeping the previous version
+[ERROR] [scripting] failed to load plugin .../Homes.dll: System.InvalidOperationException: no such home table ...
+[WARN] [scripting] reload of .../Homes.dll failed: it threw InvalidOperationException: no such home table; keeping the previous version
 ```
+
+The reason is one of: `it threw <ExceptionType>: <message>` (from `OnEnable`); `it does not compile (the errors are logged above)` (a [source plugin](project-layout.md#source-plugins)); `its data folder <id>/data is not writable` (see below); `no IPlugin implementation with a parameterless constructor`; `plugins.allow_source is false`; or the first problem found in the manifest or the dependencies (for example `plugin 'homes' requires 'economy >=1.2' which is not installed`). The same problems are in `Plugins.Problems`.
+
+## Plugins added while the server runs
+
+Copy a new plugin (a `Name.dll`, a `Name/Name.dll` folder, a `.cs` file or a folder of `.cs` files) into `plugins/` while the server runs and it is picked up **without a restart**, within a few seconds. A new plugin needs its data folder to be writable, and the sandboxed plugin worker gets write access only to the data folders that existed when it started. So the server logs `new plugin '<id>': the worker restarts so that its data folder can be written` and restarts the worker: every plugin is disabled (`OnDisable` runs, so they can save) and then all of them are loaded again, yours and the ones that were already running. Plugin fields are reset, as on any reload.
+
+You need `/plugins reload` yourself when:
+
+- hot reload is switched off on the server (new plugins then wait for a restart);
+- you changed something the server does not watch for changes (for example only a data file);
+- a new plugin keeps logging `its data folder ... is not writable` after the restart: the id the plugin declares is not the one the server derives from its file or folder name. Put `"id": "<id>"` in its `plugin.json`, or name the file or folder after the id, then run `/plugins reload`.
+
+Replacing a plugin that is already running never restarts the worker: it is a normal hot reload of that plugin.
 
 ## Logging
 

@@ -60,8 +60,20 @@ Everything you register through them is tracked by the context, so **you never u
 |---|---|
 | No public `IPlugin` implementation with a parameterless constructor | `no public IPlugin implementation ...` is logged, nothing is loaded |
 | `OnEnable` throws | the exception is logged with the plugin path, every registration made so far is released and the plugin is **not** loaded; other plugins are unaffected (plugins that depend on it are skipped) |
+| A source plugin does not compile | the errors are logged and `Plugins.Problems` has them; the plugin is **not** loaded, or its previous version keeps running (below) |
 | `OnDisable` throws | logged (`error in OnDisable`), unloading continues |
 | A handler, task or system throws | caught at the boundary and logged with the plugin name; the server keeps running and the next call goes through |
+
+## Source plugins that do not compile
+
+A [source plugin](../getting-started/project-layout.md#source-plugins) is compiled by the server, so its errors are the server's to report:
+
+- **The log.** Every error is an `ERROR` line in the compiler's usual form with the file, line and column, for example `plugins/homes/Homes.cs(12,5): error CS1002: ; expected` (the first 50 in the console, then `... and N more errors`), followed by `plugins/homes failed to compile (1 error); the plugin is not loaded`, or `keeping the previous version` when an older build of it is running. The complete list, with warnings, is in the plugin's `build.log` ([logs and debugging](logging.md#compiler-output-of-source-plugins-buildlog)).
+- **In game.** Every online operator of level 2 or higher gets `[plugins] ... failed to compile (N errors)` and the first six errors, and so does an operator who joins while the plugin is still broken.
+- **`Plugins.IsLoaded(id)`** is `false` for a source plugin that has never compiled: nothing is loaded under its id (a plugin that `depends` on it is skipped too). When a build fails after an older one was running, it stays `true`: the old version keeps running.
+- **`Plugins.Problems`** has one entry per compile error line, in the same form, so another plugin (an admin tool, a status command) can show them. They stay until the plugin compiles again or is removed, and then they are gone.
+
+The plugin itself never sees its own errors: it is not running.
 
 ## What the context owns
 

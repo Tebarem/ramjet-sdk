@@ -115,6 +115,50 @@
             <summary>All active chat mutes, in profile id order: a snapshot, read from the engine in pages when this is called.</summary>
             <returns>The mutes.</returns>
         </member>
+        <member name="T:Mc.Scripting.PvpFlags">
+            <summary>The bits of a player's PvP policy (<see cref="M:Mc.Scripting.Player.SetPvpPolicy(Mc.Scripting.PvpFlags,System.Int32)" />). Without a policy a player fights by the vanilla rules.</summary>
+        </member>
+        <member name="F:Mc.Scripting.PvpFlags.None">
+            <summary>No PvP flag: the player can neither be hit by nor hit another player through the gate.</summary>
+        </member>
+        <member name="F:Mc.Scripting.PvpFlags.PvpOn">
+            <summary>The player has PvP switched on. A hit between two players counts only when both have it.</summary>
+        </member>
+        <member name="F:Mc.Scripting.PvpFlags.MayAttackPlayers">
+            <summary>The player may attack other players (a newbie may not).</summary>
+        </member>
+        <member name="F:Mc.Scripting.PvpFlags.ShieldFromPlayers">
+            <summary>The player takes no damage from other players (newbie or respawn protection).</summary>
+        </member>
+        <member name="F:Mc.Scripting.PvpFlags.ShieldFromMobs">
+            <summary>The player takes no damage from mobs and other non-player attackers.</summary>
+        </member>
+        <member name="F:Mc.Scripting.PvpFlags.ShieldFromEnvironment">
+            <summary>The player takes no environmental damage (fire, lava, fall, drowning ...).</summary>
+        </member>
+        <member name="F:Mc.Scripting.PvpFlags.WorldPvpOff">
+            <summary>PvP is off in the player's world (checked on both sides of a hit).</summary>
+        </member>
+        <member name="T:Mc.Scripting.Combat">
+            <summary>
+            The combat tag: an allowed PvP hit tags both sides for the policy's tag time (native, no worker round trip per hit). The tag ends by
+            expiry, death, logout or <see cref="M:Mc.Scripting.Combat.Untag(Mc.Scripting.Player)" />. Events: <c>CombatTagStart</c> and <c>CombatTagEnd</c>.
+            All members must be called on the tick thread.
+            </summary>
+        </member>
+        <member name="M:Mc.Scripting.Combat.Tag(Mc.Scripting.Player,System.TimeSpan,System.Nullable{Mc.Scripting.Player})">
+            <summary>Tags a player against an opponent (or no one) for <paramref name="duration" />. A tag already on refreshes its time.</summary>
+            <returns>False when the player is not online or the duration is not positive or longer than a day.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Combat.Remaining(Mc.Scripting.Player)">
+            <summary>The time of combat tag left (zero when the player is not tagged).</summary>
+        </member>
+        <member name="M:Mc.Scripting.Combat.Opponent(Mc.Scripting.Player)">
+            <summary>The player who tagged this one, or null when the player is not tagged.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Combat.Untag(Mc.Scripting.Player)">
+            <summary>Ends the player's combat tag (reason untag). Returns false when the player was not tagged.</summary>
+        </member>
         <member name="T:Mc.Scripting.Commands.ArgType">
             <summary>The type of a command argument: what the client's command tree shows (parser id + properties) and what the server parses.
             Create with the <see cref="T:Mc.Scripting.Commands.Arg" /> factories.</summary>
@@ -1643,6 +1687,117 @@
         </member>
         <member name="M:Mc.Scripting.QueryChunk.Field``1(System.Int32)">
             <summary>Column for query term <paramref name="index" /> (the order of the query's type arguments).</summary>
+        </member>
+        <member name="T:Mc.Scripting.EditJobState">
+            <summary>What a bulk edit job is at the engine's job system's state.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EditJobState.Queued">
+            <summary>Waiting for the owner's running job, or for a slot.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EditJobState.Running">
+            <summary>Being applied in slices on the tick thread.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EditJobState.Done">
+            <summary>Finished; every cell in the region was handled (some columns may have been skipped, see the message).</summary>
+        </member>
+        <member name="F:Mc.Scripting.EditJobState.Failed">
+            <summary>Stopped by a limit or an error; the changes made so far are recorded and can be undone.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EditJobState.Cancelled">
+            <summary>Cancelled by its owner (or the owner left); the changes made so far are recorded and can be undone.</summary>
+        </member>
+        <member name="T:Mc.Scripting.EditJobInfo">
+            <summary>The state of one edit job, as the engine reports it.</summary>
+            <param name="State">The job's state.</param>
+            <param name="Changed">Cells whose state changed.</param>
+            <param name="ElapsedTicks">Ticks the job has been alive.</param>
+            <param name="Clipboard">The clipboard handle of a finished copy or cut (0 otherwise).</param>
+            <param name="Message">A short note: empty on success.</param>
+        </member>
+        <member name="M:Mc.Scripting.EditJobInfo.#ctor(Mc.Scripting.EditJobState,System.UInt64,System.UInt32,System.UInt64,System.String)">
+            <summary>The state of one edit job, as the engine reports it.</summary>
+            <param name="State">The job's state.</param>
+            <param name="Changed">Cells whose state changed.</param>
+            <param name="ElapsedTicks">Ticks the job has been alive.</param>
+            <param name="Clipboard">The clipboard handle of a finished copy or cut (0 otherwise).</param>
+            <param name="Message">A short note: empty on success.</param>
+        </member>
+        <member name="P:Mc.Scripting.EditJobInfo.State">
+            <summary>The job's state.</summary>
+        </member>
+        <member name="P:Mc.Scripting.EditJobInfo.Changed">
+            <summary>Cells whose state changed.</summary>
+        </member>
+        <member name="P:Mc.Scripting.EditJobInfo.ElapsedTicks">
+            <summary>Ticks the job has been alive.</summary>
+        </member>
+        <member name="P:Mc.Scripting.EditJobInfo.Clipboard">
+            <summary>The clipboard handle of a finished copy or cut (0 otherwise).</summary>
+        </member>
+        <member name="P:Mc.Scripting.EditJobInfo.Message">
+            <summary>A short note: empty on success.</summary>
+        </member>
+        <member name="T:Mc.Scripting.EditHistory">
+            <summary>The undo and redo stacks of a player.</summary>
+        </member>
+        <member name="M:Mc.Scripting.EditHistory.#ctor(System.UInt32,System.UInt32,System.UInt64,System.UInt64)">
+            <summary>The undo and redo stacks of a player.</summary>
+        </member>
+        <member name="T:Mc.Scripting.EditClipboardInfo">
+            <summary>A clipboard the player holds: its size, the copy origin relative to its minimum corner, and its engine memory.</summary>
+        </member>
+        <member name="M:Mc.Scripting.EditClipboardInfo.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.UInt64)">
+            <summary>A clipboard the player holds: its size, the copy origin relative to its minimum corner, and its engine memory.</summary>
+        </member>
+        <member name="T:Mc.Scripting.EditMemory">
+            <summary>Engine memory held by bulk edits, for every player together.</summary>
+        </member>
+        <member name="M:Mc.Scripting.EditMemory.#ctor(System.UInt64,System.UInt64)">
+            <summary>Engine memory held by bulk edits, for every player together.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Edit">
+            <summary>Bulk region edits run by the engine in slices of the tick budget (for WorldEdit-style plugins). A plugin builds the request
+            (the WEJB binary format of the engine's edit module) and submits it; the engine validates every field, applies the job, and records what it
+            changed so the owner can undo it. Nothing here touches blocks one at a time: a request is one call, whatever its size.
+            Tick thread only. The owner is always a player: the engine keeps history and clipboards per player.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Edit.Start(Mc.Scripting.Player,System.Byte[])">
+            <summary>Queues a request for a player. The request is validated in full before anything changes.</summary>
+            <param name="player">The owner of the job (its history and clipboards).</param>
+            <param name="request">The encoded request (WEJB).</param>
+            <returns>The job id (positive), or a negative refusal: -1 quota, -2 malformed, -3 limit, -4 unknown world or player.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Edit.GetJob(Mc.Scripting.Player,System.Int64)">
+            <summary>The state of a job the player owns.</summary>
+            <returns>The job, or nothing when the id is unknown or belongs to someone else.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Edit.Cancel(Mc.Scripting.Player,System.Int64)">
+            <summary>Cancels a queued or running job the player owns. Changes already made stay recorded, so undo restores them.</summary>
+            <returns>True when the job was cancelled; false when it is unknown, not the player's, or already finished.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Edit.Undo(Mc.Scripting.Player,System.Int32)">
+            <summary>Queues an undo of up to <paramref name="steps" /> of the player's most recent edits.</summary>
+            <returns>The job id (positive), or a negative refusal: -1 quota, -2 nothing to undo, -4 unknown player.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Edit.Redo(Mc.Scripting.Player,System.Int32)">
+            <summary>Queues a redo of up to <paramref name="steps" /> of the player's undone edits.</summary>
+            <returns>The job id (positive), or a negative refusal: -1 quota, -2 nothing to redo, -4 unknown player.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Edit.History(Mc.Scripting.Player)">
+            <summary>The player's undo and redo stacks.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Edit.ClearHistory(Mc.Scripting.Player)">
+            <summary>Drops the player's undo and redo records.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Edit.ClipboardInfo(Mc.Scripting.Player,System.UInt64)">
+            <summary>A clipboard the player holds.</summary>
+            <returns>Its size and origin, or nothing when the handle is unknown or belongs to someone else.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Edit.ReleaseClipboard(Mc.Scripting.Player,System.UInt64)">
+            <summary>Releases a clipboard the player holds. True when it was released.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Edit.Memory">
+            <summary>Engine memory held by bulk edits, for all players (for memory reports).</summary>
         </member>
         <member name="T:Mc.Scripting.Entity">
             <summary>Handle to an ECS entity (flecs id). Blittable: usable directly in events and components.</summary>
@@ -4213,6 +4368,81 @@
         <member name="M:Mc.Scripting.Events.NpcInteractEvent.#ctor(Mc.Scripting.Player,System.UInt64,Mc.Scripting.NpcClick,Mc.Scripting.Hand,System.Boolean)">
             <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
         </member>
+        <member name="T:Mc.Scripting.Events.PlayerPreQuitEvent">
+            <summary>A player is about to leave, before anything is released or removed: the entity, its inventory, its skin and its loaded chunks are as they were. Awaited (the connection waits for the handlers). quit_message starts as the leave message (a plugin kick's, when there is one); handlers may replace it, and PlayerQuit then starts from the replacement. Fires once per disconnect; CombatTagEnd(logout) fires after it, so a tagged player is still tagged here.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerPreQuitEvent.CatalogueId">
+            <summary>Catalogue id (stable ABI).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerPreQuitEvent.Key">
+            <summary>Registry key of the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerPreQuitEvent.IsCancellable">
+            <summary>Whether handlers can cancel the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerPreQuitEvent.Player">
+            <summary>The player.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerPreQuitEvent.Reason">
+            <summary>Why the connection ends (see PlayerQuit).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerPreQuitEvent.QuitMessageJson">
+            <summary>The message PlayerQuit broadcasts; a replacement is used by PlayerQuit. as JSON text (borrowed).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerPreQuitEvent.QuitMessage">
+            <summary>The message PlayerQuit broadcasts; a replacement is used by PlayerQuit. (parsed on access; allocates).</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.PlayerPreQuitEvent.SetQuitMessage(Mc.Scripting.Text.Component)">
+            <summary>Replaces <see cref="P:Mc.Scripting.Events.PlayerPreQuitEvent.QuitMessage" />; an empty component clears it where the event says so.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.PlayerPreQuitEvent.#ctor(Mc.Scripting.Player,Mc.Scripting.Utf8String,Mc.Scripting.Utf8String)">
+            <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Events.CombatTagStartEvent">
+            <summary>A player was combat tagged by a PvP hit (the opponent is the other side). Refreshing an existing tag fires nothing. Observed only.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.CombatTagStartEvent.CatalogueId">
+            <summary>Catalogue id (stable ABI).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.CombatTagStartEvent.Key">
+            <summary>Registry key of the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.CombatTagStartEvent.IsCancellable">
+            <summary>Whether handlers can cancel the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.CombatTagStartEvent.Player">
+            <summary>The tagged player.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.CombatTagStartEvent.Opponent">
+            <summary>The opponent that tagged the player.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.CombatTagStartEvent.Ticks">
+            <summary>Ticks of tag left when it started.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.CombatTagStartEvent.#ctor(Mc.Scripting.Player,Mc.Scripting.Entity,System.Int32)">
+            <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Events.CombatTagEndEvent">
+            <summary>A player's combat tag ended. Fired before the entity is removed on a logout, so the handler may still read the player. Observed only.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.CombatTagEndEvent.CatalogueId">
+            <summary>Catalogue id (stable ABI).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.CombatTagEndEvent.Key">
+            <summary>Registry key of the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.CombatTagEndEvent.IsCancellable">
+            <summary>Whether handlers can cancel the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.CombatTagEndEvent.Player">
+            <summary>The player.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.CombatTagEndEvent.Reason">
+            <summary>Why the tag ended.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.CombatTagEndEvent.#ctor(Mc.Scripting.Player,Mc.Scripting.CombatTagEndReason)">
+            <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
+        </member>
         <member name="T:Mc.Scripting.GameMode">
             <summary>Vanilla game mode (the numbers are the protocol ids).</summary>
         </member>
@@ -4746,6 +4976,21 @@
         </member>
         <member name="F:Mc.Scripting.ChatFilterKind.PartiallyFiltered">
             <summary>Filtering recipients see the text with the characters of filter_bits hidden.</summary>
+        </member>
+        <member name="T:Mc.Scripting.CombatTagEndReason">
+            <summary>Why a combat tag ended (CombatTagEnd).</summary>
+        </member>
+        <member name="F:Mc.Scripting.CombatTagEndReason.Expired">
+            <summary>The tag time ran out.</summary>
+        </member>
+        <member name="F:Mc.Scripting.CombatTagEndReason.Death">
+            <summary>The player died.</summary>
+        </member>
+        <member name="F:Mc.Scripting.CombatTagEndReason.Logout">
+            <summary>The player left the server.</summary>
+        </member>
+        <member name="F:Mc.Scripting.CombatTagEndReason.Untag">
+            <summary>A plugin cleared the tag (Combat.Untag).</summary>
         </member>
         <member name="T:Mc.Scripting.Http">
             <summary>HTTP(S) for plugins. In the plugin worker the requests are performed by the server: its HTTP client resolves each name, refuses
@@ -7562,6 +7807,17 @@
             clear it. Not persisted: it is cleared when the player leaves, so a plugin that keeps nicknames sets it again on join. The profile name stays the
             key of commands, the scoreboard and the click and insertion text of chat. Stale handles: reads give null, writes do nothing.</summary>
         </member>
+        <member name="M:Mc.Scripting.Player.SetPvpPolicy(Mc.Scripting.PvpFlags,System.Int32)">
+            <summary>
+            Writes the PvP policy of this player: the native gate decides every hit on the player from it. Refresh it when the state changes (toggle,
+            newbie or respawn protection, world). <paramref name="tagTicks" /> is the combat tag an allowed hit gives both sides (0: none).
+            A player without a policy keeps the vanilla rules. Stale handles, flags this server does not know and a tag time outside 0 .. 1728000
+            ticks (one day) do nothing.
+            </summary>
+        </member>
+        <member name="P:Mc.Scripting.Player.PvpPolicyFlags">
+            <summary>The PvP flags last written with <see cref="M:Mc.Scripting.Player.SetPvpPolicy(Mc.Scripting.PvpFlags,System.Int32)" />, or null when the player has no policy (or is not online).</summary>
+        </member>
         <member name="P:Mc.Scripting.Player.GameMode">
             <summary>The player's game mode. Setting it fires <see cref="T:Mc.Scripting.Events.PlayerGameModeChangeEvent" /> (a handler may cancel it).</summary>
         </member>
@@ -9162,6 +9418,36 @@
             <param name="kind">Prefixes or suffixes.</param>
             <param name="separator">Between two affixes.</param>
             <returns>The text (empty when there are none).</returns>
+        </member>
+        <member name="T:Mc.Scripting.Services.PrivateMessageResult">
+            <summary>The outcome of a private message.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Services.PrivateMessageResult.Ok">
+            <summary>Delivered.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Services.PrivateMessageResult.Offline">
+            <summary>The recipient is not online.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Services.PrivateMessageResult.Ignored">
+            <summary>The recipient ignores the sender.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Services.PrivateMessageResult.Muted">
+            <summary>The sender is muted.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Services.PrivateMessageResult.Refused">
+            <summary>Refused by the provider's rules (empty text, the recipient refuses messages, and the like).</summary>
+        </member>
+        <member name="T:Mc.Scripting.Services.IPrivateMessages">
+            <summary>The private-message service: the delivery, formatting, ignore and mute rules of <c>/msg</c> and <c>/r</c>. Registered by the chat
+            plugin when it is installed; the command owner (Essentials) hands each message here and delivers a plain message itself when no provider is
+            registered. Thread: tick thread.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Services.IPrivateMessages.Send(Mc.Scripting.Player,Mc.Scripting.Player,System.String)">
+            <summary>Sends a private message between two online players. The provider formats it and shows it to both ends.</summary>
+            <param name="sender">The sending player.</param>
+            <param name="recipient">The receiving player.</param>
+            <param name="message">The text as typed (the provider may trim, filter or colour it).</param>
+            <returns>The result.</returns>
         </member>
         <member name="T:Mc.Scripting.Services.ServicePriority">
             <summary>How a provider ranks when several plugins register the same service type (the highest wins).</summary>

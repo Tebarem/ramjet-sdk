@@ -51,7 +51,7 @@ The manifest is read **before any assembly is loaded**: the server builds the de
 | `loadBefore` | string[] | no | an edge from this plugin to the named one: this plugin loads first |
 | `permissions` | object[] | no | `node`, `default` and `description` for each permission the plugin checks |
 
-For a permission, `default` is `"true"`, `"false"`, `"op"` (operator level 2 and up), `"op:N"` (level N and up, 0-4) or `"not_op"`; when it is missing it is `"op"`. Declaring permissions in the manifest makes them exist before your code runs. An invalid default stops the manifest from loading.
+For a permission, `default` is `"true"`, `"false"`, `"op"` (operator level 2 and up), `"op:N"` (level N and up, 0-4) or `"not_op"`; when it is missing it is `"op"`. Declaring permissions in the manifest makes them exist before your code runs. An invalid default stops the manifest from loading. If your code also calls `Permissions.Register` for the same node, the code's registration replaces the manifest's (no error); a node that a different loaded plugin has already declared stops this plugin from loading. See [declared in `plugin.json`, in code, or both](../concepts/permissions.md#declared-in-pluginjson-in-code-or-both).
 
 Unknown fields are ignored (forward compatible). Malformed JSON, a missing or invalid `id`, a duplicate id or an unsatisfiable API version are reported with the file path and the offending key.
 

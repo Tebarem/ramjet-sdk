@@ -44,6 +44,10 @@ Mc.Scripting.ClickType.SwapOffhand = 11
 Mc.Scripting.ClickType.Unknown = 12
 Mc.Scripting.ClickType.WindowBorderLeft = 9
 Mc.Scripting.ClickType.WindowBorderRight = 10
+Mc.Scripting.CombatTagEndReason.Death = 1
+Mc.Scripting.CombatTagEndReason.Expired = 0
+Mc.Scripting.CombatTagEndReason.Logout = 2
+Mc.Scripting.CombatTagEndReason.Untag = 3
 Mc.Scripting.Content.ItemRarity.Common = 0
 Mc.Scripting.Content.ItemRarity.Epic = 3
 Mc.Scripting.Content.ItemRarity.Rare = 2
@@ -82,6 +86,11 @@ Mc.Scripting.DisplaySlot.Sidebar = 1
 Mc.Scripting.DragType.Clone = 2
 Mc.Scripting.DragType.Even = 0
 Mc.Scripting.DragType.Single = 1
+Mc.Scripting.EditJobState.Cancelled = 4
+Mc.Scripting.EditJobState.Done = 2
+Mc.Scripting.EditJobState.Failed = 3
+Mc.Scripting.EditJobState.Queued = 0
+Mc.Scripting.EditJobState.Running = 1
 Mc.Scripting.EventPriority.High = 100
 Mc.Scripting.EventPriority.Highest = 200
 Mc.Scripting.EventPriority.Low = -100
@@ -238,6 +247,13 @@ Mc.Scripting.PlayerAction.SwapItemWithOffhand = 7
 Mc.Scripting.PortalCreateReason.Fire = 0
 Mc.Scripting.PortalCreateReason.NetherPair = 1
 Mc.Scripting.PortalCreateReason.Plugin = 2
+Mc.Scripting.PvpFlags.MayAttackPlayers = 2
+Mc.Scripting.PvpFlags.None = 0
+Mc.Scripting.PvpFlags.PvpOn = 1
+Mc.Scripting.PvpFlags.ShieldFromEnvironment = 16
+Mc.Scripting.PvpFlags.ShieldFromMobs = 8
+Mc.Scripting.PvpFlags.ShieldFromPlayers = 4
+Mc.Scripting.PvpFlags.WorldPvpOff = 32
 Mc.Scripting.ResourcePackStatus.Accepted = 3
 Mc.Scripting.ResourcePackStatus.Declined = 1
 Mc.Scripting.ResourcePackStatus.Discarded = 7
@@ -265,6 +281,12 @@ Mc.Scripting.Services.EconomyResult.Refused = 4
 Mc.Scripting.Services.EconomyResult.Unknown = 1
 Mc.Scripting.Services.PlaceholderScope.Global = 0
 Mc.Scripting.Services.PlaceholderScope.Player = 1
+Mc.Scripting.Services.PrivateMessageResult Mc.Scripting.Services.IPrivateMessages.Send(Mc.Scripting.Player sender, Mc.Scripting.Player recipient, string message)
+Mc.Scripting.Services.PrivateMessageResult.Ignored = 2
+Mc.Scripting.Services.PrivateMessageResult.Muted = 3
+Mc.Scripting.Services.PrivateMessageResult.Offline = 1
+Mc.Scripting.Services.PrivateMessageResult.Ok = 0
+Mc.Scripting.Services.PrivateMessageResult.Refused = 4
 Mc.Scripting.Services.ServicePriority.High = 1
 Mc.Scripting.Services.ServicePriority.Highest = 2
 Mc.Scripting.Services.ServicePriority.Low = -1
@@ -389,6 +411,8 @@ enum Mc.Scripting.ChatKind
 enum Mc.Scripting.ChatKind enum : byte
 enum Mc.Scripting.ClickType
 enum Mc.Scripting.ClickType enum : byte
+enum Mc.Scripting.CombatTagEndReason
+enum Mc.Scripting.CombatTagEndReason enum : byte
 enum Mc.Scripting.Content.ItemRarity
 enum Mc.Scripting.Content.ItemRarity enum : int
 enum Mc.Scripting.DamageCause
@@ -397,6 +421,8 @@ enum Mc.Scripting.DisplaySlot
 enum Mc.Scripting.DisplaySlot enum : int
 enum Mc.Scripting.DragType
 enum Mc.Scripting.DragType enum : byte
+enum Mc.Scripting.EditJobState
+enum Mc.Scripting.EditJobState enum : int
 enum Mc.Scripting.EventPriority
 enum Mc.Scripting.EventPriority enum : int
 enum Mc.Scripting.Facing
@@ -451,6 +477,8 @@ enum Mc.Scripting.PlayerAction
 enum Mc.Scripting.PlayerAction enum : int
 enum Mc.Scripting.PortalCreateReason
 enum Mc.Scripting.PortalCreateReason enum : byte
+enum Mc.Scripting.PvpFlags @System.FlagsAttribute
+enum Mc.Scripting.PvpFlags enum : uint
 enum Mc.Scripting.ResourcePackStatus
 enum Mc.Scripting.ResourcePackStatus enum : byte
 enum Mc.Scripting.RespawnReason
@@ -463,6 +491,8 @@ enum Mc.Scripting.Services.EconomyResult
 enum Mc.Scripting.Services.EconomyResult enum : int
 enum Mc.Scripting.Services.PlaceholderScope
 enum Mc.Scripting.Services.PlaceholderScope enum : int
+enum Mc.Scripting.Services.PrivateMessageResult
+enum Mc.Scripting.Services.PrivateMessageResult enum : int
 enum Mc.Scripting.Services.ServicePriority
 enum Mc.Scripting.Services.ServicePriority enum : int
 enum Mc.Scripting.SoundCategory
@@ -502,6 +532,7 @@ interface Mc.Scripting.Services.IBanList
 interface Mc.Scripting.Services.IEconomy
 interface Mc.Scripting.Services.IPlaceholders
 interface Mc.Scripting.Services.IPlayerMeta
+interface Mc.Scripting.Services.IPrivateMessages
 long Mc.Scripting.Services.IEconomy.Balance(Mc.Scripting.Uuid player)
 protected Mc.Scripting.Nbt.NbtTag.NbtTag()
 protected Mc.Scripting.Nbt.NbtValueTag.NbtValueTag()
@@ -555,6 +586,7 @@ public Mc.Scripting.ChatKind.ChatKind()
 public Mc.Scripting.ChatMuteEntry Mc.Scripting.ChatMuteEntry.<Clone>$()
 public Mc.Scripting.ChatMuteEntry.ChatMuteEntry(Mc.Scripting.Uuid Player, System.DateTimeOffset? Expires, string? Reason)
 public Mc.Scripting.ClickType.ClickType()
+public Mc.Scripting.CombatTagEndReason.CombatTagEndReason()
 public Mc.Scripting.Commands.ArgType? Mc.Scripting.Commands.CommandNode.Type { get; }
 public Mc.Scripting.Commands.AsyncSuggestionProvider.AsyncSuggestionProvider(object @object, nint method)
 public Mc.Scripting.Commands.CommandExecutor.CommandExecutor(object @object, nint method)
@@ -628,6 +660,16 @@ public Mc.Scripting.DisplaySlot.DisplaySlot()
 public Mc.Scripting.DragType.DragType()
 public Mc.Scripting.Ecs Mc.Scripting.Plugin.Ecs { get; }
 public Mc.Scripting.Ecs Mc.Scripting.PluginContext.Ecs { get; }
+public Mc.Scripting.EditClipboardInfo.EditClipboardInfo()
+public Mc.Scripting.EditClipboardInfo.EditClipboardInfo(int SizeX, int SizeY, int SizeZ, int OriginX, int OriginY, int OriginZ, ulong Bytes)
+public Mc.Scripting.EditHistory.EditHistory()
+public Mc.Scripting.EditHistory.EditHistory(uint UndoSteps, uint RedoSteps, ulong UndoBytes, ulong RedoBytes)
+public Mc.Scripting.EditJobInfo.EditJobInfo()
+public Mc.Scripting.EditJobInfo.EditJobInfo(Mc.Scripting.EditJobState State, ulong Changed, uint ElapsedTicks, ulong Clipboard, string Message)
+public Mc.Scripting.EditJobState Mc.Scripting.EditJobInfo.State { get; init; }
+public Mc.Scripting.EditJobState.EditJobState()
+public Mc.Scripting.EditMemory.EditMemory()
+public Mc.Scripting.EditMemory.EditMemory(ulong HistoryBytes, ulong ClipboardBytes)
 public Mc.Scripting.Entity Mc.Scripting.Commands.CommandContext.Sender { get; }
 public Mc.Scripting.Entity Mc.Scripting.Commands.CommandSource.Entity { get; }
 public Mc.Scripting.Entity Mc.Scripting.Commands.DetachedCommand.Sender { get; }
@@ -674,6 +716,10 @@ public Mc.Scripting.Events.ChunkLoadEvent.ChunkLoadEvent()
 public Mc.Scripting.Events.ChunkLoadEvent.ChunkLoadEvent(int dimension, int x, int z, bool newlyGenerated)
 public Mc.Scripting.Events.ChunkUnloadEvent.ChunkUnloadEvent()
 public Mc.Scripting.Events.ChunkUnloadEvent.ChunkUnloadEvent(int dimension, int x, int z)
+public Mc.Scripting.Events.CombatTagEndEvent.CombatTagEndEvent()
+public Mc.Scripting.Events.CombatTagEndEvent.CombatTagEndEvent(Mc.Scripting.Player player, Mc.Scripting.CombatTagEndReason reason)
+public Mc.Scripting.Events.CombatTagStartEvent.CombatTagStartEvent()
+public Mc.Scripting.Events.CombatTagStartEvent.CombatTagStartEvent(Mc.Scripting.Player player, Mc.Scripting.Entity opponent, int ticks)
 public Mc.Scripting.Events.CommandsRegisteredEvent.CommandsRegisteredEvent()
 public Mc.Scripting.Events.CraftItemEvent.CraftItemEvent()
 public Mc.Scripting.Events.CraftItemEvent.CraftItemEvent(Mc.Scripting.Player player, Mc.Scripting.Utf8String recipe, Mc.Scripting.Inventories.ItemView result, bool shiftClick)
@@ -759,6 +805,8 @@ public Mc.Scripting.Events.PlayerPortalEvent.PlayerPortalEvent()
 public Mc.Scripting.Events.PlayerPortalEvent.PlayerPortalEvent(Mc.Scripting.Player player, Mc.Scripting.Vec3d from, Mc.Scripting.Worlds.World fromWorld, Mc.Scripting.Worlds.World toWorld, Mc.Scripting.TeleportCause cause)
 public Mc.Scripting.Events.PlayerPreLoginEvent.PlayerPreLoginEvent()
 public Mc.Scripting.Events.PlayerPreLoginEvent.PlayerPreLoginEvent(ulong connection, Mc.Scripting.Uuid uuid, Mc.Scripting.Utf8String username, Mc.Scripting.Utf8String address, Mc.Scripting.Utf8String kickMessage, int deferrals)
+public Mc.Scripting.Events.PlayerPreQuitEvent.PlayerPreQuitEvent()
+public Mc.Scripting.Events.PlayerPreQuitEvent.PlayerPreQuitEvent(Mc.Scripting.Player player, Mc.Scripting.Utf8String reason, Mc.Scripting.Utf8String quitMessage)
 public Mc.Scripting.Events.PlayerQuitEvent.PlayerQuitEvent()
 public Mc.Scripting.Events.PlayerQuitEvent.PlayerQuitEvent(Mc.Scripting.Player player, Mc.Scripting.Uuid uuid, Mc.Scripting.Utf8String username, Mc.Scripting.Utf8String reason, Mc.Scripting.Utf8String quitMessage)
 public Mc.Scripting.Events.PlayerResourcePackStatusEvent.PlayerResourcePackStatusEvent()
@@ -1053,6 +1101,8 @@ public Mc.Scripting.PortalCreateReason.PortalCreateReason()
 public Mc.Scripting.PotionEffect.PotionEffect()
 public Mc.Scripting.PotionEffect.PotionEffect(string Effect, int DurationTicks, [int Amplifier = 0], [bool Ambient = false], [bool ShowParticles = true], [bool ShowIcon = true])
 public Mc.Scripting.PotionEffect? Mc.Scripting.Player.GetEffect(string effect)
+public Mc.Scripting.PvpFlags.PvpFlags()
+public Mc.Scripting.PvpFlags? Mc.Scripting.Player.PvpPolicyFlags { get; }
 public Mc.Scripting.Query<T1, T2, T3> Mc.Scripting.Ecs.Query<T1, T2, T3>() where T1 : unmanaged where T2 : unmanaged where T3 : unmanaged
 public Mc.Scripting.Query<T1, T2> Mc.Scripting.Ecs.Query<T1, T2>() where T1 : unmanaged where T2 : unmanaged
 public Mc.Scripting.Query<T1> Mc.Scripting.Ecs.Query<T1>() where T1 : unmanaged
@@ -1085,6 +1135,7 @@ public Mc.Scripting.Services.EconomyResult.EconomyResult()
 public Mc.Scripting.Services.MetaKey<T>.MetaKey(string name)
 public Mc.Scripting.Services.PlaceholderScope.PlaceholderScope()
 public Mc.Scripting.Services.PlaceholderValue.PlaceholderValue(object @object, nint method)
+public Mc.Scripting.Services.PrivateMessageResult.PrivateMessageResult()
 public Mc.Scripting.Services.ServiceManager Mc.Scripting.Plugin.Services { get; }
 public Mc.Scripting.Services.ServiceManager Mc.Scripting.PluginContext.Services { get; }
 public Mc.Scripting.Services.ServicePriority Mc.Scripting.Services.ServiceRegistration<T>.Priority { get; init; }
@@ -1294,6 +1345,10 @@ public bool Mc.Scripting.Content.CustomBlock.Place(Mc.Scripting.Worlds.World wor
 public bool Mc.Scripting.Content.CustomItem.Matches(Mc.Scripting.Inventories.ItemStack stack)
 public bool Mc.Scripting.Content.ItemUseContext.Cancelled { get; set; }
 public bool Mc.Scripting.Content.ItemUseContext.HasBlock { get; }
+public bool Mc.Scripting.EditClipboardInfo.Equals(Mc.Scripting.EditClipboardInfo other)
+public bool Mc.Scripting.EditHistory.Equals(Mc.Scripting.EditHistory other)
+public bool Mc.Scripting.EditJobInfo.Equals(Mc.Scripting.EditJobInfo other)
+public bool Mc.Scripting.EditMemory.Equals(Mc.Scripting.EditMemory other)
 public bool Mc.Scripting.Entity.Despawn()
 public bool Mc.Scripting.Entity.Equals(Mc.Scripting.Entity other)
 public bool Mc.Scripting.Entity.Has<T>() where T : unmanaged
@@ -1666,6 +1721,12 @@ public int Mc.Scripting.Commands.SuggestionContext.PermissionLevel { get; }
 public int Mc.Scripting.Content.CustomItem.CooldownTicks { get; }
 public int Mc.Scripting.Content.CustomItem.MaxStackSize { get; }
 public int Mc.Scripting.Content.ResourcePackFile.Size { get; }
+public int Mc.Scripting.EditClipboardInfo.OriginX { get; init; }
+public int Mc.Scripting.EditClipboardInfo.OriginY { get; init; }
+public int Mc.Scripting.EditClipboardInfo.OriginZ { get; init; }
+public int Mc.Scripting.EditClipboardInfo.SizeX { get; init; }
+public int Mc.Scripting.EditClipboardInfo.SizeY { get; init; }
+public int Mc.Scripting.EditClipboardInfo.SizeZ { get; init; }
 public int Mc.Scripting.Events.BlockBreakEvent.Experience { get; set; }
 public int Mc.Scripting.Events.BlockRedstoneEvent.NewPower { get; set; }
 public int Mc.Scripting.Events.EntityCombustEvent.DurationTicks { get; set; }
@@ -1795,6 +1856,10 @@ public override Mc.Scripting.Nbt.NbtType Mc.Scripting.Nbt.NbtShort.Type { get; }
 public override Mc.Scripting.Nbt.NbtType Mc.Scripting.Nbt.NbtString.Type { get; }
 public override bool Mc.Scripting.ApiVersion.Equals(object obj)
 public override bool Mc.Scripting.ChatMuteEntry.Equals(object? obj)
+public override bool Mc.Scripting.EditClipboardInfo.Equals(object obj)
+public override bool Mc.Scripting.EditHistory.Equals(object obj)
+public override bool Mc.Scripting.EditJobInfo.Equals(object obj)
+public override bool Mc.Scripting.EditMemory.Equals(object obj)
 public override bool Mc.Scripting.Entity.Equals(object? obj)
 public override bool Mc.Scripting.Inventories.ItemStack.Equals(object? obj)
 public override bool Mc.Scripting.Location.Equals(object obj)
@@ -1821,6 +1886,10 @@ public override bool Mc.Scripting.Worlds.BlockState.Equals(object? obj)
 public override bool Mc.Scripting.Worlds.World.Equals(object? obj)
 public override int Mc.Scripting.ApiVersion.GetHashCode()
 public override int Mc.Scripting.ChatMuteEntry.GetHashCode()
+public override int Mc.Scripting.EditClipboardInfo.GetHashCode()
+public override int Mc.Scripting.EditHistory.GetHashCode()
+public override int Mc.Scripting.EditJobInfo.GetHashCode()
+public override int Mc.Scripting.EditMemory.GetHashCode()
 public override int Mc.Scripting.Entity.GetHashCode()
 public override int Mc.Scripting.Inventories.ItemStack.GetHashCode()
 public override int Mc.Scripting.Inventories.PlayerInventory.Size { get; }
@@ -1892,6 +1961,10 @@ public override readonly string Mc.Scripting.Vec3d.ToString()
 public override string Mc.Scripting.ApiVersion.ToString()
 public override string Mc.Scripting.ChatMuteEntry.ToString()
 public override string Mc.Scripting.Commands.ArgType.ToString()
+public override string Mc.Scripting.EditClipboardInfo.ToString()
+public override string Mc.Scripting.EditHistory.ToString()
+public override string Mc.Scripting.EditJobInfo.ToString()
+public override string Mc.Scripting.EditMemory.ToString()
 public override string Mc.Scripting.Entity.ToString()
 public override string Mc.Scripting.Inventories.ItemStack.ToString()
 public override string Mc.Scripting.Inventories.ItemView.ToString()
@@ -1954,11 +2027,13 @@ public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.PlayerInteractBlockEve
 public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.PlayerInteractEvent.Pos { get; }
 public readonly Mc.Scripting.ClickType Mc.Scripting.Events.InventoryClickEvent.ClickType { get; }
 public readonly Mc.Scripting.ClickType Mc.Scripting.Events.MenuClickEvent.ClickType { get; }
+public readonly Mc.Scripting.CombatTagEndReason Mc.Scripting.Events.CombatTagEndEvent.Reason { get; }
 public readonly Mc.Scripting.DamageCause Mc.Scripting.Events.EntityDamageEvent.Cause { get; }
 public readonly Mc.Scripting.DamageCause Mc.Scripting.Events.EntityDeathEvent.Cause { get; }
 public readonly Mc.Scripting.DamageCause Mc.Scripting.Events.PlayerDeathEvent.Cause { get; }
 public readonly Mc.Scripting.DragType Mc.Scripting.Events.InventoryDragEvent.DragType { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.BlockIgniteEvent.IgnitingEntity { get; }
+public readonly Mc.Scripting.Entity Mc.Scripting.Events.CombatTagStartEvent.Opponent { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.EntityCombustEvent.Entity { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.EntityCombustEvent.Source { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.EntityDamageEvent.Attacker { get; }
@@ -2022,6 +2097,8 @@ public readonly Mc.Scripting.NpcClick Mc.Scripting.Events.NpcInteractEvent.Actio
 public readonly Mc.Scripting.Player Mc.Scripting.Events.BlockBreakEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.BlockDamageEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.BlockPlaceEvent.Player { get; }
+public readonly Mc.Scripting.Player Mc.Scripting.Events.CombatTagEndEvent.Player { get; }
+public readonly Mc.Scripting.Player Mc.Scripting.Events.CombatTagStartEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.CraftItemEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.CustomBlockBreakEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.CustomBlockInteractEvent.Player { get; }
@@ -2055,6 +2132,7 @@ public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerLevelChangeEvent.P
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerMoveEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerPickupItemEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerPortalEvent.Player { get; }
+public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerPreQuitEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerQuitEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerResourcePackStatusEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerRespawnEvent.Player { get; }
@@ -2082,6 +2160,7 @@ public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.PlayerJoinEvent.
 public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.PlayerKickEvent.LeaveMessage { get; }
 public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.PlayerKickEvent.Reason { get; }
 public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.PlayerPreLoginEvent.KickMessage { get; }
+public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.PlayerPreQuitEvent.QuitMessage { get; }
 public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.PlayerQuitEvent.QuitMessage { get; }
 public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.PrivateMessageEvent.Decoration { get; }
 public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.ServerListPingEvent.Motd { get; }
@@ -2105,6 +2184,8 @@ public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerKickEvent.Reas
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerPreLoginEvent.Address { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerPreLoginEvent.KickMessageJson { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerPreLoginEvent.Username { get; }
+public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerPreQuitEvent.QuitMessageJson { get; }
+public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerPreQuitEvent.Reason { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerQuitEvent.QuitMessageJson { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerQuitEvent.Reason { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerQuitEvent.Username { get; }
@@ -2199,6 +2280,7 @@ public readonly int Mc.Scripting.Events.ChunkLoadEvent.Z { get; }
 public readonly int Mc.Scripting.Events.ChunkUnloadEvent.Dimension { get; }
 public readonly int Mc.Scripting.Events.ChunkUnloadEvent.X { get; }
 public readonly int Mc.Scripting.Events.ChunkUnloadEvent.Z { get; }
+public readonly int Mc.Scripting.Events.CombatTagStartEvent.Ticks { get; }
 public readonly int Mc.Scripting.Events.EnchantItemEvent.Cost { get; }
 public readonly int Mc.Scripting.Events.EnchantItemEvent.Option { get; }
 public readonly int Mc.Scripting.Events.InventoryClickEvent.Button { get; }
@@ -2323,6 +2405,10 @@ public static Mc.Scripting.Commands.CommandNode Mc.Scripting.Commands.Command.Li
 public static Mc.Scripting.Content.BlockRegistry Mc.Scripting.Content.Content.Blocks { get; }
 public static Mc.Scripting.Content.ItemRegistry Mc.Scripting.Content.Content.Items { get; }
 public static Mc.Scripting.Content.ResourcePackBuilder Mc.Scripting.Content.ResourcePackBuilder.Create(string name)
+public static Mc.Scripting.EditClipboardInfo? Mc.Scripting.Edit.ClipboardInfo(Mc.Scripting.Player player, ulong handle)
+public static Mc.Scripting.EditHistory Mc.Scripting.Edit.History(Mc.Scripting.Player player)
+public static Mc.Scripting.EditJobInfo? Mc.Scripting.Edit.GetJob(Mc.Scripting.Player player, long job)
+public static Mc.Scripting.EditMemory Mc.Scripting.Edit.Memory()
 public static Mc.Scripting.Entity Mc.Scripting.Entity.Null { get; }
 public static Mc.Scripting.Entity Mc.Scripting.Entity.Spawn()
 public static Mc.Scripting.EventHeader Mc.Scripting.EventHeader.For<T>() where T : struct, Mc.Scripting.IEvent, allows ref struct
@@ -2368,6 +2454,7 @@ public static Mc.Scripting.Permissions.PermissionDefault Mc.Scripting.Permission
 public static Mc.Scripting.Permissions.PermissionValue Mc.Scripting.Permissions.PermissionManager.GetExplicit(Mc.Scripting.Uuid player, string node)
 public static Mc.Scripting.Player Mc.Scripting.Player.None { get; }
 public static Mc.Scripting.Player.implicit operator Mc.Scripting.Entity(Mc.Scripting.Player p)
+public static Mc.Scripting.Player? Mc.Scripting.Combat.Opponent(Mc.Scripting.Player player)
 public static Mc.Scripting.Player? Mc.Scripting.Server.GetPlayer(Mc.Scripting.Uuid uuid)
 public static Mc.Scripting.Player? Mc.Scripting.Server.GetPlayer(string name)
 public static Mc.Scripting.PluginDependency Mc.Scripting.PluginDependency.Parse(string text)
@@ -2445,6 +2532,7 @@ public static System.Net.Http.HttpMessageHandler Mc.Scripting.Http.Handler { get
 public static System.Threading.Tasks.Task Mc.Scripting.Server.UnloadWorldAsync(Mc.Scripting.Worlds.World world, [bool save = true], [bool movePlayers = false])
 public static System.Threading.Tasks.Task<Mc.Scripting.Worlds.World> Mc.Scripting.Server.CreateWorldAsync(Mc.Scripting.Worlds.WorldOptions options)
 public static System.Threading.Tasks.Task<Mc.Scripting.Worlds.World> Mc.Scripting.Server.LoadWorldAsync(string name)
+public static System.TimeSpan Mc.Scripting.Combat.Remaining(Mc.Scripting.Player player)
 public static bool Mc.Scripting.ApiVersion.TryParse(string? text, out Mc.Scripting.ApiVersion version)
 public static bool Mc.Scripting.ApiVersion.operator !=(Mc.Scripting.ApiVersion left, Mc.Scripting.ApiVersion right)
 public static bool Mc.Scripting.ApiVersion.operator ==(Mc.Scripting.ApiVersion left, Mc.Scripting.ApiVersion right)
@@ -2452,7 +2540,19 @@ public static bool Mc.Scripting.ChatMute.Clear(Mc.Scripting.Uuid player)
 public static bool Mc.Scripting.ChatMute.Set(Mc.Scripting.Uuid player, System.DateTimeOffset? expires, string? reason)
 public static bool Mc.Scripting.ChatMuteEntry.operator !=(Mc.Scripting.ChatMuteEntry? left, Mc.Scripting.ChatMuteEntry? right)
 public static bool Mc.Scripting.ChatMuteEntry.operator ==(Mc.Scripting.ChatMuteEntry? left, Mc.Scripting.ChatMuteEntry? right)
+public static bool Mc.Scripting.Combat.Tag(Mc.Scripting.Player player, System.TimeSpan duration, [Mc.Scripting.Player? opponent = null])
+public static bool Mc.Scripting.Combat.Untag(Mc.Scripting.Player player)
 public static bool Mc.Scripting.Content.ResourcePackHost.IsRunning { get; }
+public static bool Mc.Scripting.Edit.Cancel(Mc.Scripting.Player player, long job)
+public static bool Mc.Scripting.Edit.ReleaseClipboard(Mc.Scripting.Player player, ulong handle)
+public static bool Mc.Scripting.EditClipboardInfo.operator !=(Mc.Scripting.EditClipboardInfo left, Mc.Scripting.EditClipboardInfo right)
+public static bool Mc.Scripting.EditClipboardInfo.operator ==(Mc.Scripting.EditClipboardInfo left, Mc.Scripting.EditClipboardInfo right)
+public static bool Mc.Scripting.EditHistory.operator !=(Mc.Scripting.EditHistory left, Mc.Scripting.EditHistory right)
+public static bool Mc.Scripting.EditHistory.operator ==(Mc.Scripting.EditHistory left, Mc.Scripting.EditHistory right)
+public static bool Mc.Scripting.EditJobInfo.operator !=(Mc.Scripting.EditJobInfo left, Mc.Scripting.EditJobInfo right)
+public static bool Mc.Scripting.EditJobInfo.operator ==(Mc.Scripting.EditJobInfo left, Mc.Scripting.EditJobInfo right)
+public static bool Mc.Scripting.EditMemory.operator !=(Mc.Scripting.EditMemory left, Mc.Scripting.EditMemory right)
+public static bool Mc.Scripting.EditMemory.operator ==(Mc.Scripting.EditMemory left, Mc.Scripting.EditMemory right)
 public static bool Mc.Scripting.Entity.operator !=(Mc.Scripting.Entity a, Mc.Scripting.Entity b)
 public static bool Mc.Scripting.Entity.operator ==(Mc.Scripting.Entity a, Mc.Scripting.Entity b)
 public static bool Mc.Scripting.EventBus.Fire<T>(ref T ev) where T : struct, Mc.Scripting.IEvent, allows ref struct
@@ -2471,6 +2571,8 @@ public static bool Mc.Scripting.Events.BlockRedstoneEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.BlockSpreadEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.ChunkLoadEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.ChunkUnloadEvent.IsCancellable { get; }
+public static bool Mc.Scripting.Events.CombatTagEndEvent.IsCancellable { get; }
+public static bool Mc.Scripting.Events.CombatTagStartEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.CommandsRegisteredEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.CraftItemEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.CustomBlockBreakEvent.IsCancellable { get; }
@@ -2514,6 +2616,7 @@ public static bool Mc.Scripting.Events.PlayerMoveEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerPickupItemEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerPortalEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerPreLoginEvent.IsCancellable { get; }
+public static bool Mc.Scripting.Events.PlayerPreQuitEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerQuitEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerResourcePackStatusEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerRespawnEvent.IsCancellable { get; }
@@ -2617,6 +2720,9 @@ public static int Mc.Scripting.Content.ResourcePackHost.Port { get; }
 public static int Mc.Scripting.Packets.AllocateEntityId()
 public static int Mc.Scripting.Permissions.NativePermissionTable.Apply(byte[] message)
 public static int Mc.Scripting.Server.PlayerCount { get; }
+public static long Mc.Scripting.Edit.Redo(Mc.Scripting.Player player, [int steps = 1])
+public static long Mc.Scripting.Edit.Start(Mc.Scripting.Player player, byte[] request)
+public static long Mc.Scripting.Edit.Undo(Mc.Scripting.Player player, [int steps = 1])
 public static long Mc.Scripting.Server.CommittedBytes { get; }
 public static long Mc.Scripting.Server.MemoryBytes { get; }
 public static long Mc.Scripting.Server.PluginMemoryBytes { get; }
@@ -2638,6 +2744,8 @@ public static string Mc.Scripting.Events.BlockRedstoneEvent.Key { get; }
 public static string Mc.Scripting.Events.BlockSpreadEvent.Key { get; }
 public static string Mc.Scripting.Events.ChunkLoadEvent.Key { get; }
 public static string Mc.Scripting.Events.ChunkUnloadEvent.Key { get; }
+public static string Mc.Scripting.Events.CombatTagEndEvent.Key { get; }
+public static string Mc.Scripting.Events.CombatTagStartEvent.Key { get; }
 public static string Mc.Scripting.Events.CommandsRegisteredEvent.Key { get; }
 public static string Mc.Scripting.Events.CraftItemEvent.Key { get; }
 public static string Mc.Scripting.Events.CustomBlockBreakEvent.Key { get; }
@@ -2681,6 +2789,7 @@ public static string Mc.Scripting.Events.PlayerMoveEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerPickupItemEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerPortalEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerPreLoginEvent.Key { get; }
+public static string Mc.Scripting.Events.PlayerPreQuitEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerQuitEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerResourcePackStatusEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerRespawnEvent.Key { get; }
@@ -2725,6 +2834,8 @@ public static ushort Mc.Scripting.Events.BlockRedstoneEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.BlockSpreadEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.ChunkLoadEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.ChunkUnloadEvent.CatalogueId { get; }
+public static ushort Mc.Scripting.Events.CombatTagEndEvent.CatalogueId { get; }
+public static ushort Mc.Scripting.Events.CombatTagStartEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.CommandsRegisteredEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.CraftItemEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.CustomBlockBreakEvent.CatalogueId { get; }
@@ -2768,6 +2879,7 @@ public static ushort Mc.Scripting.Events.PlayerMoveEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerPickupItemEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerPortalEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerPreLoginEvent.CatalogueId { get; }
+public static ushort Mc.Scripting.Events.PlayerPreQuitEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerQuitEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerResourcePackStatusEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerRespawnEvent.CatalogueId { get; }
@@ -2791,6 +2903,7 @@ public static ushort Mc.Scripting.Events.TimeSkipEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.WeatherChangeEvent.CatalogueId { get; }
 public static void Mc.Scripting.Content.ResourcePackHost.Stop()
 public static void Mc.Scripting.Content.ResourcePackHost.Unpublish(Mc.Scripting.Content.ResourcePackFile pack)
+public static void Mc.Scripting.Edit.ClearHistory(Mc.Scripting.Player player)
 public static void Mc.Scripting.Log.Error(string message)
 public static void Mc.Scripting.Log.Error(string message, System.Exception e)
 public static void Mc.Scripting.Log.Info(string message)
@@ -2825,6 +2938,7 @@ public string Mc.Scripting.Content.CustomItem.Id { get; }
 public string Mc.Scripting.Content.ResourcePackBuilder.Name { get; }
 public string Mc.Scripting.Content.ResourcePackFile.Name { get; }
 public string Mc.Scripting.Content.ResourcePackFile.Sha1 { get; }
+public string Mc.Scripting.EditJobInfo.Message { get; init; }
 public string Mc.Scripting.Entity.TypeKey { get; }
 public string Mc.Scripting.Inventories.ItemStack.Type { get; }
 public string Mc.Scripting.Inventories.ItemView.Key { get; }
@@ -2925,8 +3039,18 @@ public string[]? Mc.Scripting.McPluginAttribute.Authors { get; }
 public string[]? Mc.Scripting.McPluginAttribute.Depends { get; }
 public string[]? Mc.Scripting.McPluginAttribute.LoadBefore { get; }
 public string[]? Mc.Scripting.McPluginAttribute.SoftDepends { get; }
+public uint Mc.Scripting.EditHistory.RedoSteps { get; init; }
+public uint Mc.Scripting.EditHistory.UndoSteps { get; init; }
+public uint Mc.Scripting.EditJobInfo.ElapsedTicks { get; init; }
 public uint Mc.Scripting.EventHeader.Size
 public ulong Mc.Scripting.Ecs.RegisterComponent<T>(string key) where T : unmanaged
+public ulong Mc.Scripting.EditClipboardInfo.Bytes { get; init; }
+public ulong Mc.Scripting.EditHistory.RedoBytes { get; init; }
+public ulong Mc.Scripting.EditHistory.UndoBytes { get; init; }
+public ulong Mc.Scripting.EditJobInfo.Changed { get; init; }
+public ulong Mc.Scripting.EditJobInfo.Clipboard { get; init; }
+public ulong Mc.Scripting.EditMemory.ClipboardBytes { get; init; }
+public ulong Mc.Scripting.EditMemory.HistoryBytes { get; init; }
 public ulong Mc.Scripting.Npc.Handle { get; }
 public ulong Mc.Scripting.NpcInteraction.Handle { get; }
 public ulong Mc.Scripting.Permissions.NativeTableStats.Applied { get; init; }
@@ -2991,6 +3115,10 @@ public void Mc.Scripting.Content.ItemRegistry.Register(Mc.Scripting.Content.Cust
 public void Mc.Scripting.Content.ItemUseContext.Consume([int count = 1])
 public void Mc.Scripting.Content.ResourcePackFile.SendTo(Mc.Scripting.Player player, [bool required = false], [Mc.Scripting.Text.Component? prompt = null])
 public void Mc.Scripting.Content.ResourcePackFile.WriteTo(string path)
+public void Mc.Scripting.EditClipboardInfo.Deconstruct(out int SizeX, out int SizeY, out int SizeZ, out int OriginX, out int OriginY, out int OriginZ, out ulong Bytes)
+public void Mc.Scripting.EditHistory.Deconstruct(out uint UndoSteps, out uint RedoSteps, out ulong UndoBytes, out ulong RedoBytes)
+public void Mc.Scripting.EditJobInfo.Deconstruct(out Mc.Scripting.EditJobState State, out ulong Changed, out uint ElapsedTicks, out ulong Clipboard, out string Message)
+public void Mc.Scripting.EditMemory.Deconstruct(out ulong HistoryBytes, out ulong ClipboardBytes)
 public void Mc.Scripting.Entity.Destroy()
 public void Mc.Scripting.Events.LoginDeferral.Allow()
 public void Mc.Scripting.Events.LoginDeferral.Deny([Mc.Scripting.Text.Component? reason = null])
@@ -3006,6 +3134,7 @@ public void Mc.Scripting.Events.PlayerJoinEvent.SetJoinMessage(Mc.Scripting.Text
 public void Mc.Scripting.Events.PlayerKickEvent.SetLeaveMessage(Mc.Scripting.Text.Component value)
 public void Mc.Scripting.Events.PlayerKickEvent.SetReason(Mc.Scripting.Text.Component value)
 public void Mc.Scripting.Events.PlayerPreLoginEvent.SetKickMessage(Mc.Scripting.Text.Component value)
+public void Mc.Scripting.Events.PlayerPreQuitEvent.SetQuitMessage(Mc.Scripting.Text.Component value)
 public void Mc.Scripting.Events.PlayerQuitEvent.SetQuitMessage(Mc.Scripting.Text.Component value)
 public void Mc.Scripting.Events.PrivateMessageEvent.SetDecoration(Mc.Scripting.Text.Component value)
 public void Mc.Scripting.Events.PrivateMessageEvent.SetMessage(string value)
@@ -3070,6 +3199,7 @@ public void Mc.Scripting.Player.SendActionBar(Mc.Scripting.Text.Component messag
 public void Mc.Scripting.Player.SendMessage(Mc.Scripting.Text.Component message)
 public void Mc.Scripting.Player.SendResourcePack(Mc.Scripting.ResourcePack pack)
 public void Mc.Scripting.Player.SetListName(Mc.Scripting.Text.Component? name)
+public void Mc.Scripting.Player.SetPvpPolicy(Mc.Scripting.PvpFlags flags, int tagTicks)
 public void Mc.Scripting.Player.SetTabList(Mc.Scripting.Text.Component? header, Mc.Scripting.Text.Component? footer)
 public void Mc.Scripting.Player.ShowSubtitle(Mc.Scripting.Text.Component subtitle)
 public void Mc.Scripting.Player.ShowTitle(Mc.Scripting.Text.Component title, [Mc.Scripting.Text.Component? subtitle = null], [Mc.Scripting.TitleTimes? times = null])
@@ -3121,6 +3251,10 @@ public void Mc.Scripting.Worlds.ChunkTicket.Dispose()
 public void Mc.Scripting.Worlds.ChunkTicket.Release()
 public void Mc.Scripting.Worlds.World.AddDayTime(long ticks)
 readonly readonly struct Mc.Scripting.ApiVersion [interface System.IComparable<Mc.Scripting.ApiVersion>, interface System.IEquatable<Mc.Scripting.ApiVersion>]
+readonly readonly struct Mc.Scripting.EditClipboardInfo [interface System.IEquatable<Mc.Scripting.EditClipboardInfo>]
+readonly readonly struct Mc.Scripting.EditHistory [interface System.IEquatable<Mc.Scripting.EditHistory>]
+readonly readonly struct Mc.Scripting.EditJobInfo [interface System.IEquatable<Mc.Scripting.EditJobInfo>]
+readonly readonly struct Mc.Scripting.EditMemory [interface System.IEquatable<Mc.Scripting.EditMemory>]
 readonly readonly struct Mc.Scripting.Entity [interface System.IEquatable<Mc.Scripting.Entity>]
 readonly readonly struct Mc.Scripting.Inventories.ItemStack [interface System.IEquatable<Mc.Scripting.Inventories.ItemStack>]
 readonly readonly struct Mc.Scripting.Inventories.ItemView
@@ -3158,6 +3292,8 @@ ref ref struct Mc.Scripting.Events.BlockRedstoneEvent [interface Mc.Scripting.IE
 ref ref struct Mc.Scripting.Events.BlockSpreadEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.ChunkLoadEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.ChunkUnloadEvent [interface Mc.Scripting.IEvent]
+ref ref struct Mc.Scripting.Events.CombatTagEndEvent [interface Mc.Scripting.IEvent]
+ref ref struct Mc.Scripting.Events.CombatTagStartEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.CommandsRegisteredEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.CraftItemEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.CustomBlockBreakEvent [interface Mc.Scripting.IEvent]
@@ -3201,6 +3337,7 @@ ref ref struct Mc.Scripting.Events.PlayerMoveEvent [interface Mc.Scripting.IEven
 ref ref struct Mc.Scripting.Events.PlayerPickupItemEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerPortalEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerPreLoginEvent [interface Mc.Scripting.IEvent]
+ref ref struct Mc.Scripting.Events.PlayerPreQuitEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerQuitEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerResourcePackStatusEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerRespawnEvent [interface Mc.Scripting.IEvent]
@@ -3359,12 +3496,14 @@ static Mc.Scripting.PresenceExtensions.extension(Mc.Scripting.PluginContext)
 static class Mc.Scripting.Chat
 static class Mc.Scripting.ChatMute
 static class Mc.Scripting.ChatRoute
+static class Mc.Scripting.Combat
 static class Mc.Scripting.Commands.Arg
 static class Mc.Scripting.Commands.Command
 static class Mc.Scripting.Component<T> where T : unmanaged
 static class Mc.Scripting.Content.Content
 static class Mc.Scripting.Content.PackImage
 static class Mc.Scripting.Content.ResourcePackHost
+static class Mc.Scripting.Edit
 static class Mc.Scripting.EventBus
 static class Mc.Scripting.EventType<T> where T : struct, Mc.Scripting.IEvent, allows ref struct
 static class Mc.Scripting.Http

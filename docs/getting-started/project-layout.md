@@ -73,6 +73,19 @@ public sealed class Hello : Plugin
 
 The arguments must be string literals (or arrays of them): the server reads them from the syntax before it compiles, to work out the load order. `[assembly: McPermission("hello.use", Default = "true", Description = "Use /hello")]` declares a permission node the same way. The API namespaces are imported for you, as in a project built with `Ramjet.Api`. Source plugins can be switched off in the server's settings, so check that your server accepts them before you rely on them; a compiled plugin always works.
 
+#### Compile errors
+
+A source plugin that does not compile is not loaded (or, after an edit, its previous version keeps running). The errors are in the log with file, line and column, and in `Plugins.Problems`; see [source plugins that do not compile](../concepts/lifecycle.md#source-plugins-that-do-not-compile).
+
+#### Memory and the compile cache
+
+Compiling needs the C# compiler, and the compiler is the expensive part of a source plugin: while it is loaded, the plugin worker uses roughly 60 MB more than without it (a measurement on a single-core server with about 300 MiB, two small source plugins: about 128 MB with the compiler loaded, about 64 MB without), and the first compile after a start takes a few seconds on a single core. On a small server (256 MiB) that difference matters, so:
+
+- **The server keeps the compiled result** in `plugins/.cache/`, one file per source plugin (the newest build only), valid for exactly those sources, that manifest and that API version. A start with unchanged sources loads the cached assembly in milliseconds and **never loads the compiler**, so once compiled, a source plugin costs about what a compiled plugin does. All source plugins on the server share this one folder.
+- **Any change compiles again**, and the compiler then stays loaded until the plugin worker restarts (`/plugins reload` or a server restart). After a round of edits on a small server, restart once to give the memory back.
+- **The folder must be a plain folder** that the server can write. The server creates it; if it is missing or unwritable (a file or a link in its place), every start compiles every source plugin again. You can delete it at any time: the next start compiles and fills it again.
+- For a plugin you are done editing, a compiled plugin (`dotnet build`, see [build and hot reload](build-and-hot-reload.md)) needs no compiler at all.
+
 ## plugin.json
 
 The manifest describes the plugin before its code is loaded, so the server can order plugins by their dependencies and refuse an incompatible one with a precise message instead of a stack trace. The template includes one:

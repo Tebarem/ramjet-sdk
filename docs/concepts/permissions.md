@@ -24,6 +24,15 @@ bool allowed = Permissions.Has(uuid, "homes.admin");
 PermissionValue v = PermissionManager.GetExplicit(uuid, "homes.admin");   // True | False | Unset
 ```
 
+## Declared in `plugin.json`, in code, or both
+
+A node can be declared in the `permissions` array of [`plugin.json`](../reference/plugin-json.md) (for a source plugin: `[assembly: McPermission(...)]`), with `Permissions.Register` in `OnEnable`, or both. The rules:
+
+- **Manifest first, code second, no error.** The manifest's nodes are registered when the plugin is loaded, before your plugin class is created. If `OnEnable` then registers the same node, the code's registration **replaces** the manifest's: its default and description are the ones in force. Declare each node in one place; the manifest is enough unless the default depends on something you only know in code.
+- **A node belongs to one plugin at a time.** If a *different* loaded plugin has already declared the node, the second declaration fails with `permission node 'x' is already declared by plugin 'Name'`: from the manifest this stops the plugin from loading, from code it is an exception in `OnEnable` that has the same effect. The cause is in the log and in `Plugins.Problems`; the first declaration keeps its meaning. Start your nodes with your plugin's id (`homes.use`) so they do not collide. A hot reload of your own plugin takes over its nodes without this error.
+- **Both kinds go away together.** Nodes from the manifest and from code are removed when the plugin unloads or is hot-reloaded, and declared again by the new version.
+- **Declaring is not required to check or grant.** `HasPermission("x")` on a node nobody declared is allowed, and `permissions.json` can grant any node. An undeclared node that nobody granted is denied, and the node does not appear in listings for admins.
+
 ## Defaults
 
 | Default | Meaning |
