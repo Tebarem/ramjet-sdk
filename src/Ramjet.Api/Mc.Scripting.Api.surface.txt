@@ -339,6 +339,11 @@ Mc.Scripting.Worlds.HeightMap.Surface = 0
 Mc.Scripting.Worlds.WeatherType.Clear = 0
 Mc.Scripting.Worlds.WeatherType.Rain = 1
 Mc.Scripting.Worlds.WeatherType.Thunder = 2
+Mc.Scripting.Worlds.WorldGenerator.Flat = 1
+Mc.Scripting.Worlds.WorldGenerator.Normal = 0
+Mc.Scripting.Worlds.WorldGenerator.Void = 2
+Mc.Scripting.Worlds.WorldStorage.Anvil = 0
+Mc.Scripting.Worlds.WorldStorage.Slime = 1
 System.Collections.Generic.IEnumerable<Mc.Scripting.Inventories.ItemStack> Mc.Scripting.Inventories.IInventory.Contents { get; }
 System.Collections.Generic.IReadOnlyCollection<string> Mc.Scripting.Permissions.IPermissionProvider.Groups(Mc.Scripting.Uuid player)
 System.Collections.Generic.IReadOnlyList<Mc.Scripting.Services.Affix> Mc.Scripting.Services.IPlayerMeta.Affixes(Mc.Scripting.Uuid player, Mc.Scripting.Services.AffixKind kind)
@@ -478,6 +483,10 @@ enum Mc.Scripting.Worlds.HeightMap
 enum Mc.Scripting.Worlds.HeightMap enum : int
 enum Mc.Scripting.Worlds.WeatherType
 enum Mc.Scripting.Worlds.WeatherType enum : int
+enum Mc.Scripting.Worlds.WorldGenerator
+enum Mc.Scripting.Worlds.WorldGenerator enum : int
+enum Mc.Scripting.Worlds.WorldStorage
+enum Mc.Scripting.Worlds.WorldStorage enum : int
 event System.Action<Mc.Scripting.Uuid?>? Mc.Scripting.Permissions.IPermissionProvider.Changed
 event System.Action<Mc.Scripting.Uuid?>? Mc.Scripting.Services.IEconomy.Changed
 event System.Action<Mc.Scripting.Uuid?>? Mc.Scripting.Services.IPlayerMeta.Changed
@@ -522,6 +531,7 @@ public Mc.Scripting.BlockPos Mc.Scripting.Packets.Serverbound.SignUpdate.Pos
 public Mc.Scripting.BlockPos Mc.Scripting.Packets.Serverbound.UseItemOn.Pos
 public Mc.Scripting.BlockPos.BlockPos()
 public Mc.Scripting.BlockPos.BlockPos(int x, int y, int z)
+public Mc.Scripting.BlockPos? Mc.Scripting.Worlds.WorldOptions.Spawn { get; init; }
 public Mc.Scripting.BossBar Mc.Scripting.BossBar.AddViewer(Mc.Scripting.Player player)
 public Mc.Scripting.BossBar Mc.Scripting.BossBar.AddViewer(Mc.Scripting.Uuid player)
 public Mc.Scripting.BossBar Mc.Scripting.BossBar.RemoveViewer(Mc.Scripting.Player player)
@@ -1192,6 +1202,13 @@ public Mc.Scripting.Worlds.World Mc.Scripting.Player.World { get; }
 public Mc.Scripting.Worlds.World Mc.Scripting.Worlds.ChunkTicket.World { get; }
 public Mc.Scripting.Worlds.World.World()
 public Mc.Scripting.Worlds.World.World(int index)
+public Mc.Scripting.Worlds.WorldGenerator.WorldGenerator()
+public Mc.Scripting.Worlds.WorldGenerator? Mc.Scripting.Worlds.World.Generator { get; }
+public Mc.Scripting.Worlds.WorldGenerator? Mc.Scripting.Worlds.WorldOptions.Generator { get; init; }
+public Mc.Scripting.Worlds.WorldOptions.WorldOptions(string name)
+public Mc.Scripting.Worlds.WorldStorage Mc.Scripting.Worlds.WorldOptions.Storage { get; init; }
+public Mc.Scripting.Worlds.WorldStorage.WorldStorage()
+public Mc.Scripting.Worlds.WorldStorage? Mc.Scripting.Worlds.World.Storage { get; }
 public Mc.Scripting.WrongThreadException.WrongThreadException(string api)
 public System.Action<Mc.Scripting.Content.ItemUseContext>? Mc.Scripting.Content.CustomItem.UseHandler { get; }
 public System.Action<Mc.Scripting.Content.ItemUseContext>? Mc.Scripting.Content.CustomItem.UseOnHandler { get; }
@@ -1236,6 +1253,7 @@ public System.DateTimeOffset? Mc.Scripting.OfflineProfile.LastSeen { get; init; 
 public System.DateTimeOffset? Mc.Scripting.Services.BanEntry.Expires { get; init; }
 public System.Guid Mc.Scripting.PlayerSnapshot.Uuid { get; init; }
 public System.IDisposable Mc.Scripting.Services.ServiceManager.Changed<T>(System.Action onChanged) where T : class
+public System.ReadOnlyMemory<byte>? Mc.Scripting.Worlds.WorldOptions.Template { get; init; }
 public System.ReadOnlySpan<Mc.Scripting.Entity> Mc.Scripting.QueryChunk.Entities { get; }
 public System.ReadOnlySpan<byte> Mc.Scripting.NativeBytes.Span { get; }
 public System.ReadOnlySpan<byte> Mc.Scripting.Utf8String.Bytes { get; }
@@ -1243,8 +1261,10 @@ public System.Span<T> Mc.Scripting.QueryChunk.Field<T>(int index) where T : unma
 public System.Threading.Tasks.Task Mc.Scripting.Scheduler.Delay(long ticks)
 public System.Threading.Tasks.Task Mc.Scripting.Scheduler.RunAsync(System.Action action)
 public System.Threading.Tasks.Task Mc.Scripting.Scheduler.RunSync(System.Action action)
+public System.Threading.Tasks.Task Mc.Scripting.Worlds.World.SaveAsync()
 public System.Threading.Tasks.Task<T> Mc.Scripting.Scheduler.RunAsync<T>(System.Func<T> func)
 public System.Threading.Tasks.Task<T> Mc.Scripting.Scheduler.RunSync<T>(System.Func<T> func)
+public System.Threading.Tasks.Task<byte[]> Mc.Scripting.Worlds.World.ExportAsync()
 public T Mc.Scripting.Configuration.Config<T>.Value { get; }
 public T Mc.Scripting.PacketEvent<T>.Packet { get; }
 public T Mc.Scripting.Services.ServiceManager.Get<T>() where T : class
@@ -1489,14 +1509,21 @@ public bool Mc.Scripting.Worlds.World.HasDayTime { get; }
 public bool Mc.Scripting.Worlds.World.IsBlockLoaded(Mc.Scripting.BlockPos pos)
 public bool Mc.Scripting.Worlds.World.IsChunkLoaded(int chunkX, int chunkZ)
 public bool Mc.Scripting.Worlds.World.IsRaining { get; }
+public bool Mc.Scripting.Worlds.World.IsRuntime { get; }
+public bool Mc.Scripting.Worlds.World.IsTemporary { get; }
 public bool Mc.Scripting.Worlds.World.IsThundering { get; }
 public bool Mc.Scripting.Worlds.World.IsValid { get; }
 public bool Mc.Scripting.Worlds.World.SetBlock(Mc.Scripting.BlockPos pos, Mc.Scripting.Worlds.BlockState state, [Mc.Scripting.Worlds.BlockUpdateFlags flags = Mc.Scripting.Worlds.BlockUpdateFlags.All])
 public bool Mc.Scripting.Worlds.World.SetBlock(Mc.Scripting.BlockPos pos, string state, [Mc.Scripting.Worlds.BlockUpdateFlags flags = Mc.Scripting.Worlds.BlockUpdateFlags.All])
 public bool Mc.Scripting.Worlds.World.SetBlockEntityData(Mc.Scripting.BlockPos pos, Mc.Scripting.Nbt.NbtCompound data, [bool merge = true])
+public bool Mc.Scripting.Worlds.World.SetGameRule(string name, bool value)
+public bool Mc.Scripting.Worlds.World.SetGameRule(string name, int value)
+public bool Mc.Scripting.Worlds.World.SetGameRule(string name, string value)
 public bool Mc.Scripting.Worlds.World.SetSpawn(Mc.Scripting.BlockPos pos, [float yaw = 0], [float pitch = 0])
 public bool Mc.Scripting.Worlds.World.SetWeather(Mc.Scripting.Worlds.WeatherType weather, [int? durationTicks = null])
 public bool Mc.Scripting.Worlds.World.TryGetBlock(Mc.Scripting.BlockPos pos, out Mc.Scripting.Worlds.BlockState state)
+public bool Mc.Scripting.Worlds.WorldOptions.Structures { get; init; }
+public bool Mc.Scripting.Worlds.WorldOptions.Temporary { get; init; }
 public bool? Mc.Scripting.Content.CustomItem.HasGlint { get; }
 public bool? Mc.Scripting.TabEntry.Listed { get; init; }
 public byte Mc.Scripting.EventHeader.Flags
@@ -1740,6 +1767,7 @@ public long Mc.Scripting.Packets.Serverbound.Chat.Timestamp
 public long Mc.Scripting.Worlds.World.DayTime { get; set; }
 public long Mc.Scripting.Worlds.World.GameTime { get; }
 public long Mc.Scripting.Worlds.World.GeneratedChunkCount { get; }
+public long? Mc.Scripting.Worlds.WorldOptions.Seed { get; init; }
 public long[] Mc.Scripting.Nbt.NbtLongArray.Value { get; set; }
 public override Mc.Scripting.Nbt.NbtTag Mc.Scripting.Nbt.NbtByte.Clone()
 public override Mc.Scripting.Nbt.NbtTag Mc.Scripting.Nbt.NbtByteArray.Clone()
@@ -2414,6 +2442,9 @@ public static System.Collections.Generic.IReadOnlyList<string> Mc.Scripting.Plug
 public static System.IDisposable Mc.Scripting.Packets.On<T>(System.Action<Mc.Scripting.PacketEvent<T>> handler, [Mc.Scripting.PacketMode mode = Mc.Scripting.PacketMode.Observe], [Mc.Scripting.EventPriority priority = Mc.Scripting.EventPriority.Normal]) where T : Mc.Scripting.PacketBase, new()
 public static System.Net.Http.HttpClient Mc.Scripting.Http.Client { get; }
 public static System.Net.Http.HttpMessageHandler Mc.Scripting.Http.Handler { get; }
+public static System.Threading.Tasks.Task Mc.Scripting.Server.UnloadWorldAsync(Mc.Scripting.Worlds.World world, [bool save = true], [bool movePlayers = false])
+public static System.Threading.Tasks.Task<Mc.Scripting.Worlds.World> Mc.Scripting.Server.CreateWorldAsync(Mc.Scripting.Worlds.WorldOptions options)
+public static System.Threading.Tasks.Task<Mc.Scripting.Worlds.World> Mc.Scripting.Server.LoadWorldAsync(string name)
 public static bool Mc.Scripting.ApiVersion.TryParse(string? text, out Mc.Scripting.ApiVersion version)
 public static bool Mc.Scripting.ApiVersion.operator !=(Mc.Scripting.ApiVersion left, Mc.Scripting.ApiVersion right)
 public static bool Mc.Scripting.ApiVersion.operator ==(Mc.Scripting.ApiVersion left, Mc.Scripting.ApiVersion right)
@@ -2858,6 +2889,7 @@ public string Mc.Scripting.Text.Component.ToPlainText()
 public string Mc.Scripting.Worlds.BlockState.BlockKey { get; }
 public string Mc.Scripting.Worlds.BlockState.Key { get; }
 public string Mc.Scripting.Worlds.World.Key { get; }
+public string Mc.Scripting.Worlds.WorldOptions.Name { get; }
 public string? Mc.Scripting.ChatMuteEntry.Reason { get; init; }
 public string? Mc.Scripting.Commands.CommandFailure.TranslationKey { get; }
 public string? Mc.Scripting.Configuration.PluginConfig.ReadText(string fileName)
@@ -2885,6 +2917,9 @@ public string? Mc.Scripting.ResourcePack.Sha1 { get; init; }
 public string? Mc.Scripting.Services.BanEntry.Address { get; init; }
 public string? Mc.Scripting.Services.BanEntry.Name { get; init; }
 public string? Mc.Scripting.Services.BanEntry.Reason { get; init; }
+public string? Mc.Scripting.Worlds.World.GetGameRule(string name)
+public string? Mc.Scripting.Worlds.WorldOptions.DimensionType { get; init; }
+public string? Mc.Scripting.Worlds.WorldOptions.FlatSettings { get; init; }
 public string[] Mc.Scripting.Commands.CommandContext.Args { get; }
 public string[]? Mc.Scripting.McPluginAttribute.Authors { get; }
 public string[]? Mc.Scripting.McPluginAttribute.Depends { get; }
@@ -3309,6 +3344,7 @@ sealed class Mc.Scripting.Text.Component
 sealed class Mc.Scripting.Text.HoverEvent
 sealed class Mc.Scripting.Worlds.ChunkTicket [interface Mc.Scripting.IPluginResource, interface System.IDisposable]
 sealed class Mc.Scripting.Worlds.ChunkTickets
+sealed class Mc.Scripting.Worlds.WorldOptions
 sealed class Mc.Scripting.WrongThreadException : class System.InvalidOperationException
 sealed record Mc.Scripting.ChatMuteEntry [interface System.IEquatable<Mc.Scripting.ChatMuteEntry>]
 sealed record Mc.Scripting.OfflineProfile [interface System.IEquatable<Mc.Scripting.OfflineProfile>]

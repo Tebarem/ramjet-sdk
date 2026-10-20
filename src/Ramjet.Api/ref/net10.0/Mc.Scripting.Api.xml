@@ -8788,12 +8788,13 @@
             <returns>The player, or null if that profile is not online.</returns>
         </member>
         <member name="P:Mc.Scripting.Server.Worlds">
-            <summary>The dimensions of the server (overworld first).</summary>
+            <summary>The live worlds of the server: the vanilla dimensions (overworld first), then the runtime worlds. A new list on every call.</summary>
         </member>
         <member name="M:Mc.Scripting.Server.GetWorld(System.String)">
-            <summary>Finds a dimension by key ("minecraft:the_nether"; "the_nether" also works for minecraft keys).</summary>
-            <param name="key">The dimension key.</param>
-            <returns>The world, or null if there is no such dimension.</returns>
+            <summary>Finds a live world by key ("minecraft:the_nether", "ramjet:arena"). A name without a namespace is looked up as <c>minecraft:</c> first, then as
+            <c>ramjet:</c> (the namespace of runtime worlds made without one): "the_nether", "arena".</summary>
+            <param name="key">The world key.</param>
+            <returns>The world, or null if no live world has that key.</returns>
         </member>
         <member name="P:Mc.Scripting.Server.Overworld">
             <summary>The overworld.</summary>
@@ -8810,6 +8811,34 @@
         <member name="M:Mc.Scripting.Server.Broadcast(Mc.Scripting.Text.Component)">
             <summary>Sends a rich text message to every online player and logs its plain text on the console.</summary>
             <param name="message">The message.</param>
+        </member>
+        <member name="M:Mc.Scripting.Server.CreateWorldAsync(Mc.Scripting.Worlds.WorldOptions)">
+            <summary>Makes a runtime world (Bukkit's <c>WorldCreator</c>): saved (anvil or slime storage) or temporary, normal, flat or void terrain, empty or a copy of
+            a <see cref="P:Mc.Scripting.Worlds.WorldOptions.Template" />. The world is built at the start of the next tick; the task completes then, on the tick thread, so the code after
+            <c>await</c> can use the world at once. Move players in with <c>player.Teleport(new Location(world, x, y, z))</c>.</summary>
+            <param name="options">The world's name and options.</param>
+            <returns>The new world.</returns>
+            <exception cref="T:System.InvalidOperationException">The world cannot be made: the name is invalid or taken, a saved world of that name exists, the options do not fit
+            together, the template is not a valid blob, the server has <c>[worlds] max_runtime_worlds</c> worlds already (the task faults with it).</exception>
+        </member>
+        <member name="M:Mc.Scripting.Server.LoadWorldAsync(System.String)">
+            <summary>Loads a saved runtime world (made by <see cref="M:Mc.Scripting.Server.CreateWorldAsync(Mc.Scripting.Worlds.WorldOptions)" /> or <c>/world create</c>, not temporary) at the start of the next tick. The task
+            completes then, on the tick thread. Admins can have worlds loaded at startup with <c>[worlds] load</c> in ramjet.toml.</summary>
+            <param name="name">The world's key or bare name (<c>ramjet:</c>).</param>
+            <returns>The loaded world.</returns>
+            <exception cref="T:System.InvalidOperationException">No saved world has that name, it is loaded already, or the server has <c>[worlds] max_runtime_worlds</c> worlds
+            (the task faults with it).</exception>
+        </member>
+        <member name="M:Mc.Scripting.Server.UnloadWorldAsync(Mc.Scripting.Worlds.World,System.Boolean,System.Boolean)">
+            <summary>Unloads a runtime world at the start of the next tick (Bukkit's <c>unloadWorld</c>). The vanilla dimensions stay loaded. Handles of the world are
+            invalid afterwards (<see cref="P:Mc.Scripting.Worlds.World.IsValid" /> is false).</summary>
+            <param name="world">The world.</param>
+            <param name="save">True: a slime world is written to its file. False: the changes since its last save are thrown away. A temporary world is dropped either
+            way; an anvil world is always saved (false is refused for it).</param>
+            <param name="movePlayers">True: players still in the world are sent to the overworld spawn first. False: a world with players in it is refused (move them
+            with <c>Teleport</c> first).</param>
+            <returns>A task that completes on the tick thread when the world is gone.</returns>
+            <exception cref="T:System.InvalidOperationException">The world is a vanilla dimension, players are in it, or it could not be saved (the task faults with it).</exception>
         </member>
         <member name="T:Mc.Scripting.TickTimes">
             <summary>The engine's tick time over a window of ticks (<see cref="M:Mc.Scripting.Server.TickTimes(System.Int32)" />): average (MSPT), max, p95 and p50 in milliseconds, the
@@ -9969,9 +9998,10 @@
             <summary>Like <see cref="F:Mc.Scripting.Worlds.HeightMap.MotionBlocking" /> but leaves do not count.</summary>
         </member>
         <member name="T:Mc.Scripting.Worlds.World">
-            <summary>A handle to a dimension (overworld, nether, end ...). Blittable. Dimensions live as long as the server. The members are split over several files by topic:
-            blocks and block entities (<c>World.Blocks.cs</c>), entities and effects (<c>World.Entities.cs</c>), time, weather, spawn and chunk loading (<c>World.Environment.cs</c>).
-            Everything here must be called on the tick thread.</summary>
+            <summary>A handle to a world: a vanilla dimension (overworld, nether, end), which lives as long as the server, or a runtime world made by <c>/world</c> or
+            <see cref="M:Mc.Scripting.Server.CreateWorldAsync(Mc.Scripting.Worlds.WorldOptions)" />, which lives until it is unloaded. Blittable. The members are split over several files by topic: blocks and block entities
+            (<c>World.Blocks.cs</c>), entities and effects (<c>World.Entities.cs</c>), time, weather, spawn and chunk loading (<c>World.Environment.cs</c>), runtime worlds
+            (<c>World.Runtime.cs</c>). Everything here must be called on the tick thread.</summary>
         </member>
         <member name="P:Mc.Scripting.Worlds.World.MinY">
             <summary>The lowest block y of the dimension (-64 in the overworld).</summary>
@@ -10063,11 +10093,12 @@
             <returns>True when the block entity took the data; false when there is no block entity, it cannot be edited this way or the data is invalid for it.</returns>
         </member>
         <member name="F:Mc.Scripting.Worlds.World.Index">
-            <summary>The dimension slot (overworld 0, nether 1, end 2).</summary>
+            <summary>The world handle: the slot in the low 16 bits (overworld 0, nether 1, end 2), and for a runtime world the generation of its slot above them, so a
+            handle kept after its world was unloaded never names the world that reuses the slot. The value <c>ChunkLoadEvent.Dimension</c> and the other events carry.</summary>
         </member>
         <member name="M:Mc.Scripting.Worlds.World.#ctor(System.Int32)">
-            <summary>Wraps a dimension slot.</summary>
-            <param name="index">The slot.</param>
+            <summary>Wraps a world handle.</summary>
+            <param name="index">The handle (<see cref="F:Mc.Scripting.Worlds.World.Index" />).</param>
         </member>
         <member name="P:Mc.Scripting.Worlds.World.Overworld">
             <summary>The overworld.</summary>
@@ -10079,7 +10110,7 @@
             <summary>The end.</summary>
         </member>
         <member name="P:Mc.Scripting.Worlds.World.IsValid">
-            <summary>Whether the slot names a dimension of this server.</summary>
+            <summary>Whether the handle names a live world of this server (false once a runtime world is unloaded).</summary>
         </member>
         <member name="P:Mc.Scripting.Worlds.World.Key">
             <summary>The dimension key, e.g. "minecraft:overworld" (empty if the index is invalid).</summary>
@@ -10155,7 +10186,8 @@
             <summary>The number of ticks the dimension has been running (does not change with <c>/time set</c>; 20 per second).</summary>
         </member>
         <member name="P:Mc.Scripting.Worlds.World.HasDayTime">
-            <summary>Whether this dimension has a day/night clock. In this server version only the overworld has one; the nether and the end have a fixed time.</summary>
+            <summary>Whether this world has a day/night clock: the overworld, and the runtime worlds of the overworld type (each with a clock of its own); the nether, the end
+            and their runtime copies have a fixed time.</summary>
         </member>
         <member name="P:Mc.Scripting.Worlds.World.DayTime">
             <summary>The time of day clock in ticks since the world was created (a day is 24000 ticks: 0 is sunrise, 6000 noon, 12000 sunset, 18000 midnight). Setting it moves the sun
@@ -10174,7 +10206,8 @@
             <summary>How fast the day/night clock runs (1 = normal, 2 = twice as fast).</summary>
         </member>
         <member name="P:Mc.Scripting.Worlds.World.Weather">
-            <summary>The weather. Only the overworld has weather in this server version; the other dimensions always report <see cref="F:Mc.Scripting.Worlds.WeatherType.Clear" />.</summary>
+            <summary>The weather. The overworld and the runtime worlds of the overworld type have weather (a runtime world its own); the other worlds always report
+            <see cref="F:Mc.Scripting.Worlds.WeatherType.Clear" />.</summary>
         </member>
         <member name="P:Mc.Scripting.Worlds.World.IsRaining">
             <summary>Whether it is raining (also during a thunderstorm).</summary>
@@ -10189,15 +10222,40 @@
             <returns>False in dimensions without weather.</returns>
         </member>
         <member name="P:Mc.Scripting.Worlds.World.SpawnLocation">
-            <summary>The spawn point of the dimension (where new players appear and where players without a bed respawn) and its facing. Only the overworld has a world spawn the
-            game keeps and saves; the other dimensions report a placeholder.</summary>
+            <summary>The spawn point of the world (where new players appear and where players without a bed respawn) and its facing. The overworld and the runtime worlds
+            have a spawn the game keeps and saves; the nether and the end report a placeholder.</summary>
         </member>
         <member name="M:Mc.Scripting.Worlds.World.SetSpawn(Mc.Scripting.BlockPos,System.Single,System.Single)">
             <summary>Changes the spawn point (like <c>/setworldspawn</c>; the clients are told the new position of the compass and of the respawn, and it is saved with the world).</summary>
             <param name="pos">The block.</param>
             <param name="yaw">The facing of a player who spawns there.</param>
             <param name="pitch">The pitch of a player who spawns there.</param>
-            <returns>False in the nether and the end: only the overworld has a world spawn.</returns>
+            <returns>False in the nether and the end: only the overworld and the runtime worlds have a spawn of their own.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Worlds.World.GetGameRule(System.String)">
+            <summary>A game rule's value in this world as <c>/gamerule</c> shows it: <c>"true"</c>, <c>"false"</c> or a number. A runtime world has rules of its own
+            for what happens in it (keep_inventory, mob_griefing, random_tick_speed, advance_time ...); the vanilla dimensions share the overworld's. The rules of the
+            server (send_command_feedback, reduced_debug_info, the command limits ...) are the same everywhere.</summary>
+            <param name="name">The rule: <c>"keep_inventory"</c> or <c>"minecraft:keep_inventory"</c>.</param>
+            <returns>The value, or null for an unknown rule.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Worlds.World.SetGameRule(System.String,System.String)">
+            <summary>Sets a game rule in this world, like <c>/gamerule</c> run there (see <see cref="M:Mc.Scripting.Worlds.World.GetGameRule(System.String)" /> for which worlds share which rules).</summary>
+            <param name="name">The rule: <c>"keep_inventory"</c> or <c>"minecraft:keep_inventory"</c>.</param>
+            <param name="value"><c>"true"</c>, <c>"false"</c> or a number in the rule's range.</param>
+            <returns>False for an unknown rule or a value the rule does not take.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Worlds.World.SetGameRule(System.String,System.Boolean)">
+            <summary>Sets a boolean game rule (see <see cref="M:Mc.Scripting.Worlds.World.SetGameRule(System.String,System.String)" />).</summary>
+            <param name="name">The rule.</param>
+            <param name="value">The value.</param>
+            <returns>False for an unknown or a numeric rule.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Worlds.World.SetGameRule(System.String,System.Int32)">
+            <summary>Sets a numeric game rule (see <see cref="M:Mc.Scripting.Worlds.World.SetGameRule(System.String,System.String)" />).</summary>
+            <param name="name">The rule.</param>
+            <param name="value">The value.</param>
+            <returns>False for an unknown or a boolean rule, or a value out of its range.</returns>
         </member>
         <member name="M:Mc.Scripting.Worlds.World.DropItem(Mc.Scripting.Vec3d,Mc.Scripting.Inventories.ItemStack,System.Boolean)">
             <summary>Drops an item entity with the full stack (data components included) at a position, like a broken block's drop: a small random sideways drift and a short pickup
@@ -10217,6 +10275,31 @@
             <summary>The inventory of the block entity at a position (<see cref="M:Mc.Scripting.Inventories.BlockInventory.At(Mc.Scripting.Worlds.World,Mc.Scripting.BlockPos)" />).</summary>
             <param name="pos">The block position.</param>
             <returns>The inventory, or null when the block has none.</returns>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.World.IsRuntime">
+            <summary>Whether this is a runtime world (made by <c>/world create</c> or <see cref="M:Mc.Scripting.Server.CreateWorldAsync(Mc.Scripting.Worlds.WorldOptions)" />), not a vanilla dimension.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.World.IsTemporary">
+            <summary>Whether this is a temporary runtime world (in memory only, gone when it is unloaded).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.World.Generator">
+            <summary>The generator of a runtime world; null for a vanilla dimension.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.World.Storage">
+            <summary>Where a saved runtime world keeps its data; null for a temporary world and for a vanilla dimension.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Worlds.World.ExportAsync">
+            <summary>The world as a blob: its blocks, block entities, entities and points of interest in one buffer, the format of slime worlds. Keep it (a file
+            in your data folder, a database) and pass it as <see cref="P:Mc.Scripting.Worlds.WorldOptions.Template" /> to make copies: one arena per match. Only temporary and slime
+            worlds can be exported. The world is saved into its storage first. The task completes on the tick thread, a tick or more later.</summary>
+            <returns>The blob.</returns>
+            <exception cref="T:System.InvalidOperationException">The world is a vanilla dimension or an anvil world, or the blob is over <c>[worlds] max_blob_mib</c>
+            (the task faults with it).</exception>
+        </member>
+        <member name="M:Mc.Scripting.Worlds.World.SaveAsync">
+            <summary>Saves a runtime world: an anvil world's chunks, entities and points of interest; a slime world's file. Nothing for a temporary world. The
+            task completes on the tick thread, a tick or more later.</summary>
+            <returns>The task.</returns>
         </member>
         <member name="T:Mc.Scripting.Worlds.WeatherType">
             <summary>The weather of a dimension.</summary>
@@ -10280,6 +10363,71 @@
             <param name="centerZ">The centre chunk z.</param>
             <param name="radius">The radius in chunks (at most 32).</param>
             <returns>The tickets, one per chunk.</returns>
+        </member>
+        <member name="T:Mc.Scripting.Worlds.WorldGenerator">
+            <summary>How a runtime world makes its terrain.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Worlds.WorldGenerator.Normal">
+            <summary>The vanilla terrain of the dimension type (overworld, nether or end noise), with its biomes and structures.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Worlds.WorldGenerator.Flat">
+            <summary>Superflat (overworld type only): <see cref="P:Mc.Scripting.Worlds.WorldOptions.FlatSettings" />, or the classic preset (bedrock, two dirt, grass).</summary>
+        </member>
+        <member name="F:Mc.Scripting.Worlds.WorldGenerator.Void">
+            <summary>Nothing (overworld type only): every chunk is empty air. Build into it, or start it from a <see cref="P:Mc.Scripting.Worlds.WorldOptions.Template" />.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Worlds.WorldStorage">
+            <summary>Where a saved runtime world keeps its data.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Worlds.WorldStorage.Anvil">
+            <summary>Region files under <c>&lt;world&gt;/dimensions/&lt;namespace&gt;/&lt;name&gt;/</c>, like the vanilla dimensions. Always saved when unloaded.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Worlds.WorldStorage.Slime">
+            <summary>One file (<c>world.rjwb</c>) in the world's folder, written when the world is saved or unloaded, and every few minutes
+            (<c>[worlds] slime_save_seconds</c>). In memory while the world is loaded: for small worlds (lobbies, arenas, templates).</summary>
+        </member>
+        <member name="T:Mc.Scripting.Worlds.WorldOptions">
+            <summary>What <see cref="M:Mc.Scripting.Server.CreateWorldAsync(Mc.Scripting.Worlds.WorldOptions)" /> makes. Only <see cref="P:Mc.Scripting.Worlds.WorldOptions.Name" /> is required.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Worlds.WorldOptions.#ctor(System.String)">
+            <summary>Options for a world named <paramref name="name" />.</summary>
+            <param name="name">A key (<c>"myplugin:arena_1"</c>) or a bare name, which gets the <c>ramjet:</c> namespace (<c>"arena_1"</c> is <c>ramjet:arena_1</c>).
+            Lower case letters, digits, <c>_ - . /</c>; at most 64 characters; not in the <c>minecraft:</c> namespace.</param>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.WorldOptions.Name">
+            <summary>The world's name (see the constructor).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.WorldOptions.Generator">
+            <summary>The terrain. Null: the template's generator, or <see cref="F:Mc.Scripting.Worlds.WorldGenerator.Normal" />.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.WorldOptions.DimensionType">
+            <summary>The vanilla dimension type the world uses: <c>"minecraft:overworld"</c>, <c>"minecraft:the_nether"</c> or <c>"minecraft:the_end"</c> (height, sky,
+            portals, fast lava). Null: the template's, or the overworld. Flat and void worlds use the overworld type.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.WorldOptions.Seed">
+            <summary>The generator's seed. Null: the template's, or a random one.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.WorldOptions.Temporary">
+            <summary>True: the world lives in memory only and is gone when it is unloaded or the server stops (one world per match). <see cref="P:Mc.Scripting.Worlds.WorldOptions.Storage" /> is
+            ignored. False: the world is saved and can be loaded again with <see cref="M:Mc.Scripting.Server.LoadWorldAsync(System.String)" />.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.WorldOptions.Storage">
+            <summary>Where a saved world keeps its data (default <see cref="F:Mc.Scripting.Worlds.WorldStorage.Anvil" />). A world made from a <see cref="P:Mc.Scripting.Worlds.WorldOptions.Template" /> is temporary or slime.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.WorldOptions.FlatSettings">
+            <summary>The superflat layers and options of a <see cref="F:Mc.Scripting.Worlds.WorldGenerator.Flat" /> world as vanilla's <c>generator-settings</c> JSON
+            (<c>{"layers":[{"block":"minecraft:stone","height":4}],"biome":"minecraft:plains"}</c>). Null: the classic preset.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.WorldOptions.Spawn">
+            <summary>The world's spawn. Null: the template's, else the top of the layers of a flat world, else 0 64 0.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.WorldOptions.Structures">
+            <summary>Villages, strongholds and the other structures of a normal or flat world (default true).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Worlds.WorldOptions.Template">
+            <summary>A world blob from <see cref="M:Mc.Scripting.Worlds.World.ExportAsync" /> or <c>/world export</c>: the new world starts as a copy of it (its blocks, block entities,
+            entities). Chunks the blob does not have are made by the generator (a void world: empty). The world must be <see cref="P:Mc.Scripting.Worlds.WorldOptions.Temporary" /> or
+            <see cref="F:Mc.Scripting.Worlds.WorldStorage.Slime" />. At most <c>[worlds] max_blob_mib</c> MiB.</summary>
         </member>
     </members>
 </doc>

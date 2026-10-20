@@ -92,6 +92,6 @@ The manifest describes the plugin before its code is loaded, so the server can o
 }
 ```
 
-Keep `id`, `name` and `version` consistent with `[PluginInfo]`. The `id` is also the name of the plugin's data folder, `plugins/<id>/`. See the [plugin.json reference](../reference/plugin-json.md) for every field.
+Keep `id`, `name` and `version` consistent with `[PluginInfo]`. The `id` also names the plugin's data folder, `plugins/<id>/data/`, the only folder the plugin may write. See the [plugin.json reference](../reference/plugin-json.md) for every field.
 
 Next: [build and hot reload](build-and-hot-reload.md).

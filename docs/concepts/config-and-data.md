@@ -4,7 +4,9 @@ Typed JSON config with defaults, the plugin data folder, atomic writes and reloa
 
 ## The data folder
 
-Every plugin gets its own data folder, `plugins/<id>/` (the `id` from `plugin.json`, or the lower-cased plugin name), created on first access and exposed as `DataFolder`. Put every file the plugin writes there; `Config.Load` writes the defaults there on first run. The folder layout `plugins/<dir>/<dir>.dll` may share it; the hot-reload watcher only reacts to `*.dll`, so writing JSON there never reloads your plugin.
+Every plugin gets its own data folder, `plugins/<id>/data/` (the `id` from `plugin.json`, or the lower-cased plugin name), exposed as `DataFolder`. The server creates it before the plugin worker starts. Put every file the plugin writes there; `Config.Load` writes the defaults there on first run. A plugin folder `plugins/<id>/` (a `<id>.dll`, or `.cs` sources) holds it as its `data/` subfolder: the sources in `data/` are never compiled, and hot reload ignores everything in it, so writing files there never reloads your plugin.
+
+The plugin worker is sandboxed: the data folder is the **only** place a plugin can write (the server's shared source-plugin cache `plugins/.cache` is the worker's own). Writing anywhere else, with `Config` or with plain `System.IO`, fails with `UnauthorizedAccessException`.
 
 ## Typed config
 
@@ -28,7 +30,7 @@ internal partial class MyJson : JsonSerializerContext { }
 ```csharp
 protected override void OnEnable()
 {
-    var cfg = Config.Load(MyJson.Default.HomesConfig);   // reads plugins/<id>/config.json
+    var cfg = Config.Load(MyJson.Default.HomesConfig);   // reads plugins/<id>/data/config.json
     int max = cfg.Value.MaxHomes;                         // an immutable snapshot
     cfg.Changed += value => Log.Info($"config reloaded, limit {value.MaxHomes}");
 }
@@ -60,6 +62,6 @@ string? json = Config.ReadText("homes.json");
 Config.WriteText("homes.json", JsonSerializer.Serialize(_data, MyJson.Default.HomesData));
 ```
 
-Do the disk work off the tick thread for anything big (see [threading](threading.md)). If you want a file outside the data folder, use plain `System.IO` yourself, but keep it away from `*.dll` names the watcher reacts to.
+Do the disk work off the tick thread for anything big (see [threading](threading.md)). Plain `System.IO` works too, inside `DataFolder` only: the sandbox refuses writes anywhere else.
 
 Remember that ECS component values survive a hot reload while your fields do not, so state that must survive a reload belongs in components or on disk.

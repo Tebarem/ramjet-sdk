@@ -41,8 +41,8 @@ dotnet build -c Release
 
 Server operators can list and restart plugins with `/plugins` and `/plugins reload`.
 
-> **Preview:** both packages are `1.0.0-preview.1`. The API can still change before 1.0; breaking changes will be listed in the release
-> notes of this repository.
+> **Preview:** both packages are `1.0.0-preview.2`. The API can still change before 1.0; breaking changes are listed in the
+> [changelog](CHANGELOG.md).
 
 ## Samples
 

@@ -38,7 +38,7 @@ The manifest is read **before any assembly is loaded**: the server builds the de
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
-| `id` | string | yes | stable plugin id: lower-case `[a-z0-9_-]{1,32}`. Used for the data folder (`plugins/<id>/`), dependencies and logs. A duplicate id skips the second plugin |
+| `id` | string | yes | stable plugin id: lower-case `[a-z0-9_-]{1,32}`. Used for the data folder (`plugins/<id>/data/`), dependencies and logs. A duplicate id skips the second plugin |
 | `name` | string | no | display name, used as the log prefix (defaults to the id) |
 | `version` | string | recommended | plugin version, compared against dependants' constraints (defaults to `0.0.0`) |
 | `api` | string | recommended | the API version the plugin was built for, `"major.minor"`. If missing, the plugin is assumed to match the server |

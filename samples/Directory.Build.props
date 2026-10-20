@@ -8,7 +8,7 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <InvariantGlobalization>true</InvariantGlobalization>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <RamjetApiVersion Condition="'$(RamjetApiVersion)' == ''">1.0.0-preview.1</RamjetApiVersion>
+    <RamjetApiVersion Condition="'$(RamjetApiVersion)' == ''">1.0.0-preview.2</RamjetApiVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Ramjet.Api" Version="$(RamjetApiVersion)" />
