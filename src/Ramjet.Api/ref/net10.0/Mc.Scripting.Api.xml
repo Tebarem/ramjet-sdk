@@ -1246,10 +1246,11 @@
             <returns>This builder.</returns>
         </member>
         <member name="M:Mc.Scripting.Content.ResourcePackBuilder.AddItem(Mc.Scripting.Content.CustomItem,System.Byte[])">
-            <summary>Adds a flat item for a custom item (its <see cref="P:Mc.Scripting.Content.CustomItem.ModelId" /> names the model).</summary>
+            <summary>Adds a flat item for a custom item (its <see cref="P:Mc.Scripting.Content.CustomItem.ModelId" /> names the model; set it with <c>CustomItem.Model(id)</c>).</summary>
             <param name="item">The item (with a model id).</param>
             <param name="png">The texture.</param>
             <returns>This builder.</returns>
+            <exception cref="T:System.ArgumentException">The item has no model id.</exception>
         </member>
         <member name="M:Mc.Scripting.Content.ResourcePackBuilder.AddCustomBlock(Mc.Scripting.Content.CustomBlock,System.Byte[])">
             <summary>Gives the block state of a registered custom block a cube model with one texture. Writes the block state file of the note block with every variant: the custom ones
@@ -1310,6 +1311,7 @@
             <param name="prompt">Text shown in the download prompt.</param>
             <returns>The resource pack description.</returns>
             <exception cref="T:System.InvalidOperationException">The built-in host is off (<c>content.pack_host_port</c> is 0 and <see cref="M:Mc.Scripting.Content.ResourcePackHost.Start(System.String,System.Int32,System.String)" /> was not called).</exception>
+            <exception cref="T:System.NotSupportedException">The host cannot listen inside a plugin (sandbox); use <see cref="M:Mc.Scripting.Content.ResourcePackFile.ToResourcePack(System.String,System.Boolean,Mc.Scripting.Text.Component)" /> with your own URL.</exception>
         </member>
         <member name="M:Mc.Scripting.Content.ResourcePackFile.SendTo(Mc.Scripting.Player,System.Boolean,Mc.Scripting.Text.Component)">
             <summary>Hosts the pack (see <see cref="M:Mc.Scripting.Content.ResourcePackFile.Publish(System.Boolean,Mc.Scripting.Text.Component)" />) and asks a player to download it.</summary>
@@ -1342,10 +1344,11 @@
             <returns>The PNG file.</returns>
         </member>
         <member name="T:Mc.Scripting.Content.ResourcePackHost">
-            <summary>A small built-in web server that hands out the resource packs plugins publish, so a plugin needs no web space of its own. It is off until it is configured
-            (<c>content.pack_host_port</c> in Ramjet.toml, with <c>pack_host_bind</c> and the public <c>pack_host_url</c>) or started by code with <see cref="M:Mc.Scripting.Content.ResourcePackHost.Start(System.String,System.Int32,System.String)" />; it listens on
-            127.0.0.1 unless told otherwise, answers only <c>GET</c> / <c>HEAD</c> of <c>/&lt;sha1&gt;.zip</c> for packs that were published, and keeps nothing of the plugins that
-            published them (a pack is removed when its plugin unloads).</summary>
+            <summary>The server's built-in web server for resource packs: it answers <c>GET</c> / <c>HEAD</c> of <c>/&lt;sha1&gt;.zip</c> for the packs that were published, and keeps
+            nothing of the plugins that published them (a pack is removed when its plugin unloads). It listens on 127.0.0.1 unless told otherwise.</summary>
+            <remarks>Plugins run in a sandboxed worker process that denies sockets, so the server cannot be started from a plugin: <see cref="M:Mc.Scripting.Content.ResourcePackHost.Start(System.String,System.Int32,System.String)" /> throws
+            <see cref="T:System.NotSupportedException" />, and so does <see cref="M:Mc.Scripting.Content.ResourcePackHost.Publish(Mc.Scripting.Content.ResourcePackFile)" /> when <c>content.pack_host_port</c> is set (the server is started from that setting only).
+            Host the zip on a web server you run and use <see cref="M:Mc.Scripting.Content.ResourcePackFile.ToResourcePack(System.String,System.Boolean,Mc.Scripting.Text.Component)" /> with its URL instead.</remarks>
         </member>
         <member name="P:Mc.Scripting.Content.ResourcePackHost.IsRunning">
             <summary>Whether the server is listening.</summary>
@@ -1357,11 +1360,13 @@
             <summary>The port the server listens on, 0 while it is off.</summary>
         </member>
         <member name="M:Mc.Scripting.Content.ResourcePackHost.Start(System.String,System.Int32,System.String)">
-            <summary>Starts the server (does nothing when it already runs).</summary>
+            <summary>Starts the server (does nothing when it already runs). Not available to plugins: the worker's sandbox denies sockets.</summary>
             <param name="bind">The address to listen on (default 127.0.0.1: this machine only; 0.0.0.0 for every interface, then give <paramref name="publicUrl" />).</param>
             <param name="port">The port, 0 for any free one.</param>
             <param name="publicUrl">The base URL clients use to reach it (default <c>http://&lt;bind&gt;:&lt;port&gt;</c>).</param>
             <returns>The base URL.</returns>
+            <exception cref="T:System.NotSupportedException">The socket could not be opened (the plugin sandbox denies it); serve the pack from an external URL with
+            <see cref="M:Mc.Scripting.Content.ResourcePackFile.ToResourcePack(System.String,System.Boolean,Mc.Scripting.Text.Component)" /> instead.</exception>
         </member>
         <member name="M:Mc.Scripting.Content.ResourcePackHost.Stop">
             <summary>Takes back the packs the calling plugin published, and stops the server when it was started by code (<see cref="M:Mc.Scripting.Content.ResourcePackHost.Start(System.String,System.Int32,System.String)" />) and no published pack of any plugin is left.
@@ -1371,7 +1376,9 @@
             <summary>Publishes a pack and returns the URL it is downloadable from. The pack stays available until the plugin that published it unloads (or <see cref="M:Mc.Scripting.Content.ResourcePackHost.Unpublish(Mc.Scripting.Content.ResourcePackFile)" />).</summary>
             <param name="pack">The pack.</param>
             <returns>The URL, <c>http://host:port/&lt;sha1&gt;.zip</c>.</returns>
-            <exception cref="T:System.InvalidOperationException">The server is off and not configured.</exception>
+            <exception cref="T:System.InvalidOperationException">The server is off and not configured (<c>content.pack_host_port</c> is 0).</exception>
+            <exception cref="T:System.NotSupportedException"><c>content.pack_host_port</c> is set, but a plugin cannot listen (the sandbox denies sockets): host the zip yourself and
+            use <see cref="M:Mc.Scripting.Content.ResourcePackFile.ToResourcePack(System.String,System.Boolean,Mc.Scripting.Text.Component)" />.</exception>
         </member>
         <member name="M:Mc.Scripting.Content.ResourcePackHost.Unpublish(Mc.Scripting.Content.ResourcePackFile)">
             <summary>Stops handing out a pack the calling plugin published (it stays available while another plugin publishes the same pack).</summary>
@@ -10503,12 +10510,12 @@
         <member name="M:Mc.Scripting.Inventories.IInventory.AddItem(Mc.Scripting.Inventories.ItemStack)">
             <summary>Adds a stack, merging into existing stacks first and then filling free slots.</summary>
             <param name="stack">The stack (the count may exceed the stack size: it is split).</param>
-            <returns>How many items did not fit.</returns>
+            <returns>How many items did NOT fit (0 = all were added). The leftover is not dropped: it stays with the caller.</returns>
         </member>
         <member name="M:Mc.Scripting.Inventories.IInventory.RemoveItem(Mc.Scripting.Inventories.ItemStack)">
             <summary>Removes items of the stack's type (and components) from the slots.</summary>
             <param name="stack">What to remove.</param>
-            <returns>How many items were removed.</returns>
+            <returns>How many items were actually removed: may be less than the stack's count when the slots hold fewer.</returns>
         </member>
         <member name="M:Mc.Scripting.Inventories.IInventory.Clear">
             <summary>Empties every slot.</summary>
@@ -11165,7 +11172,7 @@
             <summary>The maximum health (the <c>minecraft:max_health</c> attribute, 20 by default). Read only: change it with attribute modifiers.</summary>
         </member>
         <member name="P:Mc.Scripting.LivingEntity.Absorption">
-            <summary>The golden hearts of absorption. Setting clamps it to 0 .. the <c>minecraft:max_absorption</c> attribute.</summary>
+            <summary>The golden hearts of absorption, in half hearts. Setting it is not clamped to the <c>minecraft:max_absorption</c> attribute (Paper semantics).</summary>
         </member>
         <member name="P:Mc.Scripting.LivingEntity.IsDead">
             <summary>Whether the entity is dead or dying. False for a handle that is not living.</summary>
@@ -11551,7 +11558,7 @@
             <summary>The maximum health (the attribute value, 20 by default). Read only: change it with attribute modifiers.</summary>
         </member>
         <member name="P:Mc.Scripting.Player.Absorption">
-            <summary>The golden hearts of absorption in half hearts.</summary>
+            <summary>The golden hearts of absorption in half hearts. Setting it is not clamped to the <c>minecraft:max_absorption</c> attribute (Paper semantics).</summary>
         </member>
         <member name="P:Mc.Scripting.Player.FoodLevel">
             <summary>The food level, 0..20 (the hunger bar; below 7 sprinting stops, at 0 the player starves).</summary>
@@ -11566,7 +11573,7 @@
             <summary>The experience level shown in the HUD. Setting resets the progress within the level.</summary>
         </member>
         <member name="P:Mc.Scripting.Player.ExperienceProgress">
-            <summary>The progress to the next level, 0..1 (the green bar).</summary>
+            <summary>The progress to the next level, 0..1 (the green bar). Stored exactly as a float: no rounding to whole points.</summary>
         </member>
         <member name="P:Mc.Scripting.Player.TotalExperience">
             <summary>The total experience points ever collected (drives the score on the death screen). Read only; use <see cref="M:Mc.Scripting.Player.GiveExperience(System.Int32)" />.</summary>
@@ -13297,14 +13304,17 @@
             <summary>Raised when permissions changed (the player's id, or null when a group or everything changed): the server refreshes the command trees.</summary>
         </member>
         <member name="T:Mc.Scripting.Permissions.FilePermissionProvider">
-            <summary>The built-in backend: groups (weighted, inheriting, with prefix and suffix) and per-player overrides, stored in <c>permissions.json</c>.
+            <summary>A file-based backend: groups (weighted, inheriting, with prefix and suffix) and per-player overrides, stored in a JSON file. The built-in backend
+            (<see cref="P:Mc.Scripting.Permissions.PermissionManager.BuiltIn" />) is <c>permissions.json</c> in the server directory; a provider created with another path reads and writes only that file.
             Resolution order: the player's own entries, then his groups by weight (highest first, parents after their child), then the implicit "default"
             group everybody belongs to. Within one layer the most specific node wins: an exact entry beats <c>a.b.*</c>, a longer wildcard beats a shorter one, <c>*</c> comes
             last; a <c>false</c> value is a denial. A key written as <c>"-node"</c> in the file means the same as <c>"node": false</c>.</summary>
         </member>
         <member name="M:Mc.Scripting.Permissions.FilePermissionProvider.#ctor(System.String)">
-            <summary>Opens (and creates, when missing) the permission file. A file that cannot be read (malformed JSON) does not stop the server: the provider starts empty
-            (the registered defaults apply), logs the problem once and leaves the file alone so that it can be fixed and reloaded with <see cref="M:Mc.Scripting.Permissions.FilePermissionProvider.Reload" />.</summary>
+            <summary>Opens (and creates, when missing) a permission file at <paramref name="path" />. A file that cannot be read (malformed JSON) does not stop the server: the
+            provider starts empty (the registered defaults apply), logs the problem once and leaves the file alone so that it can be fixed and reloaded with <see cref="M:Mc.Scripting.Permissions.FilePermissionProvider.Reload" />.
+            The file is written by this provider itself, so it works for any path the plugin can write; the server's own permissions.json is
+            <see cref="P:Mc.Scripting.Permissions.PermissionManager.BuiltIn" />.</summary>
             <param name="path">The file path.</param>
         </member>
         <member name="P:Mc.Scripting.Permissions.FilePermissionProvider.LoadError">
@@ -13321,9 +13331,10 @@
             <exception cref="T:System.IO.InvalidDataException">The file is not valid JSON; the permissions in memory stay as they were.</exception>
         </member>
         <member name="M:Mc.Scripting.Permissions.FilePermissionProvider.Save">
-            <summary>Writes the file if something changed. The engine writes it (a host call: the worker's sandbox refuses writes to the server folder), atomically
-            (temp file, flushed, then renamed over the old one). The engine refuses a write that comes too soon after the last one (its rate limit): then the
-            changes stay pending and the next call (the runtime's flush, a second later) tries again. Never throws; a refusal is logged once per streak.</summary>
+            <summary>Writes the file if something changed, atomically (temp file, flushed, then renamed over the old one). The built-in backend's file is written by the
+            engine (a host call: the worker's sandbox refuses writes to the server folder), and the engine refuses a write that comes too soon after the last one
+            (its rate limit): then the changes stay pending and the next call (the runtime's flush, a second later) tries again. A provider on another path
+            writes that file itself and never touches permissions.json. Never throws; a refusal or a failed write is logged once per streak and retried.</summary>
         </member>
         <member name="M:Mc.Scripting.Permissions.FilePermissionProvider.Get(Mc.Scripting.Uuid,System.String)">
             <inheritdoc />
@@ -13821,13 +13832,15 @@
         </member>
         <member name="M:Mc.Scripting.BossBars.Create(System.String,Mc.Scripting.Text.Component,Mc.Scripting.BossBarColor,Mc.Scripting.BossBarStyle,System.Single)">
             <summary>Creates a boss bar with nobody watching; add viewers to show it.</summary>
-            <param name="name">A name unique within the plugin (letters, digits, <c>_ - . /</c>); the bar's key becomes "pluginid:name".</param>
+            <param name="name">A name unique within the plugin: letters, digits and <c>_ - . /</c> only, no ':' (it is lower-cased; the plugin id and ':' are prepended,
+            so the bar's key becomes "pluginid:name").</param>
             <param name="title">The text above the bar.</param>
             <param name="color">The colour.</param>
             <param name="style">The segmentation.</param>
             <param name="progress">How full the bar is, 0..1.</param>
             <returns>The bar.</returns>
             <exception cref="T:System.InvalidOperationException">A bar with this name already exists.</exception>
+            <exception cref="T:System.ArgumentException">The name has a character other than a letter, a digit or <c>_ - . /</c> (a ':' included).</exception>
         </member>
         <member name="T:Mc.Scripting.SoundCategory">
             <summary>Where a sound is mixed in the client's volume sliders.</summary>
@@ -14281,7 +14294,8 @@
             <summary>The text after the name, or null for none. The prefix and the suffix together are at most 8000 bytes.</summary>
         </member>
         <member name="P:Mc.Scripting.NametagStyle.Colour">
-            <summary>The team colour of the name, 0 to 15 (the colour codes), or null for none.</summary>
+            <summary>The legacy colour of the name as an index 0 to 15 (the §0 to §f colour codes, NOT RGB), or null for none. A value outside 0..15 throws
+            <see cref="T:System.ArgumentOutOfRangeException" /> when the style is applied.</summary>
         </member>
         <member name="P:Mc.Scripting.NametagStyle.Visibility">
             <summary>Who sees the nametag.</summary>
@@ -14744,11 +14758,21 @@
             <returns>A task with the result.</returns>
         </member>
         <member name="M:Mc.Scripting.Scheduler.ToTick">
-            <summary>Awaitable that resumes on the tick thread at the next tick boundary: <c>await Scheduler.ToTick();</c>. If the plugin unloads first the continuation is dropped.</summary>
+            <summary>Awaitable that always resumes on the tick thread at the next tick boundary, even when already there:
+            <c>await Scheduler.ToTick();</c> (a wait loop such as <c>while (!loaded) await Scheduler.ToTick();</c> needs
+            this). Use <see cref="M:Mc.Scripting.Scheduler.EnsureTick" /> to skip the hop when already on the tick thread. If the plugin unloads first
+            the continuation is dropped.</summary>
+            <returns>The awaitable.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Scheduler.EnsureTick">
+            <summary>Awaitable that resumes on the tick thread: <c>await Scheduler.EnsureTick();</c>. Already on the tick
+            thread it continues synchronously (no hop); otherwise it resumes at the next tick boundary, like
+            <see cref="M:Mc.Scripting.Scheduler.ToTick" />. If the plugin unloads first the continuation is dropped.</summary>
             <returns>The awaitable.</returns>
         </member>
         <member name="M:Mc.Scripting.Scheduler.ToAsync">
-            <summary>Awaitable that resumes on a thread-pool thread: <c>await Scheduler.ToAsync();</c> (leave the tick thread before blocking work).</summary>
+            <summary>Awaitable that always resumes on a thread-pool thread: <c>await Scheduler.ToAsync();</c> (leave the
+            tick thread before blocking work).</summary>
             <returns>The awaitable.</returns>
         </member>
         <member name="M:Mc.Scripting.Scheduler.Delay(System.Int64)">
@@ -14764,7 +14788,9 @@
             <returns>This awaiter.</returns>
         </member>
         <member name="P:Mc.Scripting.TickAwaitable.IsCompleted">
-            <summary>Awaiter protocol: already on the target thread means no hop.</summary>
+            <summary>Awaiter protocol. Only <see cref="M:Mc.Scripting.Scheduler.EnsureTick" /> completes synchronously (when already on the
+            tick thread); <see cref="M:Mc.Scripting.Scheduler.ToTick" /> always resumes at the next tick boundary and
+            <see cref="M:Mc.Scripting.Scheduler.ToAsync" /> always resumes on a pool thread.</summary>
         </member>
         <member name="M:Mc.Scripting.TickAwaitable.GetResult">
             <summary>Awaiter protocol.</summary>
@@ -14861,6 +14887,10 @@
             and cannot run its own command meanwhile, so that command fails with a message. Vanilla commands still run, and so does a plugin command the
             server runs by itself (a player's typed command, a command block). To run a plugin's own command, call its code directly.
             </para>
+            <para>
+            Inside an event handler, a system, a scheduler phase or another plugin's call this fails with a message and runs nothing: use
+            <see cref="M:Mc.Scripting.Server.DispatchCommandAsync(System.String)" /> there.
+            </para>
             </remarks>
             <param name="line">The command line (at most 32767 characters after an optional leading slash).</param>
             <returns>The outcome: success, the command's result, and the failure message when it failed.</returns>
@@ -14870,7 +14900,8 @@
         <member name="M:Mc.Scripting.Server.DispatchCommand(Mc.Scripting.Player,System.String)">
             <summary>Runs a command line as a player: the player's own permissions decide what runs, and the feedback goes to the player's chat, as when the
             player types it. The line is limited to 256 characters (a chat line), with or without the leading slash. See
-            <see cref="M:Mc.Scripting.Server.DispatchCommand(System.String)" /> for the rules; a player who is offline fails at once.</summary>
+            <see cref="M:Mc.Scripting.Server.DispatchCommand(System.String)" /> for the rules; a player who is offline fails at once. Inside an event handler, a system, a scheduler phase or another
+            plugin's call it fails with a message and runs nothing: use <see cref="M:Mc.Scripting.Server.DispatchCommandAsync(Mc.Scripting.Player,System.String)" /> there.</summary>
             <param name="player">The player who runs the command.</param>
             <param name="line">The command line (at most 256 characters after an optional leading slash).</param>
             <returns>The outcome: success, the command's result, and the failure message when it failed.</returns>
@@ -15604,9 +15635,12 @@
             <summary>A registered system. Dispose to remove it from the pipeline.</summary>
         </member>
         <member name="P:Mc.Scripting.SystemHandle.Name">
-            <summary>The system's effective registry name: the requested one (namespaced by the plugin, see
-            <see cref="M:Mc.Scripting.SystemRegistry.Register(Mc.Scripting.Phase,System.String,Mc.Scripting.SystemCallback,Mc.Scripting.SystemPlacement,System.String)" />), or, while a hot-reload predecessor still holds that name, the
-            temporary "name#2" form. Renamed back to the plain name once the predecessor is released.</summary>
+            <summary>The system's full registry name, <c>"{plugin name}:{name}"</c>: the name passed to
+            <see cref="M:Mc.Scripting.SystemRegistry.Add(System.String,Mc.Scripting.Phase,Mc.Scripting.SystemCallback)" /> with the plugin prefix (unless it already had one). While a hot-reload
+            predecessor still holds that name it is the temporary "name#2" form, renamed back to the plain name once the
+            predecessor is released. Pass either this full name or the short name you registered with to
+            <see cref="M:Mc.Scripting.SystemRegistry.After(System.String,System.String,Mc.Scripting.SystemCallback)" />, <see cref="M:Mc.Scripting.SystemRegistry.Before(System.String,System.String,Mc.Scripting.SystemCallback)" />, <see cref="M:Mc.Scripting.SystemRegistry.Replace(System.String,System.String,Mc.Scripting.SystemCallback)" />
+            and <see cref="M:Mc.Scripting.SystemRegistry.SetEnabled(System.String,System.Boolean)" />.</summary>
         </member>
         <member name="M:Mc.Scripting.SystemHandle.Dispose">
             <summary>Removes the system from the pipeline.</summary>
@@ -15615,29 +15649,38 @@
             <summary>Registers ECS systems in the engine's tick pipeline, scoped to a plugin (released on unload).</summary>
         </member>
         <member name="M:Mc.Scripting.SystemRegistry.Add(System.String,Mc.Scripting.Phase,Mc.Scripting.SystemCallback)">
-            <summary>Adds a system that runs once per tick at the end of <paramref name="phase" /> on the tick thread.</summary>
+            <summary>Adds a system that runs once per tick at the end of <paramref name="phase" /> on the tick thread.
+            The registry name is <c>"{plugin name}:{name}"</c> (see <see cref="M:Mc.Scripting.SystemRegistry.Register(Mc.Scripting.Phase,System.String,Mc.Scripting.SystemCallback,Mc.Scripting.SystemPlacement,System.String)" />); the handle's
+            <see cref="P:Mc.Scripting.SystemHandle.Name" /> reports it.</summary>
         </member>
         <member name="M:Mc.Scripting.SystemRegistry.Register(Mc.Scripting.Phase,System.String,Mc.Scripting.SystemCallback,Mc.Scripting.SystemPlacement,System.String)">
             <summary>Registers a system in the engine's registry. The registry name is namespaced by the plugin:
             <c>"{plugin name}:{name}"</c> (left as is when <paramref name="name" /> already starts with that prefix), so
             plugins cannot collide; a collision with a native system or with another plugin's system throws.
-            <paramref name="anchor" /> is the full registry name of an existing (native or scripted) system for
-            After/Before/Replace (the phase is then the anchor's and <paramref name="phase" /> is ignored). Called from
+            <paramref name="anchor" /> names an existing (native or scripted) system for After/Before/Replace (the phase
+            is then the anchor's and <paramref name="phase" /> is ignored). An anchor is accepted by its short name (a
+            system this plugin registered) or its full name (see <see cref="P:Mc.Scripting.SystemHandle.Name" />). Called from
             inside a system, the registration takes effect when the tick ends.</summary>
         </member>
         <member name="M:Mc.Scripting.SystemRegistry.After(System.String,System.String,Mc.Scripting.SystemCallback)">
-            <summary>Registers <paramref name="name" /> to run right after the system <paramref name="anchor" />.</summary>
+            <summary>Registers <paramref name="name" /> to run right after the system <paramref name="anchor" />. The
+            anchor is a short name this plugin registered or a full registry name (<see cref="P:Mc.Scripting.SystemHandle.Name" />),
+            e.g. <c>"vanilla:physics"</c> for an engine system.</summary>
         </member>
         <member name="M:Mc.Scripting.SystemRegistry.Before(System.String,System.String,Mc.Scripting.SystemCallback)">
-            <summary>Registers <paramref name="name" /> to run right before the system <paramref name="anchor" />.</summary>
+            <summary>Registers <paramref name="name" /> to run right before the system <paramref name="anchor" />. The
+            anchor is a short name this plugin registered or a full registry name (<see cref="P:Mc.Scripting.SystemHandle.Name" />).</summary>
         </member>
         <member name="M:Mc.Scripting.SystemRegistry.Replace(System.String,System.String,Mc.Scripting.SystemCallback)">
             <summary>Replaces the (native or scripted) system <paramref name="target" />: it is disabled and
-            <paramref name="name" /> runs in its place. Dispose the handle (or unload the plugin) to restore it.</summary>
+            <paramref name="name" /> runs in its place. <paramref name="target" /> is a short name this plugin registered
+            or a full registry name (<see cref="P:Mc.Scripting.SystemHandle.Name" />). Dispose the handle (or unload the plugin) to
+            restore it.</summary>
         </member>
         <member name="M:Mc.Scripting.SystemRegistry.SetEnabled(System.String,System.Boolean)">
-            <summary>Enables or disables a registered system by name (native or scripted). A system this plugin
-            disabled is re-enabled when the plugin unloads. Returns false if no such system exists.</summary>
+            <summary>Enables or disables a registered system by name (native or scripted). The name is a short name this
+            plugin registered or a full registry name (<see cref="P:Mc.Scripting.SystemHandle.Name" />). A system this plugin disabled is
+            re-enabled when the plugin unloads. Returns false if no such system exists.</summary>
         </member>
         <member name="T:Mc.Scripting.Tags">
             <summary>The datapack tags of the blocks, items, entity types and biomes: <c>#minecraft:logs</c> and the like. The tag names are given with or without the
@@ -16688,6 +16731,7 @@
             <summary>Saves a runtime world: an anvil world's chunks, entities and points of interest; a slime world's file. Nothing for a temporary world. The
             task completes on the tick thread, a tick or more later.</summary>
             <returns>The task.</returns>
+            <exception cref="T:System.InvalidOperationException">The world is a vanilla dimension (the server saves those) or no longer exists.</exception>
         </member>
         <member name="T:Mc.Scripting.Worlds.WeatherType">
             <summary>The weather of a dimension.</summary>

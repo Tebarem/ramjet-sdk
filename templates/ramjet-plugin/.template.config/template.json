@@ -28,7 +28,7 @@
     "RamjetApiVersion": {
       "type": "parameter",
       "datatype": "string",
-      "defaultValue": "1.0.0-preview.4",
+      "defaultValue": "1.0.0-preview.5",
       "replaces": "RAMJET_API_VERSION",
       "description": "Version of the Ramjet.Api package (the plugin API) to reference."
     },

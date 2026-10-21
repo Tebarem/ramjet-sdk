@@ -4,6 +4,38 @@ Versions of the `Ramjet.Api` and `Ramjet.Templates` packages. While the API is i
 breaking changes are listed under **Breaking**. `src/Ramjet.Api/Mc.Scripting.Api.surface.txt` lists the full public API, so
 `git diff v<old>..v<new> -- src/Ramjet.Api/Mc.Scripting.Api.surface.txt` shows every API change between two versions.
 
+## 1.0.0-preview.5
+
+Fixes for the bugs found by live testing of preview.4 (thank you for the detailed report). Needs a server updated to the same release.
+
+### Fixed
+- `Server.CreateWorldAsync` crashed the server on Linux.
+- Changes made by a plugin now fire their events, like the same change made by a command: `Player.GameMode`, `Player.Teleport`,
+  `Entity.Teleport`, `World.DestroyBlock`, `World.SetWeather`, `World.SpawnEntity` / `World.DropItem` (`EntitySpawn` with reason
+  `Plugin`, `LightningStrike`), `LivingEntity.Damage` / `Heal` / `AddEffect` / `Mount` / `Kill`, `World.Explode`, `Menu.Open`. The
+  handlers run before the call returns (as in Paper), so a cancel or a changed field takes effect.
+- The plugin worker was sometimes restarted ("did not finish its systems of a phase within the tick budget") right after systems were
+  registered or reordered (`Systems.After` / `Before` / `Replace`, including an unknown anchor) on a slow machine.
+- `Entity.IsAlive` is true for every live entity, not only the ones made with `Ecs.Spawn()`.
+- `Player.Absorption` / `LivingEntity.Absorption` can be set (as in Paper, the value is not limited by the `max_absorption` attribute).
+- `Player.ExperienceProgress` keeps the exact value it was set to.
+- Command aliases of a command that runs on its own (no arguments) work.
+- `FilePermissionProvider(path).Save()` writes `path`; it no longer writes the server's own permissions file.
+- The "event not answered in time" warning names the plugin.
+
+### Added
+- `Scheduler.EnsureTick()`: continues on the tick thread without waiting for the next tick when the code already runs there.
+- `Systems.SetEnabled` / `After` / `Before` / `Replace` accept the short name a plugin registered (`"x:count"`) as well as the full
+  name (`"<Plugin>:x:count"`).
+
+### Changed
+- `ResourcePackHost.Start` (and `Publish` with `content.pack_host_port` set) throws `NotSupportedException`: plugins run in a sandbox
+  without network sockets. Host the pack yourself and use `ResourcePackFile.ToResourcePack(url)`.
+- Documentation: `Server.DispatchCommand` (not inside events, systems or another plugin's call: use `DispatchCommandAsync`),
+  `IInventory.AddItem` / `RemoveItem` return values, `BossBars.Create` names, `World.SaveAsync` on the vanilla dimensions,
+  `NametagStyle.Colour` (a 0..15 colour index, not RGB), `ResourcePackBuilder.AddItem` (needs a model id), `Scheduler.ToTick` (always
+  the next tick).
+
 ## 1.0.0-preview.4
 
 A large step toward Paper's API: 155 new events (236 in all) and the APIs plugin authors asked for most.

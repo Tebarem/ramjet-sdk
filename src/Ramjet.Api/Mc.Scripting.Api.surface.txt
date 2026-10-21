@@ -1854,6 +1854,7 @@ public Mc.Scripting.Text.Component? Mc.Scripting.ResourcePack.Prompt { get; init
 public Mc.Scripting.Text.Component? Mc.Scripting.TabEntry.Display { get; init; }
 public Mc.Scripting.Text.TextColor Mc.Scripting.Text.Component.TextColour { get; }
 public Mc.Scripting.Text.TextColor.TextColor()
+public Mc.Scripting.TickAwaitable Mc.Scripting.Scheduler.EnsureTick()
 public Mc.Scripting.TickAwaitable Mc.Scripting.Scheduler.ToAsync()
 public Mc.Scripting.TickAwaitable Mc.Scripting.Scheduler.ToTick()
 public Mc.Scripting.TickAwaitable Mc.Scripting.TickAwaitable.GetAwaiter()

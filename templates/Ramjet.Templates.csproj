@@ -2,13 +2,13 @@
 
   <!-- Packs the `dotnet new` template(s) in this folder into a nupkg:
          dotnet pack templates -c Release -o artifacts
-         dotnet new install artifacts/Ramjet.Templates.1.0.0-preview.4.nupkg
+         dotnet new install artifacts/Ramjet.Templates.1.0.0-preview.5.nupkg
        Installing straight from the folder works too (see install.ps1 / install.sh), no pack needed. -->
 
   <PropertyGroup>
     <PackageType>Template</PackageType>
     <PackageId>Ramjet.Templates</PackageId>
-    <Version>1.0.0-preview.4</Version>
+    <Version>1.0.0-preview.5</Version>
     <Title>ramjet plugin templates</Title>
     <Authors>Ramjet</Authors>
     <Description>dotnet new templates for Ramjet plugins (C#, net10.0).</Description>

@@ -19,6 +19,70 @@ The version of the plugin API (semantic: a minor increase is additive, a major i
 - `public override string ToString()`
 - `public static bool TryParse(string? text, out ApiVersion version)`: Parses "1.0", "1" or "1.x".
 
+## ArmorSlot (enum, other)
+
+```csharp
+public enum ArmorSlot : byte
+```
+
+A worn armor slot (PlayerArmorChange.Slot).
+
+- `Feet` = 0: Boots.
+- `Legs` = 1: Leggings.
+- `Chest` = 2: Chestplate.
+- `Head` = 3: Helmet.
+
+## AttributeOperation (enum, other)
+
+```csharp
+public enum AttributeOperation : int
+```
+
+How an attribute modifier combines with the attribute (vanilla `AttributeModifier.Operation`).
+
+- `AddValue` = 0: Adds the amount to the base value.
+- `AddMultipliedBase` = 1: Adds the amount times the base value.
+- `AddMultipliedTotal` = 2: Multiplies the total by (1 + amount), after the other two operations.
+
+## AttributeValue (struct, other)
+
+```csharp
+public readonly struct AttributeValue : IEquatable<AttributeValue>
+```
+
+The base and the modified value of an attribute of a living entity.
+
+- `public AttributeValue(double Base, double Value)`: The base and the modified value of an attribute of a living entity.
+- `public double Base { get; init; }`: The base value (what `LivingEntity.SetAttributeBase` writes).
+- `public double Value { get; init; }`: The value with every modifier applied.
+
+## BedEnterResult (enum, other)
+
+```csharp
+public enum BedEnterResult : byte
+```
+
+The outcome of a bed use as the server found it (PlayerBedEnter.Result).
+
+- `Ok` = 0: The player can sleep.
+- `TooFarAway` = 1: The bed is out of reach.
+- `Obstructed` = 2: Something blocks the space above the bed.
+- `NotSafe` = 3: Monsters are near the bed.
+- `NotPossibleHere` = 4: The dimension does not let the player sleep here.
+- `Other` = 5: Any other reason.
+
+## BedUseResult (enum, other)
+
+```csharp
+public enum BedUseResult : byte
+```
+
+What a plugin decides for a bed use (PlayerBedEnter.UseBed).
+
+- `Default` = 0: Keep the outcome the server found.
+- `Allow` = 1: Sleep even when the server found a problem.
+- `Deny` = 2: Stay awake.
+
 ## Belowname (class, display)
 
 ```csharp
@@ -139,6 +203,25 @@ Creates boss bars owned by a plugin (`plugin.BossBars`).
 
 - `public BossBar Create(string name, Component title, BossBarColor color = BossBarColor.Pink, BossBarStyle style = BossBarStyle.Solid, float progress = 1f)`: Creates a boss bar with nobody watching; add viewers to show it.
 
+## CauldronChangeReason (enum, other)
+
+```csharp
+public enum CauldronChangeReason : byte
+```
+
+Why a cauldron's contents or level change (CauldronLevelChange).
+
+- `BucketFill` = 0: A bucket takes the fluid out of the cauldron.
+- `BucketEmpty` = 1: A bucket pours its fluid into the cauldron.
+- `BottleFill` = 2: A glass bottle takes water out of a water cauldron.
+- `BottleEmpty` = 3: A water bottle pours its water into the cauldron.
+- `BannerWash` = 4: A banner loses its top pattern in a water cauldron.
+- `ArmorWash` = 5: Dyed armour or wolf armour loses its colour in a water cauldron.
+- `ShulkerWash` = 6: A dyed shulker box loses its colour in a water cauldron.
+- `NaturalFill` = 7: Rain, snow or a dripstone fills the cauldron (no player).
+- `Extinguish` = 8: Reserved: a burning entity is put out in a water cauldron. Not raised yet (that mechanic is not ported).
+- `Unknown` = 9: Any other change.
+
 ## ChannelRegistry (class, chat)
 
 ```csharp
@@ -235,6 +318,7 @@ public static class ChatRoute
 
 Restricts who gets a chat message while its handler runs. Signed chat stays signed: a restricted line is sent to the listed players only, as the engine's own private messages are.
 
+- `public static IReadOnlyList<Player> Audience()`: The audience of the running handler: the players who would get the line now. Without a restriction that is every player who accepts chat (a `PlayerChatEvent` line); after {{cref:M:Mc.Scripting.ChatRoute.Restrict(System.Collections.Generic.IEnumerable{Mc.Scripting.Player})}} it is the restricted list. Offline profiles are left out.
 - `public static int Restrict(IEnumerable<Player> recipients)`: Restricts the recipients of the chat message of the running handler. Only the listed players get the line. Works in a `PlayerChatEvent` or a `PrivateMessageEvent` handler; the restriction applies to that one message only and ends when the dispatch is over. A second call replaces the list. An empty list means nobody gets the line. Offline handles are left out.
 
 ## ClickType (enum, inventories)
@@ -259,6 +343,45 @@ How an inventory slot was clicked (vanilla ContainerInput folded with the button
 - `SwapOffhand` = 11: Swap with the off hand (F key).
 - `Unknown` = 12: Anything else.
 - `Drag` = 13: The end of a drag over several slots (only delivered to MenuClick, which has no InventoryDrag counterpart for locked menus).
+
+## Combat (class, other)
+
+```csharp
+public static class Combat
+```
+
+The combat tag: an allowed PvP hit tags both sides for the policy's tag time (native, no worker round trip per hit). The tag ends by expiry, death, logout or `Combat.Untag`. Events: `CombatTagStart` and `CombatTagEnd`. All members must be called on the tick thread.
+
+- `public static Player? Opponent(Player player)`: The player who tagged this one, or null when the player is not tagged.
+- `public static TimeSpan Remaining(Player player)`: The time of combat tag left (zero when the player is not tagged).
+- `public static bool Tag(Player player, TimeSpan duration, Player? opponent = null)`: Tags a player against an opponent (or no one) for `duration`. A tag already on refreshes its time.
+- `public static bool Untag(Player player)`: Ends the player's combat tag (reason untag). Returns false when the player was not tagged.
+
+## CombatTagEndReason (enum, other)
+
+```csharp
+public enum CombatTagEndReason : byte
+```
+
+Why a combat tag ended (CombatTagEnd).
+
+- `Expired` = 0: The tag time ran out.
+- `Death` = 1: The player died.
+- `Logout` = 2: The player left the server.
+- `Untag` = 3: A plugin cleared the tag (Combat.Untag).
+
+## CommandResult (struct, commands)
+
+```csharp
+public readonly struct CommandResult : IEquatable<CommandResult>
+```
+
+The outcome of `Server.DispatchCommand` and `Server.DispatchCommand`.
+
+- `public CommandResult(bool Success, int Result, string? Error)`: The outcome of `Server.DispatchCommand` and `Server.DispatchCommand`.
+- `public string? Error { get; init; }`: The message for the failure, in English, as the sender would see it; null on success.
+- `public int Result { get; init; }`: The command's result as vanilla's dispatcher reports it (the value its executor returns); 0 on failure.
+- `public bool Success { get; init; }`: True when the command ran without failing. A vanilla command that matched no executor, a syntax error, or a plugin command that failed (a `CommandFailure` or an exception) is not a success.
 
 ## Arg (class, commands)
 
@@ -819,7 +942,7 @@ Builds the resource pack zip that goes with custom content: item definitions, mo
 - `public ResourcePackBuilder AddFile(string path, byte[] content)`: Adds (or replaces) a file of the pack.
 - `public ResourcePackBuilder AddFile(string path, string text)`: Adds (or replaces) a text file of the pack.
 - `public ResourcePackBuilder AddItem(string itemModelId, byte[] png)`: Adds a flat item: the item definition, a `item/generated` model and the texture, all named after the item model id.
-- `public ResourcePackBuilder AddItem(CustomItem item, byte[] png)`: Adds a flat item for a custom item (its `CustomItem.ModelId` names the model).
+- `public ResourcePackBuilder AddItem(CustomItem item, byte[] png)`: Adds a flat item for a custom item (its `CustomItem.ModelId` names the model; set it with `CustomItem.Model(id)`).
 - `public ResourcePackBuilder AddItemDefinition(string itemModelId, string json)`: Adds an item definition (`assets/<namespace>/items/<path>.json`): what a stack with this `item_model` looks like.
 - `public ResourcePackBuilder AddLang(string locale, IReadOnlyDictionary<string, string> entries, string? namespaceId = null)`: Adds a language file (`assets/<namespace>/lang/<locale>.json`).
 - `public ResourcePackBuilder AddModel(string modelId, string json)`: Adds a model (`assets/<namespace>/models/<path>.json`).
@@ -864,13 +987,15 @@ A built resource pack: the zip, its SHA-1 and the id clients know it by.
 public static class ResourcePackHost
 ```
 
-A small built-in web server that hands out the resource packs plugins publish, so a plugin needs no web space of its own. It is off until it is configured (`content.pack_host_port` in Ramjet.toml, with `pack_host_bind` and the public `pack_host_url`) or started by code with `ResourcePackHost.Start`; it listens on 127.0.0.1 unless told otherwise, answers only `GET` / `HEAD` of `/<sha1>.zip` for packs that were published, and keeps nothing of the plugins that published them (a pack is removed when its plugin unloads).
+The server's built-in web server for resource packs: it answers `GET` / `HEAD` of `/<sha1>.zip` for the packs that were published, and keeps nothing of the plugins that published them (a pack is removed when its plugin unloads). It listens on 127.0.0.1 unless told otherwise.
+
+Plugins run in a sandboxed worker process that denies sockets, so the server cannot be started from a plugin: `ResourcePackHost.Start` throws `NotSupportedException`, and so does `ResourcePackHost.Publish` when `content.pack_host_port` is set (the server is started from that setting only). Host the zip on a web server you run and use `ResourcePackFile.ToResourcePack` with its URL instead.
 
 - `public static string? BaseUrl { get; }`: The base URL the clients use (`http://host:port`), or null while the server is off.
 - `public static bool IsRunning { get; }`: Whether the server is listening.
 - `public static int Port { get; }`: The port the server listens on, 0 while it is off.
 - `public static string Publish(ResourcePackFile pack)`: Publishes a pack and returns the URL it is downloadable from. The pack stays available until the plugin that published it unloads (or `ResourcePackHost.Unpublish`).
-- `public static string Start(string bind = "127.0.0.1", int port = 0, string? publicUrl = null)`: Starts the server (does nothing when it already runs).
+- `public static string Start(string bind = "127.0.0.1", int port = 0, string? publicUrl = null)`: Starts the server (does nothing when it already runs). Not available to plugins: the worker's sandbox denies sockets.
 - `public static void Stop()`: Takes back the packs the calling plugin published, and stops the server when it was started by code (`ResourcePackHost.Start`) and no published pack of any plugin is left. Packs of other plugins stay available; a server started by the configuration keeps running.
 - `public static void Unpublish(ResourcePackFile pack)`: Stops handing out a pack the calling plugin published (it stays available while another plugin publishes the same pack).
 
@@ -970,6 +1095,147 @@ protected override void OnEnable()
 }
 ```
 
+## Edit (class, other)
+
+```csharp
+public static class Edit
+```
+
+Bulk region edits run by the engine in slices of the tick budget (for WorldEdit-style plugins). A plugin builds the request (the WEJB binary format of the engine's edit module) and submits it; the engine validates every field, applies the job, and records what it changed so the owner can undo it. Nothing here touches blocks one at a time: a request is one call, whatever its size. Tick thread only. The owner is always a player: the engine keeps history and clipboards per player.
+
+- `public static bool Cancel(Player player, long job)`: Cancels a queued or running job the player owns. Changes already made stay recorded, so undo restores them.
+- `public static void ClearHistory(Player player)`: Drops the player's undo and redo records.
+- `public static EditClipboardInfo? ClipboardInfo(Player player, ulong handle)`: A clipboard the player holds.
+- `public static EditJobInfo? GetJob(Player player, long job)`: The state of a job the player owns.
+- `public static EditHistory History(Player player)`: The player's undo and redo stacks.
+- `public static EditMemory Memory()`: Engine memory held by bulk edits, for all players (for memory reports).
+- `public static long Redo(Player player, int steps = 1)`: Queues a redo of up to `steps` of the player's undone edits.
+- `public static bool ReleaseClipboard(Player player, ulong handle)`: Releases a clipboard the player holds. True when it was released.
+- `public static long Start(Player player, byte[] request)`: Queues a request for a player. The request is validated in full before anything changes.
+- `public static long Undo(Player player, int steps = 1)`: Queues an undo of up to `steps` of the player's most recent edits.
+
+## EditClipboardInfo (struct, other)
+
+```csharp
+public readonly struct EditClipboardInfo : IEquatable<EditClipboardInfo>
+```
+
+A clipboard the player holds: its size, the copy origin relative to its minimum corner, and its engine memory.
+
+- `public EditClipboardInfo(int SizeX, int SizeY, int SizeZ, int OriginX, int OriginY, int OriginZ, ulong Bytes)`: A clipboard the player holds: its size, the copy origin relative to its minimum corner, and its engine memory.
+- `public ulong Bytes { get; init; }`
+- `public int OriginX { get; init; }`
+- `public int OriginY { get; init; }`
+- `public int OriginZ { get; init; }`
+- `public int SizeX { get; init; }`
+- `public int SizeY { get; init; }`
+- `public int SizeZ { get; init; }`
+
+## EditHistory (struct, other)
+
+```csharp
+public readonly struct EditHistory : IEquatable<EditHistory>
+```
+
+The undo and redo stacks of a player.
+
+- `public EditHistory(uint UndoSteps, uint RedoSteps, ulong UndoBytes, ulong RedoBytes)`: The undo and redo stacks of a player.
+- `public ulong RedoBytes { get; init; }`
+- `public uint RedoSteps { get; init; }`
+- `public ulong UndoBytes { get; init; }`
+- `public uint UndoSteps { get; init; }`
+
+## EditJobInfo (struct, other)
+
+```csharp
+public readonly struct EditJobInfo : IEquatable<EditJobInfo>
+```
+
+The state of one edit job, as the engine reports it.
+
+- `public EditJobInfo(EditJobState State, ulong Changed, uint ElapsedTicks, ulong Clipboard, string Message)`: The state of one edit job, as the engine reports it.
+- `public ulong Changed { get; init; }`: Cells whose state changed.
+- `public ulong Clipboard { get; init; }`: The clipboard handle of a finished copy or cut (0 otherwise).
+- `public uint ElapsedTicks { get; init; }`: Ticks the job has been alive.
+- `public string Message { get; init; }`: A short note: empty on success.
+- `public EditJobState State { get; init; }`: The job's state.
+
+## EditJobState (enum, other)
+
+```csharp
+public enum EditJobState : int
+```
+
+What a bulk edit job is at the engine's job system's state.
+
+- `Queued` = 0: Waiting for the owner's running job, or for a slot.
+- `Running` = 1: Being applied in slices on the tick thread.
+- `Done` = 2: Finished; every cell in the region was handled (some columns may have been skipped, see the message).
+- `Failed` = 3: Stopped by a limit or an error; the changes made so far are recorded and can be undone.
+- `Cancelled` = 4: Cancelled by its owner (or the owner left); the changes made so far are recorded and can be undone.
+
+## EditMemory (struct, other)
+
+```csharp
+public readonly struct EditMemory : IEquatable<EditMemory>
+```
+
+Engine memory held by bulk edits, for every player together.
+
+- `public EditMemory(ulong HistoryBytes, ulong ClipboardBytes)`: Engine memory held by bulk edits, for every player together.
+- `public ulong ClipboardBytes { get; init; }`
+- `public ulong HistoryBytes { get; init; }`
+
+## EffectAction (enum, other)
+
+```csharp
+public enum EffectAction : byte
+```
+
+What happens to a potion effect (EntityPotionEffect).
+
+- `Added` = 0: The entity did not have the effect; it is added.
+- `Changed` = 1: The entity had the effect and it gets a new amplifier or duration.
+- `Removed` = 2: The effect is removed: it ran out, the entity died, a command or a plugin removed it.
+- `Cleared` = 3: Every effect of the entity is cleared at once (one event for the batch, not one Removed each).
+
+## EffectCause (enum, other)
+
+```csharp
+public enum EffectCause : byte
+```
+
+What caused a potion effect change (EntityPotionEffect). Unknown when the call site does not say.
+
+- `Unknown` = 0: No cause reported by the call site.
+- `Plugin` = 1: A plugin added or removed the effect through the host.
+- `Command` = 2: A /effect command.
+- `PotionDrink` = 3: The entity drank a potion.
+- `PotionSplash` = 4: A splash or lingering potion hit the entity.
+- `AreaEffectCloud` = 5: An area effect cloud applies the effect.
+- `Food` = 6: A food item with an effect (golden apple, suspicious stew ...).
+- `Milk` = 7: The entity drank milk and its effects are cleared.
+- `Arrow` = 8: A tipped arrow hit the entity.
+- `Attack` = 9: A mob's attack applies the effect (a spider's poison, a wither skeleton's wither).
+- `Beacon` = 10: A beacon gives the effect to the players in its range.
+- `Conduit` = 11: A conduit gives its power to the players around it.
+- `Totem` = 12: A totem of undying saved the entity: its death effects. A cancel is ignored for the removals it makes.
+- `Expiration` = 13: The effect ran out. Cancel is ignored.
+- `Death` = 14: The entity died and its effects are cleared. Cancel is ignored.
+- `Axolotl` = 15: An axolotl gives its regeneration or mining fatigue.
+- `Conversion` = 16: A mob converts (zombie villager cure, drowned, zombified piglin ...) and its effects change.
+- `Dolphin` = 17: A dolphin gives the dolphin's grace.
+- `Illusion` = 18: An illusioner casts blindness or invisibility.
+- `SpiderSpawn` = 19: A spider spawns with its effect (a spider jockey).
+- `TurtleHelmet` = 20: A turtle helmet gives water breathing.
+- `VillagerTrade` = 21: A villager gives regeneration after a trade.
+- `Warden` = 22: A warden's sonic boom gives darkness.
+- `WitherRose` = 23: A wither rose gives wither when touched.
+- `Raid` = 24: A raid omen or the hero of the village (raids). Ramjet extra, not in Paper.
+- `TrialSpawner` = 25: A trial spawner gives its trial omen. Ramjet extra, not in Paper.
+- `Block` = 26: A block gives the effect (a potent sulfur block). Ramjet extra, not in Paper.
+- `Nautilus` = 27: A nautilus gives its rider an effect. Ramjet extra, not in Paper.
+
 ## Entity (struct, ecs)
 
 ```csharp
@@ -988,6 +1254,7 @@ Refs returned by `Entity.Get` point into ECS storage and are invalidated by stru
 - `public Location Location { get; }`: The location of a game entity.
 - `public string TypeKey { get; }`: The entity type key of a game entity (`"minecraft:zombie"`, `"minecraft:item"`, `"minecraft:player"`), empty for a stale handle or an entity that is not a game entity (one created with `Entity.Spawn`).
 - `public static Entity Null { get; }`: The null entity.
+- `public LivingEntity? AsLiving()`: The entity as a living entity (a player, a mob, ...), or null when it is not living: a stale handle, a bare ECS entity, an item or a painting.
 - `public bool Despawn()`: Removes a game entity from the world without any death logic (no drops, no death event): items, orbs, mobs, projectiles. Players cannot be removed (use `Player.Kick`).
 - `public void Destroy()`: Destroys an entity created with `Entity.Spawn`. Does nothing for the null entity or a stale handle. Entities of the game (players, mobs, items, anything an event or a handle hands out) are not the plugin's to destroy: the call is ignored with a warning (use the game APIs, e.g. `Player.Kick`).
 - `public bool Equals(Entity other)`: Same entity id.
@@ -1024,6 +1291,54 @@ if (player.Has<Mana>()) player.Get<Mana>().Value--;   // in-place edit through a
 if (player.TryGet<Mana>(out var copy)) Log.Info($"mana {copy.Value}");
 player.Remove<Mana>();
 ```
+
+## EntityPose (enum, other)
+
+```csharp
+public enum EntityPose : byte
+```
+
+The pose of a player (EntityPoseChange, the physics pose).
+
+- `Standing` = 0: Standing.
+- `Crouching` = 1: Sneaking.
+- `Swimming` = 2: Swimming.
+- `FallFlying` = 3: Gliding with an elytra.
+- `SpinAttack` = 4: A riptide spin attack.
+- `Sleeping` = 5: In a bed.
+
+## EntityRemoveCause (enum, other)
+
+```csharp
+public enum EntityRemoveCause : byte
+```
+
+Why an entity is removed (EntityRemove).
+
+- `Unknown` = 0: No removal site named a cause (a pickup, a merge or another path without one).
+- `Despawn` = 1: Natural despawn: far from every player, or the random despawn check.
+- `Death` = 2: The death animation of a mob ended.
+- `Killed` = 3: Killed by a command (/kill) or Entity.kill.
+- `Plugin` = 4: Removed by a plugin.
+- `Unloaded` = 5: Its chunk unloaded: the entity is saved with the chunk.
+- `ChangedDimension` = 6: It left through a portal: a copy in the destination dimension replaces it.
+
+## EquipmentSlot (enum, other)
+
+```csharp
+public enum EquipmentSlot : byte
+```
+
+A slot of a living entity's equipment (the values are the inventory's EquipSlot numbers).
+
+- `MainHand` = 0: The main hand.
+- `Feet` = 1: Boots.
+- `Legs` = 2: Leggings.
+- `Chest` = 3: Chestplate.
+- `Head` = 4: Helmet.
+- `OffHand` = 5: The off hand.
+- `Body` = 6: The body slot (horse and wolf armour).
+- `Saddle` = 7: The saddle.
 
 ## EventBus (class, events)
 
@@ -1127,6 +1442,40 @@ A login held by a plugin (see `PlayerPreLoginEvent.Defer`). Completing it is thr
 - `public void Deny(Component? reason = null)`: Refuses the login. Callable from any thread.
 - `public void Dispose()`: The plugin unloaded with the deferral pending: the login is refused with `LoginDeferral.UnloadDenyMessage`. A check that never answered (a ban list lookup) must not turn into a pass; the player just reconnects. Complete the deferral yourself with `LoginDeferral.Allow` to decide otherwise.
 
+## ExhaustionReason (enum, other)
+
+```csharp
+public enum ExhaustionReason : byte
+```
+
+What caused food exhaustion (PlayerExhaustion).
+
+- `Attack` = 0: The player attacked.
+- `BlockMined` = 1: The player broke a block.
+- `Crouch` = 2: Crouching (not fired by Ramjet yet).
+- `Damaged` = 3: The player took damage.
+- `Jump` = 4: The player jumped.
+- `JumpSprint` = 5: The player jumped while sprinting.
+- `Regen` = 6: Natural regeneration.
+- `Sprint` = 7: The player sprinted.
+- `Swim` = 8: The player swam.
+- `WalkOnWater` = 9: The player walked on water.
+- `WalkUnderwater` = 10: The player walked under water.
+- `Unknown` = 11: Any other source (a hunger effect, a plugin).
+
+## ExplosionResult (enum, other)
+
+```csharp
+public enum ExplosionResult : byte
+```
+
+What an explosion does to the blocks around it (EntityExplode, BlockExplode).
+
+- `Keep` = 0: No block is destroyed.
+- `Destroy` = 1: Blocks are destroyed and always drop their items (TNT, without drop decay).
+- `DestroyWithDecay` = 2: Blocks are destroyed; their drops survive with the chance of the yield (creepers, ghasts, withers).
+- `TriggerBlock` = 3: Blocks are triggered, not destroyed (the wind burst). Reserved: no explosion event uses it yet.
+
 ## Facing (enum, worlds)
 
 ```csharp
@@ -1141,6 +1490,23 @@ Values of the protocol enum Facing (the wire carries the ordinal).
 - `South` = 3: Facing south (ordinal 3).
 - `West` = 4: Facing west (ordinal 4).
 - `East` = 5: Facing east (ordinal 5).
+
+## FishState (enum, other)
+
+```csharp
+public enum FishState : byte
+```
+
+The state of a fishing bobber (PlayerFish).
+
+- `Fishing` = 0: The rod was cast; the bobber does not exist yet.
+- `CaughtFish` = 1: A loot stack was caught (once per stack).
+- `CaughtEntity` = 2: The hook pulled an entity in.
+- `InGround` = 3: The bobber rests on the ground.
+- `FailedAttempt` = 4: The fish got away: the bite window ran out.
+- `ReelIn` = 5: The rod was reeled in with nothing on the hook.
+- `Bite` = 6: A fish bit the hook.
+- `Lured` = 7: The fish were lured to the bobber.
 
 ## GameMode (enum, players)
 
@@ -1168,6 +1534,31 @@ Why a game mode changed.
 - `Plugin` = 2: A plugin set the game mode.
 - `DefaultGameMode` = 3: The server default game mode was applied.
 
+## GrowSpecies (enum, other)
+
+```csharp
+public enum GrowSpecies : byte
+```
+
+What a sapling or a mushroom grows (StructureGrow). Mega variants count as their tree.
+
+- `Oak` = 0: Oak (also fancy oak).
+- `Spruce` = 1: Spruce, mega spruce and mega pine.
+- `Birch` = 2: Birch.
+- `Jungle` = 3: Jungle tree and mega jungle tree.
+- `Acacia` = 4: Acacia.
+- `DarkOak` = 5: Dark oak (2x2).
+- `PaleOak` = 6: Pale oak (2x2).
+- `Cherry` = 7: Cherry.
+- `Mangrove` = 8: Mangrove and tall mangrove.
+- `Azalea` = 9: Azalea tree.
+- `Poplar` = 10: Red, orange and yellow poplar.
+- `RedMushroom` = 11: Huge red mushroom.
+- `BrownMushroom` = 12: Huge brown mushroom.
+- `CrimsonFungus` = 13: Crimson fungus.
+- `WarpedFungus` = 14: Warped fungus.
+- `Other` = 15: A growth that is not one of the above.
+
 ## Hand (enum, players)
 
 ```csharp
@@ -1178,6 +1569,20 @@ The hand an action was performed with.
 
 - `MainHand` = 0: The main hand.
 - `OffHand` = 1: The off hand.
+
+## HangingBreakCause (enum, other)
+
+```csharp
+public enum HangingBreakCause : byte
+```
+
+Why a hanging entity (item frame, glow item frame, painting) is about to break (HangingBreak, EntityBreak).
+
+- `Entity` = 0: An entity hit it and no explosion was involved: remover is the attacker, or the owner of the projectile that hit it.
+- `Explosion` = 1: An explosion damaged it or pushed it off its wall (remover is the entity behind the explosion, if any).
+- `Obstruction` = 2: A block now fills the space it hangs in.
+- `Physics` = 3: The wall behind it is gone.
+- `Default` = 4: Damage with no entity behind it (fire, lava, a block).
 
 ## Hologram (class, visuals)
 
@@ -1432,6 +1837,7 @@ Components are addressed by their registry key (`"minecraft:custom_name"`) and c
 - `public NbtTag? GetComponent(string key)`: Reads a data component.
 - `public override int GetHashCode()`
 - `public bool HasComponent(string key)`: Whether the stack carries a component that was added to it.
+- `public bool IsIn(string tag)`: Whether the item of this stack is in an item tag (`Items`): `stack.IsIn("#minecraft:swords")`. The components do not matter.
 - `public NbtCompound ToNbt()`: The stack in its NBT form (`{id:"minecraft:stick",count:2,components:{...}}`), the form the server exchanges.
 - `public override string ToString()`
 - `public ItemStack WithComponent(string key, NbtTag value)`: The same stack with a data component set.
@@ -1644,6 +2050,135 @@ The kind of container a player has open.
 - `Custom` = 21: A plugin-created menu.
 - `Unknown` = 22: Anything else.
 
+## ItemFrameChangeAction (enum, other)
+
+```csharp
+public enum ItemFrameChangeAction : byte
+```
+
+What a player does to an item frame (PlayerItemFrameChange).
+
+- `Place` = 0: Puts an item into the empty frame.
+- `Remove` = 1: Takes the item out of the frame (a punch).
+- `Rotate` = 2: Rotates the framed item (a use of the frame).
+
+## KickCause (enum, other)
+
+```csharp
+public enum KickCause : byte
+```
+
+Why a player is being kicked (PlayerKick).
+
+- `Command` = 0: A /kick command.
+- `Plugin` = 1: A plugin kicked the player through the host.
+- `Idle` = 2: The player idled too long (player-idle-timeout). Cancel keeps the player.
+- `Flying` = 3: The player floated too long. Cancel keeps the player.
+- `InvalidMovement` = 4: The player's movement was rejected as invalid. Cancel is ignored.
+- `Other` = 5: Any other server-decided kick. Cancel is ignored.
+
+## KnockbackCause (enum, other)
+
+```csharp
+public enum KnockbackCause : byte
+```
+
+What knocked a living entity back (EntityKnockback).
+
+- `Unknown` = 0: No cause reported by the call site.
+- `Attack` = 1: A melee, stab or extra attack knockback.
+- `Effect` = 2: A knockback that comes from an effect (LivingEntity.knockback with comesFromEffect).
+- `Push` = 3: A push by a mob's ability (a ravager's roar).
+- `Explosion` = 4: An explosion pushes the entity.
+- `ShieldBlock` = 5: A shield or blocking item pushes back the attacker.
+- `SweepAttack` = 6: The sweep attack of a sword hits the entity.
+- `Damage` = 7: The damage of a hit pushes the entity (the generic damage knockback).
+
+## LightningCause (enum, other)
+
+```csharp
+public enum LightningCause : byte
+```
+
+Why a lightning bolt is made (LightningStrike).
+
+- `Command` = 0: /summon lightning_bolt, execute summon.
+- `Custom` = 1: A plugin spawned it.
+- `Trident` = 2: Channeling of a thrown trident that hits a block (the player is the one who threw it).
+- `Trap` = 3: A skeleton trap (the visual bolt of a skeleton horse).
+- `Weather` = 4: A thunder storm strike.
+- `Unknown` = 5: Not known.
+- `Enchantment` = 6: Channeling as a post-attack effect of a melee hit (the player is the one who hit).
+
+## LivingEntity (struct, other)
+
+```csharp
+public readonly struct LivingEntity : IEquatable<LivingEntity>
+```
+
+A handle to a living entity: a player, a mob or another entity with health (vanilla `LivingEntity`). Blittable, like `LivingEntity.Entity`.
+
+Get one with `Entity.AsLiving` (null when the entity is not living) or `Player.AsLiving`. A handle that goes stale (the entity died and was removed) reads defaults and changes nothing. Members must be called on the tick thread. Health, absorption and attribute values are in vanilla units (a heart is 2).
+
+- `public LivingEntity(Entity entity)`: Wraps an entity. Prefer `Entity.AsLiving`, which checks that the entity is living.
+- `public readonly Entity Entity;`: The entity this handle names.
+- `public double Absorption { get; set; }`: The golden hearts of absorption, in half hearts. Setting it is not clamped to the `minecraft:max_absorption` attribute (Paper semantics).
+- `public Component? CustomName { get; set; }`: The custom name of a mob (the name tag), null when it has none. Setting null clears it. Mobs only; ignored for other entities.
+- `public bool CustomNameVisible { get; set; }`: Whether the custom name of a mob is shown above its head at all times (vanilla `CustomNameVisible`). Mobs only.
+- `public bool Glowing { get; set; }`: Whether the entity glows (the outline in the team colour, white without a team) for every player online. The glow follows players who join or leave. The server keeps at most 64 plugin glows and the visuals table is shared: when there is no room, setting it does nothing, and the getter reads false until the glow reaches every viewer. Any living entity that the clients track.
+- `public double Health { get; set; }`: The health. Setting clamps it to 0 .. `LivingEntity.MaxHealth` like vanilla; 0 kills the entity through the normal death handling.
+- `public bool Invisible { get; set; }`: Whether the entity is invisible to the clients (the shared flag 0x20). Reads true while the flag is sent, which includes the case where the invisibility effect is active. Setting it changes only the plugin's own share: clearing it does not end the effect. Any living entity.
+- `public bool Invulnerable { get; set; }`: Whether the entity takes no damage (vanilla `Invulnerable`). Any living entity. Hits whose damage type is tagged as bypassing invulnerability (such as falling into the void) and hits from a creative-mode player still land, as vanilla. It is separate from a player's creative invulnerability (the abilities), which also refuses damage on its own. A mob keeps the flag in its saved data (the NBT `Invulnerable` tag); a player's flag is runtime state only: it is not written to the player's save and does not survive a dimension change or a respawn.
+- `public bool IsDead { get; }`: Whether the entity is dead or dying. False for a handle that is not living.
+- `public bool IsLiving { get; }`: Whether the entity is still alive and living.
+- `public bool IsNone { get; }`: Whether this is the "no living entity" handle.
+- `public double MaxHealth { get; }`: The maximum health (the `minecraft:max_health` attribute, 20 by default). Read only: change it with attribute modifiers.
+- `public bool NoAi { get; set; }`: Whether a mob's artificial intelligence is off: it does not move, look or attack on its own (vanilla `NoAI`). Mobs only; ignored for players and other entities.
+- `public IReadOnlyList<Entity> Passengers { get; }`: The entities riding this one, in the order of the vehicle's passenger list (players first, like vanilla). A snapshot.
+- `public bool Persistent { get; set; }`: Whether a mob stays in the world when no player is near (vanilla `PersistenceRequired`): it is not despawned. Mobs only; ignored for players and other entities.
+- `public bool Silent { get; set; }`: Whether the entity makes no sound of its own (vanilla `Silent`): no ambient, hurt or death sounds. Any living entity.
+- `public Entity? Target { get; set; }`: The entity a mob attacks, null when it has no target (or the entity is not a mob, or the target is gone). Setting null clears it; setting a target that is not living is ignored. A new target takes effect in the mob's next AI tick, through the same path its goals use (so a mob that refuses the target keeps its old one). The mob's goals may change the target again afterwards.
+- `public Entity? Vehicle { get; }`: The entity this one rides (a mob, a player, a boat), or null when it rides nothing or the handle is stale.
+- `public static LivingEntity None { get; }`: The "no living entity" handle.
+- `public bool AddAttributeModifier(string key, string id, double amount, AttributeOperation operation = AttributeOperation.AddValue)`: Adds an attribute modifier with an identifier. Remove it again with `LivingEntity.RemoveAttributeModifier`; the identifier is what makes it unique on this attribute (a second modifier with the same id is refused, like `/attribute modifier add`).
+- `public bool AddEffect(PotionEffect effect)`: Adds a potion effect (vanilla `LivingEntity.addEffect`): a stronger or longer effect of the same kind replaces the current one. The same as `Player.AddEffect` for every living entity.
+- `public bool Damage(double amount, string damageType = "minecraft:generic", Entity? attacker = null)`: Hurts the entity through the damage pipeline (`Combat.hurt`): armour, enchantments, invulnerability, the damage cooldown, death and the death events all apply, as they do for an attack of the same kind.
+- `public bool Dismount()`: Stops this entity riding, as `/ride <target> dismount` does: it lands at the top of the vehicle, and cannot board again for a short while.
+- `public int EjectPassengers()`: Ejects every entity riding this one, as vanilla `Entity.ejectPassengers`.
+- `public bool Equals(LivingEntity other)`: Same entity id.
+- `public override bool Equals(object? obj)`: Same entity id.
+- `public AttributeValue? GetAttribute(string key)`: An attribute of the entity: its base value and its value with the modifiers (`minecraft:max_health`, `minecraft:movement_speed`, `minecraft:attack_damage`, ...). Only attributes the entity has are readable (a mob has the ones of its type).
+- `public double? GetAttributeModifier(string key, string id)`: The amount of an attribute modifier by identifier.
+- `public double GetDropChance(EquipmentSlot slot)`: The chance (0 .. 1, above 1 keeps the item) that a mob drops the item of an equipment slot when it dies. 0.085 by default.
+- `public PotionEffect? GetEffect(string effect)`: The active effect of a kind, null when the entity does not have it.
+- `public IReadOnlyList<PotionEffect> GetEffects()`: Every active potion effect of the entity, with its duration, amplifier and display flags.
+- `public ItemStack GetEquipment(EquipmentSlot slot)`: The item in an equipment slot (a copy; empty for an empty slot or a handle that is not living).
+- `public override int GetHashCode()`: Hash of the entity id.
+- `public bool HasEffect(string effect)`: Whether the entity has a potion effect.
+- `public bool Heal(double amount)`: Heals the entity like `LivingEntity.heal`: adds health, clamped to the maximum. Nothing happens to a dead entity.
+- `public bool Mount(Entity vehicle)`: Makes this entity ride a vehicle, as `/ride <target> mount <vehicle>` does (forced: the vehicle's willingness is not asked). Refused when this entity already rides something, the vehicle is a player, the vehicle is this entity or one of its vehicles (a cycle), or they are in different dimensions.
+- `public bool RemoveAttributeModifier(string key, string id)`: Removes an attribute modifier by identifier.
+- `public bool RemoveEffect(string effect)`: Removes a potion effect.
+- `public bool SetAttributeBase(string key, double value)`: Sets the base value of an attribute, like `/attribute <target> <attribute> base set`. The entity is refreshed: a lower maximum health clamps the health.
+- `public bool SetDropChance(EquipmentSlot slot, double chance)`: Sets the drop chance of a mob's equipment slot. Players ignore it (their items are always theirs to keep).
+- `public bool SetEquipment(EquipmentSlot slot, in ItemStack stack)`: Puts an item into an equipment slot, like `/item replace entity <target> <slot>`. A mob's armour slot takes only items of that slot; an empty stack clears the slot. The change is sent to the clients.
+- `public override string ToString()`: Debug text.
+- `public static bool operator !=(LivingEntity a, LivingEntity b)`: Different entity id.
+- `public static bool operator ==(LivingEntity a, LivingEntity b)`: Same entity id.
+
+## LocateSource (enum, other)
+
+```csharp
+public enum LocateSource : byte
+```
+
+Who asked for a structure search (StructuresLocate).
+
+- `Command` = 0: The /locate structure command.
+- `EyeOfEnder` = 1: A thrown eye of ender looking for its stronghold.
+- `ExplorerMap` = 2: An exploration map (loot or a cartographer trade).
+- `Dolphin` = 3: A dolphin looking for buried treasure.
+
 ## Location (struct, primitives)
 
 ```csharp
@@ -1707,6 +2242,68 @@ Writes to the server log (native logger), prefixed with the plugin name. A plugi
 - `public void Warn(string message)`: Writes a warning.
 - `public void Write(LogLevel level, string message)`: Writes a message at `level`.
 
+## LootContext (class, other)
+
+```csharp
+public sealed class LootContext
+```
+
+What a loot table is rolled with: the world, and the parameters the table's conditions and functions read (the vanilla `LootParams`).
+
+Only the parameters the plugin API can name are here. Set the ones the table and its `LootContext.Type` need; a table that needs one that is not set makes `LootTables.Generate` throw an `ArgumentException` naming it. Entities are handles: one that has died when the roll starts is an error too. Killer also counts as the direct attacker (the melee case, as `/loot kill` rolls it). The damage type of a mob roll is what the kill was (`"minecraft:player_attack"`, `"minecraft:mob_attack"`, `"minecraft:magic"`).
+
+- `public LootContext(World world)`: Creates a context for a roll in a world. The world's dimension decides the location conditions.
+- `public BlockState? BlockState { get; set; }`: The block state the loot comes from (vanilla `BLOCK_STATE`): the broken or the interacted block.
+- `public string? DamageType { get; set; }`: The damage type of the death or hit (vanilla `DAMAGE_SOURCE`), e.g. `"minecraft:player_attack"`; a name without a namespace is in `minecraft`.
+- `public float? ExplosionRadius { get; set; }`: The radius of the explosion the loot comes from (vanilla `EXPLOSION_RADIUS`), what the explosion decay condition reads.
+- `public Entity? Killer { get; set; }`: The attacker (vanilla `ATTACKING_ENTITY` and `DIRECT_ATTACKING_ENTITY`), the one that gets the kill.
+- `public float Luck { get; set; }`: The luck of the rolling player (vanilla `LootParams.getLuck`, the Luck attribute, fishing luck); 0 by default.
+- `public Location? Origin { get; set; }`: Where the loot comes from (vanilla `ORIGIN`): the block or the entity's position. Only the position is read, the world must be `LootContext.World`.
+- `public Player? Player { get; set; }`: The player that last damaged the entity (vanilla `LAST_DAMAGE_PLAYER`), what `killed_by_player` conditions read. Must be a player.
+- `public long? Seed { get; set; }`: The seed of this roll. Null (the default) uses the table's random sequence, which the server advances; a seed makes the roll repeatable. 0 is the same as null.
+- `public Entity? This { get; set; }`: The entity the loot belongs to (vanilla `THIS_ENTITY`): the mob that died, the chest's opener, the fishing player.
+- `public ItemStack? Tool { get; set; }`: The tool used (vanilla `TOOL`); `ItemStack.Empty` for none.
+- `public LootContextType Type { get; set; }`: The context type (the vanilla parameter set); `LootContextType.Auto` (the default) takes the table's own type.
+- `public World World { get; }`: The world the loot is rolled in.
+
+## LootContextType (enum, other)
+
+```csharp
+public enum LootContextType : int
+```
+
+The vanilla loot context type (a `LootContextParamSet`): which parameters a roll is given. `LootContextType.Auto` takes the type the table itself declares (its `"type"` key; a table without one takes no particular parameter).
+
+- `Auto` = 0: The type the table declares.
+- `Chest` = 1: Chests and other containers (`minecraft:chest`): an origin, optionally a this entity.
+- `Command` = 2: Commands (`minecraft:command`): an origin, optionally a this entity.
+- `Selector` = 3: Selectors (`minecraft:selector`): an origin and a this entity.
+- `Block` = 4: Block drops (`minecraft:block`): a block state, an origin and a tool.
+- `Entity` = 5: Mob drops (`minecraft:entity`): a this entity, an origin and a damage type; the attacker and the player are optional.
+- `Equipment` = 6: Equipment (`minecraft:equipment`): an origin and a this entity.
+- `Fishing` = 7: Fishing (`minecraft:fishing`): an origin and a tool, optionally a this entity.
+- `Gift` = 8: Gifts (`minecraft:gift`): an origin and a this entity.
+- `Barter` = 9: Piglin bartering (`minecraft:barter`): a this entity.
+- `Vault` = 10: Vaults (`minecraft:vault`): an origin, optionally a this entity and a tool.
+- `Archaeology` = 11: Archaeology brushing (`minecraft:archaeology`): an origin, a this entity and a tool.
+- `AdvancementReward` = 12: Advancement rewards (`minecraft:advancement_reward`): an origin and a this entity.
+- `AdvancementEntity` = 13: Advancement entity conditions (`minecraft:advancement_entity`): an origin and a this entity.
+
+## LootTables (class, other)
+
+```csharp
+public static class LootTables
+```
+
+Loot tables of the datapack: check that one exists, list them, roll one with a `LootContext`, and fill a container with one.
+
+A roll checks the context the way vanilla checks a `LootParams`: every parameter the context type requires must be given, and nothing the type does not allow. The table's own type is checked too, so a table that needs an origin is not rolled without one. Rolls use the server's random source (or the context's `LootContext.Seed`), so a seeded roll is repeatable. Stacks are split to their maximum size, empty ones are dropped. Ids are `"namespace:path"`, the namespace may be left out for `minecraft`. Loot is a tick thread API.
+
+- `public static bool Exists(string key)`: Whether the datapack has a loot table with this id.
+- `public static bool FillContainer(World world, BlockPos pos, string key, long? seed = null)`: Sets the loot table of a container (a chest, trapped chest, barrel or shulker box), the `LootTable` tag vanilla keeps in a container's NBT: the contents are rolled when the container is first opened, replacing what it held.
+- `public static IReadOnlyList<ItemStack> Generate(string key, LootContext context)`: Rolls a loot table with a context and returns what it drops.
+- `public static IReadOnlyList<string> Keys()`: Every loot table id of the datapack (`"minecraft:chests/simple_dungeon"`, `"minecraft:blocks/stone"`, ...).
+
 ## McPermissionAttribute (class, permissions)
 
 ```csharp
@@ -1758,6 +2355,18 @@ Why a plugin menu was closed for a player.
 - `Replaced` = 4: Another container was opened for the player.
 - `Invalid` = 5: The server closed it (death, dimension change, the menu no longer valid).
 
+## MoveInitiator (enum, other)
+
+```csharp
+public enum MoveInitiator : byte
+```
+
+What moved an item between inventories without a player (InventoryMoveItem).
+
+- `Hopper` = 0: A hopper pushed the item out of its inventory or pulled it in.
+- `Dropper` = 1: A dropper put the item into the container in front of it.
+- `HopperMinecart` = 2: A hopper minecart pulled the item out of the container above it.
+
 ## NametagCollision (enum, display)
 
 ```csharp
@@ -1781,7 +2390,7 @@ The look of a nametag for one viewer (see `Nametags.Set`).
 
 - `public NametagStyle()`
 - `public NametagCollision Collision { get; init; }`: Who the player collides with.
-- `public int? Colour { get; init; }`: The team colour of the name, 0 to 15 (the colour codes), or null for none.
+- `public int? Colour { get; init; }`: The legacy colour of the name as an index 0 to 15 (the §0 to §f colour codes, NOT RGB), or null for none. A value outside 0..15 throws `ArgumentOutOfRangeException` when the style is applied.
 - `public bool FriendlyFire { get; init; }`: Whether the players of the team hit each other.
 - `public Component? Prefix { get; init; }`: The text before the name, or null for none.
 - `public bool SeeInvisibles { get; init; }`: Whether the players of the team see the invisible players of the team.
@@ -2330,9 +2939,9 @@ Helpers for the textual particle descriptions `Player.SpawnParticle` takes (the 
 public sealed class FilePermissionProvider : IPermissionProvider
 ```
 
-The built-in backend: groups (weighted, inheriting, with prefix and suffix) and per-player overrides, stored in `permissions.json`. Resolution order: the player's own entries, then his groups by weight (highest first, parents after their child), then the implicit "default" group everybody belongs to. Within one layer the most specific node wins: an exact entry beats `a.b.*`, a longer wildcard beats a shorter one, `*` comes last; a `false` value is a denial. A key written as `"-node"` in the file means the same as `"node": false`.
+A file-based backend: groups (weighted, inheriting, with prefix and suffix) and per-player overrides, stored in a JSON file. The built-in backend (`PermissionManager.BuiltIn`) is `permissions.json` in the server directory; a provider created with another path reads and writes only that file. Resolution order: the player's own entries, then his groups by weight (highest first, parents after their child), then the implicit "default" group everybody belongs to. Within one layer the most specific node wins: an exact entry beats `a.b.*`, a longer wildcard beats a shorter one, `*` comes last; a `false` value is a denial. A key written as `"-node"` in the file means the same as `"node": false`.
 
-- `public FilePermissionProvider(string path)`: Opens (and creates, when missing) the permission file. A file that cannot be read (malformed JSON) does not stop the server: the provider starts empty (the registered defaults apply), logs the problem once and leaves the file alone so that it can be fixed and reloaded with `FilePermissionProvider.Reload`.
+- `public FilePermissionProvider(string path)`: Opens (and creates, when missing) a permission file at `path`. A file that cannot be read (malformed JSON) does not stop the server: the provider starts empty (the registered defaults apply), logs the problem once and leaves the file alone so that it can be fixed and reloaded with `FilePermissionProvider.Reload`. The file is written by this provider itself, so it works for any path the plugin can write; the server's own permissions.json is `PermissionManager.BuiltIn`.
 - `public IReadOnlyList<string> GroupNames { get; }`: The group names.
 - `public string? LoadError { get; }`: Why the file could not be read (null when it was, or since it was fixed and reloaded).
 - `public string Name { get; }`
@@ -2347,7 +2956,7 @@ The built-in backend: groups (weighted, inheriting, with prefix and suffix) and 
 - `public IReadOnlyDictionary<string, bool> PlayerEntries(Uuid player)`: The explicit entries of a player (without groups), for admin tools.
 - `public void Reload()`: Re-reads the file (a missing file is created with a "default" and an "admin" group).
 - `public bool RemoveFromGroup(Uuid player, string group)`: Removes the player from a group.
-- `public void Save()`: Writes the file if something changed. The engine writes it (a host call: the worker's sandbox refuses writes to the server folder), atomically (temp file, flushed, then renamed over the old one). The engine refuses a write that comes too soon after the last one (its rate limit): then the changes stay pending and the next call (the runtime's flush, a second later) tries again. Never throws; a refusal is logged once per streak.
+- `public void Save()`: Writes the file if something changed, atomically (temp file, flushed, then renamed over the old one). The built-in backend's file is written by the engine (a host call: the worker's sandbox refuses writes to the server folder), and the engine refuses a write that comes too soon after the last one (its rate limit): then the changes stay pending and the next call (the runtime's flush, a second later) tries again. A provider on another path writes that file itself and never touches permissions.json. Never throws; a refusal or a failed write is logged once per streak and retried.
 - `public void SetGroupMeta(string group, string prefix, string suffix)`: Sets prefix and suffix text of a group (metadata for chat plugins).
 - `public void SetGroupParents(string group, IEnumerable<string> parents)`: Sets the groups a group inherits from.
 - `public void SetGroupPermission(string group, string node, bool? value)`: Sets (true/false) or removes (null) a permission entry of a group.
@@ -2529,7 +3138,7 @@ A handle stays valid only while the player is online: after he leaves it goes st
 
 - `public Player(Entity entity)`: Wraps an entity that is a player.
 - `public readonly Entity Entity;`: The underlying ECS entity.
-- `public double Absorption { get; set; }`: The golden hearts of absorption in half hearts.
+- `public double Absorption { get; set; }`: The golden hearts of absorption in half hearts. Setting it is not clamped to the `minecraft:max_absorption` attribute (Paper semantics).
 - `public IReadOnlyList<string> ActiveEffects { get; }`: The keys of the effects the player has.
 - `public string Address { get; }`: The client's address as the server sees it ("127.0.0.1:50321"), empty for a stale handle.
 - `public int Air { get; set; }`: The remaining air in ticks (300 is full; below 0 the player drowns).
@@ -2538,7 +3147,7 @@ A handle stays valid only while the player is online: after he leaves it goes st
 - `public Component? DisplayName { get; set; }`: The name the server shows for this player where vanilla uses Player.getDisplayName: the join and leave lines, the chat sender, death and advancement messages (the team format applies to it). Null when none is set, and then the profile `Player.Name` is shown. Set it to null to clear it. Not persisted: it is cleared when the player leaves, so a plugin that keeps nicknames sets it again on join. The profile name stays the key of commands, the scoreboard and the click and insertion text of chat. Stale handles: reads give null, writes do nothing.
 - `public double Exhaustion { get; set; }`: The exhaustion, 0..40: at 4 the saturation (or food level) drops by one.
 - `public int ExperienceLevel { get; set; }`: The experience level shown in the HUD. Setting resets the progress within the level.
-- `public double ExperienceProgress { get; set; }`: The progress to the next level, 0..1 (the green bar).
+- `public double ExperienceProgress { get; set; }`: The progress to the next level, 0..1 (the green bar). Stored exactly as a float: no rounding to whole points.
 - `public int FireTicks { get; set; }`: The ticks the player will keep burning (0 when not on fire). Setting 0 extinguishes.
 - `public float FlySpeed { get; set; }`: The flying speed, 0..1 (default 0.05).
 - `public int FoodLevel { get; set; }`: The food level, 0..20 (the hunger bar; below 7 sprinting stops, at 0 the player starves).
@@ -2562,6 +3171,7 @@ A handle stays valid only while the player is online: after he leaves it goes st
 - `public string Name { get; }`: The player's name, empty for a stale handle.
 - `public int PermissionLevel { get; }`: The vanilla operator level of the player (0-4, from ops.json); 0 for an offline handle.
 - `public Vec3d Position { get; }`: The player's position (feet), `default` for a stale handle.
+- `public PvpFlags? PvpPolicyFlags { get; }`: The PvP flags last written with `Player.SetPvpPolicy`, or null when the player has no policy (or is not online).
 - `public double Saturation { get; set; }`: The saturation, 0..`Player.FoodLevel`: the buffer that is used up before the food level drops.
 - `public int TotalExperience { get; }`: The total experience points ever collected (drives the score on the death screen). Read only; use `Player.GiveExperience`.
 - `public Uuid Uuid { get; }`: The player's profile id, `default` for a stale handle.
@@ -2569,6 +3179,7 @@ A handle stays valid only while the player is online: after he leaves it goes st
 - `public World World { get; }`: The dimension the player is in (the overworld for a stale handle).
 - `public static Player None { get; }`: The "no player" handle.
 - `public bool AddEffect(PotionEffect effect)`: Adds a status effect (a stronger or longer effect of the same kind replaces the current one like in vanilla).
+- `public LivingEntity AsLiving()`: The player as a living entity: health, absorption, potion effects, attributes, damage and healing. Every player is living; a stale player gives a handle whose members read defaults.
 - `public bool ClearEffects()`: Removes every status effect.
 - `public bool ClearFakeBlock(BlockPos position)`: Shows the world's real block at a position again.
 - `public void ClearFakeBlocks()`: Ends every fake block of this player.
@@ -2597,6 +3208,7 @@ A handle stays valid only while the player is online: after he leaves it goes st
 - `public Player Set<T>(in T value) where T : unmanaged`: Adds or overwrites a plugin component on the player. The component disappears when the player leaves.
 - `public bool SetGlowingFor(Player viewer, bool glowing)`: Makes this player glow for one viewer: the viewer sees the outline (for him only, the others do not change). See `Entity.SetGlowingFor`.
 - `public void SetListName(Component? name)`: Changes the name everybody sees for this player in the tab list (colours, prefixes). Null restores the profile name. The name is kept until the player leaves.
+- `public void SetPvpPolicy(PvpFlags flags, int tagTicks)`: Writes the PvP policy of this player: the native gate decides every hit on the player from it. Refresh it when the state changes (toggle, newbie or respawn protection, world). `tagTicks` is the combat tag an allowed hit gives both sides (0: none). A player without a policy keeps the vanilla rules. Stale handles, flags this server does not know and a tag time outside 0 .. 1728000 ticks (one day) do nothing.
 - `public void SetTabList(Component? header, Component? footer)`: Sets the text above and below the player list (Tab). Null clears a part.
 - `public bool ShowBlock(BlockPos position, BlockState state)`: Shows a block state at a position to this player only. The world keeps its real block; the server still collides with the real one, and the client predicts collisions against what it sees. The fake block is re-sent with its chunk and after real changes of its position, and dropped when the player changes world or leaves.
 - `public void ShowSubtitle(Component subtitle)`: Shows only a subtitle (it appears together with the next title; vanilla shows nothing for a subtitle without a title).
@@ -2858,6 +3470,22 @@ The presence API of a plugin: `plugin.Tablist`, `plugin.Nametags` and `plugin.Be
 - `public static Tablist get_Tablist(Plugin plugin)`
 - `public static Tablist get_Tablist(PluginContext context)`
 
+## PvpFlags (enum, other)
+
+```csharp
+public enum PvpFlags : uint
+```
+
+The bits of a player's PvP policy (`Player.SetPvpPolicy`). Without a policy a player fights by the vanilla rules.
+
+- `None` = 0: No PvP flag: the player can neither be hit by nor hit another player through the gate.
+- `PvpOn` = 1: The player has PvP switched on. A hit between two players counts only when both have it.
+- `MayAttackPlayers` = 2: The player may attack other players (a newbie may not).
+- `ShieldFromPlayers` = 4: The player takes no damage from other players (newbie or respawn protection).
+- `ShieldFromMobs` = 8: The player takes no damage from mobs and other non-player attackers.
+- `ShieldFromEnvironment` = 16: The player takes no environmental damage (fire, lava, fall, drowning ...).
+- `WorldPvpOff` = 32: PvP is off in the player's world (checked on both sides of a hit).
+
 ## Query (class, ecs)
 
 ```csharp
@@ -2955,6 +3583,24 @@ A query over three component types.
 
 - `public void Each(QueryAction<T1, T2, T3> action)`: Calls `action` for every matching entity.
 
+## RegainReason (enum, other)
+
+```csharp
+public enum RegainReason : byte
+```
+
+Why an entity regains health (EntityRegainHealth). Custom is the default of every heal without a reason.
+
+- `Custom` = 0: Any heal without a more specific reason: a plugin, an iron golem's repair, an animal's or a mount's regeneration.
+- `Regen` = 1: Natural regeneration of a player with a full food bar, and the peaceful rule (fast regeneration, one heal every 20 ticks).
+- `Satiated` = 2: Natural regeneration from saturation (the food bar is full, the saturation is spent).
+- `Eating` = 3: A tamed or bred animal or a mount heals from the food it is given.
+- `EnderCrystal` = 4: An end crystal heals the ender dragon.
+- `Magic` = 5: The instant health effect (a healing potion or splash).
+- `MagicRegen` = 6: The regeneration effect, one heal per tick it applies.
+- `WitherSpawn` = 7: The wither heals while it is summoned (the spawn sequence).
+- `Wither` = 8: A wither skull hit heals the wither.
+
 ## ResourcePack (class, players)
 
 ```csharp
@@ -3022,6 +3668,7 @@ Tick-based scheduling (20 ticks = 1 second) and the bridge between the tick thre
 `Scheduler.RunLater`/`Scheduler.RunEvery` must be called on the tick thread. `Scheduler.Post`, `Scheduler.RunSync`, `Scheduler.RunAsync` and the awaiters are thread-safe.
 
 - `public Task Delay(long ticks)`: Awaitable that resumes on the tick thread after `ticks` ticks.
+- `public TickAwaitable EnsureTick()`: Awaitable that resumes on the tick thread: `await Scheduler.EnsureTick();`. Already on the tick thread it continues synchronously (no hop); otherwise it resumes at the next tick boundary, like `Scheduler.ToTick`. If the plugin unloads first the continuation is dropped.
 - `public void Post(Action action)`: Thread-safe: queue `action` to run on the tick thread next tick (fire and forget).
 - `public Task RunAsync(Action action)`: Runs `action` on the .NET thread pool. Must not touch game APIs (use `Scheduler.RunSync` to hop back).
 - `public Task<T?> RunAsync<T>(Func<T?> func)`: Runs `func` on the .NET thread pool.
@@ -3029,8 +3676,8 @@ Tick-based scheduling (20 ticks = 1 second) and the bridge between the tick thre
 - `public ScheduledTask RunLater(long delayTicks, Action action)`: Runs `action` after `delayTicks` ticks on the tick thread.
 - `public Task RunSync(Action action)`: Thread-safe: runs `action` on the tick thread at the next tick boundary (FIFO).
 - `public Task<T?> RunSync<T>(Func<T?> func)`: Thread-safe: runs `func` on the tick thread at the next tick boundary and returns its result.
-- `public TickAwaitable ToAsync()`: Awaitable that resumes on a thread-pool thread: `await Scheduler.ToAsync();` (leave the tick thread before blocking work).
-- `public TickAwaitable ToTick()`: Awaitable that resumes on the tick thread at the next tick boundary: `await Scheduler.ToTick();`. If the plugin unloads first the continuation is dropped.
+- `public TickAwaitable ToAsync()`: Awaitable that always resumes on a thread-pool thread: `await Scheduler.ToAsync();` (leave the tick thread before blocking work).
+- `public TickAwaitable ToTick()`: Awaitable that always resumes on the tick thread at the next tick boundary, even when already there: `await Scheduler.ToTick();` (a wait loop such as `while (!loaded) await Scheduler.ToTick();` needs this). Use `Scheduler.EnsureTick` to skip the hop when already on the tick thread. If the plugin unloads first the continuation is dropped.
 
 ```csharp
 Scheduler.RunLater(20, () => Server.Broadcast("one second later"));
@@ -3085,21 +3732,30 @@ Everything here except `Server.IsTickThread` and `Server.CurrentTick` must be ca
 - `public static ulong CurrentTick { get; }`: Current server tick (as reported by the engine; thread-safe).
 - `public static bool IsTickThread { get; }`: Whether the calling thread is the server tick thread (thread-safe, ~1 ns).
 - `public static long MemoryBytes { get; }`: The server's RAM in bytes as Task Manager's Memory column shows it (private working set; Linux: resident minus shared), -1 when the platform cannot tell. Plugins run in a separate worker process, so `Environment.WorkingSet` is the worker's, not the server's.
+- `public static IOperatorList Operators { get; }`: The operator list (ops.json): the players with a permission level, online or not. Thread: tick thread.
 - `public static World Overworld { get; }`: The overworld.
 - `public static int PlayerCount { get; }`: Number of players in the play state.
 - `public static double PlayerMoveThreshold { get; set; }`: How far a player has to move (blocks) before `PlayerMoveEvent` fires again (a turn of one degree also counts). 0, the default, fires for every change of position or rotation (about 20 events a second per moving player): raise it when your handler only cares about coarse movement.
 - `public static IReadOnlyList<Player> Players { get; }`: A snapshot of the online players (in the play state).
 - `public static long PluginMemoryBytes { get; }`: The RAM of the process the plugins run in (the worker; in-process plugins: the server), measured like `Server.MemoryBytes`: private working set (Linux: resident minus shared). One system call, no allocation, any thread; -1 when unknown. Prefer it to `Process.GetCurrentProcess()`, which snapshots every process of the machine.
+- `public static IWhitelist Whitelist { get; }`: The whitelist (whitelist.json) and its switches (white-list, enforce-whitelist). Thread: tick thread.
 - `public static long WorkingSetBytes { get; }`: The server's working set in bytes (resident, shared pages included), -1 when unknown.
-- `public static IReadOnlyList<World> Worlds { get; }`: The dimensions of the server (overworld first).
+- `public static IReadOnlyList<World> Worlds { get; }`: The live worlds of the server: the vanilla dimensions (overworld first), then the runtime worlds. A new list on every call.
 - `public static void Broadcast(string message)`: Sends a plain-text system message to everybody (and the console).
 - `public static void Broadcast(Component message)`: Sends a rich text message to every online player and logs its plain text on the console.
+- `public static Task<World> CreateWorldAsync(WorldOptions options)`: Makes a runtime world (Bukkit's `WorldCreator`): saved (anvil or slime storage) or temporary, normal, flat or void terrain, empty or a copy of a `WorldOptions.Template`. The world is built at the start of the next tick; the task completes then, on the tick thread, so the code after `await` can use the world at once. Move players in with `player.Teleport(new Location(world, x, y, z))`.
+- `public static CommandResult DispatchCommand(string line)`: Runs a command line as the console: operator level 4, with the feedback in the server log. The line is the command as a player types it, with or without the leading slash, and it goes through the server's command dispatcher, so vanilla and plugin commands both run.
+- `public static CommandResult DispatchCommand(Player player, string line)`: Runs a command line as a player: the player's own permissions decide what runs, and the feedback goes to the player's chat, as when the player types it. The line is limited to 256 characters (a chat line), with or without the leading slash. See `Server.DispatchCommand` for the rules; a player who is offline fails at once. Inside an event handler, a system, a scheduler phase or another plugin's call it fails with a message and runs nothing: use `Server.DispatchCommandAsync` there.
+- `public static Task<CommandResult> DispatchCommandAsync(string line)`: Queues a command line to run as the console and returns a task for its outcome. Unlike `Server.DispatchCommand` it works for plugin commands too: the line runs at the end of the next tick, when the plugin worker is not in a call.
+- `public static Task<CommandResult> DispatchCommandAsync(Player player, string line)`: Queues a command line to run as a player, with that player's permissions and feedback. See `Server.DispatchCommandAsync`.
 - `public static Player? GetPlayer(string name)`: Finds an online player by name (case-insensitive).
 - `public static Player? GetPlayer(Uuid uuid)`: Finds an online player by uuid.
-- `public static World? GetWorld(string key)`: Finds a dimension by key ("minecraft:the_nether"; "the_nether" also works for minecraft keys).
+- `public static World? GetWorld(string key)`: Finds a live world by key ("minecraft:the_nether", "ramjet:arena"). A name without a namespace is looked up as `minecraft:` first, then as `ramjet:` (the namespace of runtime worlds made without one): "the_nether", "arena".
+- `public static Task<World> LoadWorldAsync(string name)`: Loads a saved runtime world (made by `Server.CreateWorldAsync` or `/world create`, not temporary) at the start of the next tick. The task completes then, on the tick thread. Admins can have worlds loaded at startup with `[worlds] load` in ramjet.toml.
 - `public static IReadOnlyList<PlayerSnapshot> PlayersSnapshot()`: A snapshot of every online player with the data the engine keeps about him: the handle, the profile id, the dimension, the game mode, the ping and the tab list flags. One pass over the players, read in pages from the engine; use `Server.Players` when only the handles are needed.
 - `public static void SendMessage(Entity target, string message)`: Sends a system chat message to `target` (Entity.Null = console).
 - `public static TickTimes TickTimes(int ticks = 20)`: The engine's own tick time over the last `ticks` ticks (1 to 6000), as `/tick query` reports it: the busy time of each tick. Prefer it to timing your own systems: plugins run in a separate worker process, and a Stopwatch there also counts the round trips to the engine. Values are -1 when the engine cannot tell.
+- `public static Task UnloadWorldAsync(World world, bool save = true, bool movePlayers = false)`: Unloads a runtime world at the start of the next tick (Bukkit's `unloadWorld`). The vanilla dimensions stay loaded. Handles of the world are invalid afterwards (`World.IsValid` is false).
 
 ## ServiceUnavailableException (class, services)
 
@@ -3214,6 +3870,19 @@ An economy: balances of players (online or offline, by uuid), the transfers betw
 - `EconomyResult Withdraw(Uuid player, long minor, string reason)`: Takes money from an account, refusing to go below zero.
 - `public event Action<Uuid?>? Changed;`: Raised when an account's balance changed (tick thread). A null uuid means many accounts may have changed.
 
+## IOperatorList (interface, services)
+
+```csharp
+public interface IOperatorList
+```
+
+The server's operator list: the vanilla file ops.json, the list /op and /deop change. Operators get their permission level and the command tree of that level, and bypass the whitelist. The changes are written at once. A change for an online player resends its permission level and command tree, as /op does; a removal also kicks the unlisted players when enforce-whitelist and the whitelist are on, as /deop does. Works for players who are offline: the uuid is the key, and `OfflinePlayers.Find` resolves a name. Each change is logged with the plugin that made it. Thread: tick thread.
+
+- `bool Add(Uuid player, string name, int? level = null, bool? bypassesPlayerLimit = null)`: Makes a player an operator, or changes an operator's level and bypass flag. An identical entry is kept as it is.
+- `IReadOnlyList<OperatorEntry> All()`: Every operator, in uuid order.
+- `OperatorEntry? Check(Uuid player)`: The operator entry of a uuid, null when it is not an operator.
+- `bool Remove(Uuid player)`: Removes an operator (as /deop does).
+
 ## IPlaceholders (interface, services)
 
 ```csharp
@@ -3241,6 +3910,32 @@ Ramjet's first-party permissions plugin implements it; without one, a built-in p
 - `bool TryGet<T>(Uuid player, MetaKey<T?> key, out T? value)`: The value of a meta key for a player, from the provider's highest layer that has it.
 - `public event Action<Uuid?>? Changed;`: Raised when a player's meta or affixes changed (tick thread). A null uuid means every player may have changed.
 
+## IPrivateMessages (interface, services)
+
+```csharp
+public interface IPrivateMessages
+```
+
+The private-message service: the delivery, formatting, ignore and mute rules of `/msg` and `/r`. Registered by the chat plugin when it is installed; the command owner (Essentials) hands each message here and delivers a plain message itself when no provider is registered. Thread: tick thread.
+
+- `PrivateMessageResult Send(Player sender, Player recipient, string message)`: Sends a private message between two online players. The provider formats it and shows it to both ends.
+
+## IWhitelist (interface, services)
+
+```csharp
+public interface IWhitelist
+```
+
+The server's whitelist: the vanilla file whitelist.json, and the two switches that enforce it (white-list and enforce-whitelist in server.properties). A player who is not on the list (and is not an operator) cannot join while `IWhitelist.Enabled` is on. With `IWhitelist.Enforced` on, the online players who are not on the list are kicked, operators included, as the list or a switch makes them unlisted; this is vanilla's kickUnlistedPlayers, which looks at the list only. Offline players work: the uuid is the key, and `OfflinePlayers.Find` resolves a name. Adding a player and the switches are written at once to the server's files; a script's additions and removals are written a few seconds later, with the ban lists (a plugin never saves them itself). Each change is logged with the plugin that made it. Thread: tick thread.
+
+- `bool Enabled { get; set; }`: Whether the whitelist is in force (white-list in server.properties). Setting it writes server.properties, as /whitelist on and off do; turning it on kicks the unlisted players when `IWhitelist.Enforced` is on.
+- `bool Enforced { get; set; }`: Whether unlisted online players are kicked (enforce-whitelist in server.properties), operators included. Turning it on kicks them at once when `IWhitelist.Enabled` is on.
+- `bool Add(Uuid player, string name)`: Adds a player to the list (kicks nobody). The write is deferred a few seconds, with the ban lists.
+- `IReadOnlyList<WhitelistEntry> All()`: Every player on the list, in uuid order.
+- `bool Contains(Uuid player)`: Whether a uuid is on the list. Operators are not counted here: they are let in by the login check.
+- `void Reload()`: Writes the pending additions and removals, then reads whitelist.json again (as /whitelist reload does), then kicks the unlisted online players when `IWhitelist.Enforced` is on. A file that cannot be read leaves the list as it was.
+- `bool Remove(Uuid player)`: Removes a player from the list (the write is deferred like `IWhitelist.Add`), then kicks the online players who are no longer listed when `IWhitelist.Enforced` and `IWhitelist.Enabled` are on (as /whitelist remove does).
+
 ## MetaKey<T> (class, services)
 
 ```csharp
@@ -3252,6 +3947,20 @@ A typed key of player meta, declared by the plugin that owns the value (`new Met
 - `public MetaKey(string name)`: Creates a key. Throws for a value type other than string, int, bool or TimeSpan.
 - `public string Name { get; }`: The key.
 - `public override string ToString()`
+
+## OperatorEntry (class, services)
+
+```csharp
+public sealed class OperatorEntry : IEquatable<OperatorEntry>
+```
+
+One operator: a player with a permission level (the vanilla file ops.json).
+
+- `public OperatorEntry(Uuid Player, string Name, int Level, bool BypassesPlayerLimit)`: One operator: a player with a permission level (the vanilla file ops.json).
+- `public bool BypassesPlayerLimit { get; init; }`: Whether the operator may join a full server.
+- `public int Level { get; init; }`: The permission level, 1 to 4: 1 moderator, 2 gamemaster, 3 admin, 4 owner (what the command tree and /op use).
+- `public string Name { get; init; }`: The name the operator was added under.
+- `public Uuid Player { get; init; }`: The operator's uuid.
 
 ## PlaceholderScope (enum, services)
 
@@ -3281,6 +3990,20 @@ public static class PlayerMetaExtensions
 Helpers over `IPlayerMeta` for the plugins that only need text.
 
 - `public static string AffixText(IPlayerMeta meta, Uuid player, AffixKind kind, string separator = " ")`: The affixes of one kind joined into one text, highest weight first.
+
+## PrivateMessageResult (enum, services)
+
+```csharp
+public enum PrivateMessageResult : int
+```
+
+The outcome of a private message.
+
+- `Ok` = 0: Delivered.
+- `Offline` = 1: The recipient is not online.
+- `Ignored` = 2: The recipient ignores the sender.
+- `Muted` = 3: The sender is muted.
+- `Refused` = 4: Refused by the provider's rules (empty text, the recipient refuses messages, and the like).
 
 ## ServiceManager (class, services)
 
@@ -3324,6 +4047,18 @@ One registered service: the implementation, who provided it and how it ranks.
 - `public ServicePriority Priority { get; init; }`: Its rank.
 - `public string Provider { get; init; }`: The id of the registering plugin.
 
+## WhitelistEntry (class, services)
+
+```csharp
+public sealed class WhitelistEntry : IEquatable<WhitelistEntry>
+```
+
+One player on the whitelist (the vanilla file whitelist.json).
+
+- `public WhitelistEntry(Uuid Player, string Name)`: One player on the whitelist (the vanilla file whitelist.json).
+- `public string Name { get; init; }`: The name the player was added under.
+- `public Uuid Player { get; init; }`: The player's uuid.
+
 ## Sidebar (class, display)
 
 ```csharp
@@ -3354,6 +4089,17 @@ public sealed class Sidebars
 Creates sidebars owned by a plugin (`plugin.Sidebars`).
 
 - `public Sidebar Create(Component title)`: Creates a sidebar nobody sees yet.
+
+## SignOpenCause (enum, other)
+
+```csharp
+public enum SignOpenCause : byte
+```
+
+What opens the text editor of a sign (PlayerOpenSign).
+
+- `Interact` = 0: The player right-clicked the sign with an empty hand.
+- `Place` = 1: The player placed the sign; the editor opens at once.
 
 ## SoundCategory (enum, players)
 
@@ -3399,6 +4145,19 @@ Why an entity is being added to the world.
 - `Dispenser` = 13: Spawned by a dispenser.
 - `Drop` = 14: Created by a game mechanic: item drops, experience orbs, falling blocks, projectiles.
 - `Portal` = 15: Spawned by a portal.
+- `TrialSpawner` = 16: Spawned by a trial spawner (its mobs ignore the light level and are persistent).
+
+## SpawnSetCause (enum, other)
+
+```csharp
+public enum SpawnSetCause : byte
+```
+
+Why a player's spawn point is set (PlayerSetSpawn.Cause).
+
+- `Bed` = 0: A bed was used.
+- `RespawnAnchor` = 1: A respawn anchor was charged.
+- `Command` = 2: A command set the point.
 
 ## Subscription (class, events)
 
@@ -3427,7 +4186,7 @@ public sealed class SystemHandle : IDisposable, IPluginResource
 
 A registered system. Dispose to remove it from the pipeline.
 
-- `public string Name { get; }`: The system's effective registry name: the requested one (namespaced by the plugin, see `SystemRegistry.Register`), or, while a hot-reload predecessor still holds that name, the temporary "name#2" form. Renamed back to the plain name once the predecessor is released.
+- `public string Name { get; }`: The system's full registry name, `"{plugin name}:{name}"`: the name passed to `SystemRegistry.Add` with the plugin prefix (unless it already had one). While a hot-reload predecessor still holds that name it is the temporary "name#2" form, renamed back to the plain name once the predecessor is released. Pass either this full name or the short name you registered with to `SystemRegistry.After`, `SystemRegistry.Before`, `SystemRegistry.Replace` and `SystemRegistry.SetEnabled`.
 - `public void Dispose()`: Removes the system from the pipeline.
 
 ## SystemPlacement (enum, systems)
@@ -3451,12 +4210,12 @@ public sealed class SystemRegistry
 
 Registers ECS systems in the engine's tick pipeline, scoped to a plugin (released on unload).
 
-- `public SystemHandle Add(string name, Phase phase, SystemCallback callback)`: Adds a system that runs once per tick at the end of `phase` on the tick thread.
-- `public SystemHandle After(string anchor, string name, SystemCallback callback)`: Registers `name` to run right after the system `anchor`.
-- `public SystemHandle Before(string anchor, string name, SystemCallback callback)`: Registers `name` to run right before the system `anchor`.
-- `public SystemHandle Register(Phase phase, string name, SystemCallback callback, SystemPlacement placement = SystemPlacement.Append, string? anchor = null)`: Registers a system in the engine's registry. The registry name is namespaced by the plugin: `"{plugin name}:{name}"` (left as is when `name` already starts with that prefix), so plugins cannot collide; a collision with a native system or with another plugin's system throws. `anchor` is the full registry name of an existing (native or scripted) system for After/Before/Replace (the phase is then the anchor's and `phase` is ignored). Called from inside a system, the registration takes effect when the tick ends.
-- `public SystemHandle Replace(string target, string name, SystemCallback callback)`: Replaces the (native or scripted) system `target`: it is disabled and `name` runs in its place. Dispose the handle (or unload the plugin) to restore it.
-- `public bool SetEnabled(string name, bool enabled)`: Enables or disables a registered system by name (native or scripted). A system this plugin disabled is re-enabled when the plugin unloads. Returns false if no such system exists.
+- `public SystemHandle Add(string name, Phase phase, SystemCallback callback)`: Adds a system that runs once per tick at the end of `phase` on the tick thread. The registry name is `"{plugin name}:{name}"` (see `SystemRegistry.Register`); the handle's `SystemHandle.Name` reports it.
+- `public SystemHandle After(string anchor, string name, SystemCallback callback)`: Registers `name` to run right after the system `anchor`. The anchor is a short name this plugin registered or a full registry name (`SystemHandle.Name`), e.g. `"vanilla:physics"` for an engine system.
+- `public SystemHandle Before(string anchor, string name, SystemCallback callback)`: Registers `name` to run right before the system `anchor`. The anchor is a short name this plugin registered or a full registry name (`SystemHandle.Name`).
+- `public SystemHandle Register(Phase phase, string name, SystemCallback callback, SystemPlacement placement = SystemPlacement.Append, string? anchor = null)`: Registers a system in the engine's registry. The registry name is namespaced by the plugin: `"{plugin name}:{name}"` (left as is when `name` already starts with that prefix), so plugins cannot collide; a collision with a native system or with another plugin's system throws. `anchor` names an existing (native or scripted) system for After/Before/Replace (the phase is then the anchor's and `phase` is ignored). An anchor is accepted by its short name (a system this plugin registered) or its full name (see `SystemHandle.Name`). Called from inside a system, the registration takes effect when the tick ends.
+- `public SystemHandle Replace(string target, string name, SystemCallback callback)`: Replaces the (native or scripted) system `target`: it is disabled and `name` runs in its place. `target` is a short name this plugin registered or a full registry name (`SystemHandle.Name`). Dispose the handle (or unload the plugin) to restore it.
+- `public bool SetEnabled(string name, bool enabled)`: Enables or disables a registered system by name (native or scripted). The name is a short name this plugin registered or a full registry name (`SystemHandle.Name`). A system this plugin disabled is re-enabled when the plugin unloads. Returns false if no such system exists.
 
 ```csharp
 Systems.Add("regen", Phase.Tick, dt => { /* runs every tick */ });
@@ -3498,6 +4257,31 @@ The tab list as one viewer sees it: the name, order, latency and game mode of ea
 - `public void SetObjective(Player viewer, int slot, string name, Component title)`: Defines an objective for one viewer: slot 0 is the tab list (the value after each name), slot 2 is below the name.
 - `public void SetScore(Player viewer, string objective, string holder, int score, Component? display, ScoreFormat format, Component? fixedFormat)`: Sets one holder's score on an objective of one viewer.
 
+## Tags (class, other)
+
+```csharp
+public static class Tags
+```
+
+The datapack tags of the blocks, items, entity types and biomes: `#minecraft:logs` and the like. The tag names are given with or without the leading `#`; the keys are `"namespace:path"` (the namespace may be left out for `minecraft`).
+
+Membership answers what the datapack says, including the tags that name other tags. An unknown tag or key is simply not a member (no exception): a tag lists nothing. Tags are read on the tick thread (the loot service is single threaded). Example: `Tags.Blocks.Contains("minecraft:logs", "minecraft:oak_log")` is true; `BlockState.IsIn("#minecraft:logs")` asks the same of a block state.
+
+## TargetReason (enum, other)
+
+```csharp
+public enum TargetReason : byte
+```
+
+Why a mob's target changed (EntityTarget). Classified from the server state, not from the goal that chose it.
+
+- `Unknown` = 0: Not classified.
+- `ClosestPlayer` = 1: A player was chosen as the target (the nearest-player rules).
+- `TargetAttackedEntity` = 2: The entity that last hurt the mob became the target (hurt-by rules).
+- `ForgotTarget` = 3: The mob lost its target and the old one is still alive.
+- `TargetDied` = 4: The mob lost its target because the old one died or left.
+- `Custom` = 5: A plugin set the target (Mob.setTarget through the plugin API). Reported once the plugin target setter lands (batch 1: MobState::script_target).
+
 ## TeleportCause (enum, events)
 
 ```csharp
@@ -3517,6 +4301,10 @@ Why a player is being teleported.
 - `Spectate` = 8: Teleporting to an entity as a spectator.
 - `Respawn` = 9: Respawning.
 - `Dismount` = 10: Dismounting a vehicle.
+- `Enderman` = 11: An enderman teleporting (EnderMan.teleport).
+- `Shulker` = 12: A shulker moving to another block (Shulker.teleportSomewhere).
+- `TamedOwner` = 13: A tamed animal teleporting to its owner (TamableAnimal.tryToTeleportToOwner).
+- `RandomTeleport` = 14: A mob's random teleport (LivingEntity.randomTeleport: a cat's morning gift).
 
 ## ClickAction (enum, chat)
 
@@ -3649,7 +4437,7 @@ public readonly struct TickAwaitable : ICriticalNotifyCompletion, INotifyComplet
 
 The awaitable returned by `Scheduler.ToTick` / `Scheduler.ToAsync`.
 
-- `public bool IsCompleted { get; }`: Awaiter protocol: already on the target thread means no hop.
+- `public bool IsCompleted { get; }`: Awaiter protocol. Only `Scheduler.EnsureTick` completes synchronously (when already on the tick thread); `Scheduler.ToTick` always resumes at the next tick boundary and `Scheduler.ToAsync` always resumes on a pool thread.
 - `public TickAwaitable GetAwaiter()`: Awaiter protocol.
 - `public void GetResult()`: Awaiter protocol.
 - `public void OnCompleted(Action continuation)`: Awaiter protocol.
@@ -3697,6 +4485,53 @@ The timings of a title, in ticks (20 per second).
 - `public int Stay { get; init; }`: Time on screen.
 - `public static TitleTimes Default { get; }`: The vanilla defaults: 0.5 s in, 3.5 s on screen, 1 s out.
 - `public static TitleTimes From(TimeSpan fadeIn, TimeSpan stay, TimeSpan fadeOut)`: Creates timings from durations.
+
+## TntPrimeCause (enum, other)
+
+```csharp
+public enum TntPrimeCause : byte
+```
+
+What set a TNT block off (TntPrime).
+
+- `Fire` = 0: Fire burned the TNT block (the fire is the priming block).
+- `Redstone` = 1: Redstone power reached the TNT block.
+- `Player` = 2: A player lit it with flint and steel or a fire charge.
+- `Explosion` = 3: Another explosion set it off (a chain reaction).
+- `Projectile` = 4: A burning projectile hit it.
+- `BlockBreak` = 5: A player broke unstable TNT (the TNT is primed instead of dropped).
+- `Dispenser` = 6: A dispenser lit it with flint and steel (the dispenser is the priming block).
+
+## TransformReason (enum, other)
+
+```csharp
+public enum TransformReason : byte
+```
+
+Why a mob is transformed into another mob (EntityTransform).
+
+- `Unknown` = 0: Anything else (a hoglin becomes a zoglin).
+- `Cured` = 1: A zombie villager is cured and becomes a villager.
+- `Drowned` = 2: A zombie in water becomes a drowned.
+- `Infection` = 3: A zombie infects a villager, or kills one: a zombie villager.
+- `Lightning` = 4: A lightning bolt struck it: a pig becomes a zombie pig, a villager a witch.
+- `Metamorphosis` = 5: A tadpole grows into a frog.
+- `PiglinZombified` = 6: A piglin is zombified.
+- `Sheared` = 7: A mooshroom is sheared into a cow.
+- `Frozen` = 8: A skeleton is frozen in powder snow and becomes a stray.
+
+## UnleashReason (enum, other)
+
+```csharp
+public enum UnleashReason : byte
+```
+
+Why a leashed entity is unleashed (EntityUnleash).
+
+- `HolderGone` = 0: The holder (player, knot or mob) is gone or dead.
+- `PlayerUnleash` = 1: A player took the lead off or sheared the leash. Never the reason of EntityUnleash: a player action fires PlayerUnleashEntity only.
+- `Distance` = 2: The leashed entity is too far from its holder.
+- `Unknown` = 3: Any other reason (the dimension changed, a bucket, a copper golem statue, ...).
 
 ## Utf8String (struct, primitives)
 
@@ -3778,6 +4613,33 @@ Compares dotted versions against constraints (`>=`, `>`, `=`, `<`, `<=`, `^` = s
 
 - `public static bool Satisfies(string? constraint, string version)`: Whether a version satisfies a constraint.
 
+## WeatherCause (enum, other)
+
+```csharp
+public enum WeatherCause : byte
+```
+
+Why the rain or the thunder of a world changes (RainChange, ThunderChange).
+
+- `Command` = 0: /weather.
+- `Natural` = 1: The weather cycle.
+- `Sleep` = 2: Everyone slept through the night: the weather is cleared.
+- `Plugin` = 3: A plugin.
+- `Unknown` = 4: Not known.
+
+## WorldSaveCause (enum, other)
+
+```csharp
+public enum WorldSaveCause : byte
+```
+
+Why a world is saved (WorldSave).
+
+- `Autosave` = 0: The periodic autosave (and the slime save of a runtime world).
+- `Command` = 1: /save-all.
+- `Shutdown` = 2: The server stops.
+- `Plugin` = 3: A plugin (Server.Worlds save).
+
 ## BlockState (struct, worlds)
 
 ```csharp
@@ -3795,6 +4657,7 @@ A block state: a block plus its properties, as the numeric id of the global pale
 - `public bool Equals(BlockState other)`
 - `public override bool Equals(object? obj)`
 - `public override int GetHashCode()`
+- `public bool IsIn(string tag)`: Whether the block of this state is in a block tag (`Blocks`): `state.IsIn("#minecraft:logs")`.
 - `public override string ToString()`
 - `public static BlockState Parse(string text)`: Parses "minecraft:stone" or "minecraft:oak_stairs[facing=north]" (missing properties take the block's defaults).
 - `public static bool TryParse(string text, out BlockState state)`: Parses a block state text.
@@ -3882,29 +4745,34 @@ The weather of a dimension.
 public readonly struct World : IEquatable<World>
 ```
 
-A handle to a dimension (overworld, nether, end ...). Blittable. Dimensions live as long as the server. The members are split over several files by topic: blocks and block entities (`World.Blocks.cs`), entities and effects (`World.Entities.cs`), time, weather, spawn and chunk loading (`World.Environment.cs`). Everything here must be called on the tick thread.
+A handle to a world: a vanilla dimension (overworld, nether, end), which lives as long as the server, or a runtime world made by `/world` or `Server.CreateWorldAsync`, which lives until it is unloaded. Blittable. The members are split over several files by topic: blocks and block entities (`World.Blocks.cs`), entities and effects (`World.Entities.cs`), time, weather, spawn and chunk loading (`World.Environment.cs`), runtime worlds (`World.Runtime.cs`). Everything here must be called on the tick thread.
 
-- `public World(int index)`: Wraps a dimension slot.
-- `public readonly int Index;`: The dimension slot (overworld 0, nether 1, end 2).
+- `public World(int index)`: Wraps a world handle.
+- `public readonly int Index;`: The world handle: the slot in the low 16 bits (overworld 0, nether 1, end 2), and for a runtime world the generation of its slot above them, so a handle kept after its world was unloaded never names the world that reuses the slot. The value `ChunkLoadEvent.Dimension` and the other events carry.
+- `public WorldBorder Border { get; }`: The world border of this dimension (every dimension has one, runtime worlds included). See `WorldBorder`.
 - `public long DayTime { get; set; }`: The time of day clock in ticks since the world was created (a day is 24000 ticks: 0 is sunrise, 6000 noon, 12000 sunset, 18000 midnight). Setting it moves the sun for every player at once and fires `TimeSkipEvent` (reason `Custom`).
 - `public bool DayTimePaused { get; set; }`: Whether the day/night clock is stopped (`/time pause`).
 - `public float DayTimeRate { get; set; }`: How fast the day/night clock runs (1 = normal, 2 = twice as fast).
 - `public IReadOnlyList<Entity> Entities { get; }`: Every entity of the dimension (players, mobs, item entities, experience orbs, projectiles, falling blocks ...). A snapshot: entities that spawn or vanish afterwards are not reflected.
 - `public long GameTime { get; }`: The number of ticks the dimension has been running (does not change with `/time set`; 20 per second).
 - `public long GeneratedChunkCount { get; }`: How many chunks this dimension has generated from scratch since the server started (chunks loaded from disk do not count): sample it twice to get a generation rate.
-- `public bool HasDayTime { get; }`: Whether this dimension has a day/night clock. In this server version only the overworld has one; the nether and the end have a fixed time.
+- `public WorldGenerator? Generator { get; }`: The generator of a runtime world; null for a vanilla dimension.
+- `public bool HasDayTime { get; }`: Whether this world has a day/night clock: the overworld, and the runtime worlds of the overworld type (each with a clock of its own); the nether, the end and their runtime copies have a fixed time.
 - `public int Height { get; }`: The build height: the number of block layers (384 in the overworld). The highest block y is `MinY + Height - 1`.
 - `public bool IsRaining { get; }`: Whether it is raining (also during a thunderstorm).
+- `public bool IsRuntime { get; }`: Whether this is a runtime world (made by `/world create` or `Server.CreateWorldAsync`), not a vanilla dimension.
+- `public bool IsTemporary { get; }`: Whether this is a temporary runtime world (in memory only, gone when it is unloaded).
 - `public bool IsThundering { get; }`: Whether a thunderstorm is going on.
-- `public bool IsValid { get; }`: Whether the slot names a dimension of this server.
+- `public bool IsValid { get; }`: Whether the handle names a live world of this server (false once a runtime world is unloaded).
 - `public string Key { get; }`: The dimension key, e.g. "minecraft:overworld" (empty if the index is invalid).
 - `public int LoadedChunkCount { get; }`: How many chunks are loaded in this dimension right now.
 - `public int MaxY { get; }`: The highest block y of the dimension.
 - `public int MinY { get; }`: The lowest block y of the dimension (-64 in the overworld).
 - `public IReadOnlyList<Player> Players { get; }`: The players in the dimension.
 - `public int SeaLevel { get; }`: The sea level (63 in the overworld).
-- `public Location SpawnLocation { get; }`: The spawn point of the dimension (where new players appear and where players without a bed respawn) and its facing. Only the overworld has a world spawn the game keeps and saves; the other dimensions report a placeholder.
-- `public WeatherType Weather { get; }`: The weather. Only the overworld has weather in this server version; the other dimensions always report `WeatherType.Clear`.
+- `public Location SpawnLocation { get; }`: The spawn point of the world (where new players appear and where players without a bed respawn) and its facing. The overworld and the runtime worlds have a spawn the game keeps and saves; the nether and the end report a placeholder.
+- `public WorldStorage? Storage { get; }`: Where a saved runtime world keeps its data; null for a temporary world and for a vanilla dimension.
+- `public WeatherType Weather { get; }`: The weather. The overworld and the runtime worlds of the overworld type have weather (a runtime world its own); the other worlds always report `WeatherType.Clear`.
 - `public static World End { get; }`: The end.
 - `public static World Nether { get; }`: The nether.
 - `public static World Overworld { get; }`: The overworld.
@@ -3915,17 +4783,23 @@ A handle to a dimension (overworld, nether, end ...). Blittable. Dimensions live
 - `public bool Equals(World other)`
 - `public override bool Equals(object? obj)`
 - `public bool Explode(Vec3d position, float power, bool setFire = false, bool breakBlocks = true, Entity source = default)`: Creates an explosion like a creeper's: it damages and pushes entities (with exposure and distance falloff), destroys blocks (dropping loot, with decay), optionally lights fires, and the clients get the particles and the sound.
+- `public Task<byte[]> ExportAsync()`: The world as a blob: its blocks, block entities, entities and points of interest in one buffer, the format of slime worlds. Keep it (a file in your data folder, a database) and pass it as `WorldOptions.Template` to make copies: one arena per match. Only temporary and slime worlds can be exported. The world is saved into its storage first. The task completes on the tick thread, a tick or more later.
 - `public BlockState GetBlock(BlockPos pos)`: Reads a block state. A position in an unloaded chunk or outside the build height reads as air (check `World.IsBlockLoaded` to tell); the chunk is not loaded by the read.
 - `public NbtCompound? GetBlockEntityData(BlockPos pos)`: The data of the block entity at a position (a chest's items, a sign's text, a spawner ...) in the form `/data get block` shows, including the `id` and the position keys.
+- `public string? GetGameRule(string name)`: A game rule's value in this world as `/gamerule` shows it: `"true"`, `"false"` or a number. A runtime world has rules of its own for what happens in it (keep_inventory, mob_griefing, random_tick_speed, advance_time ...); the vanilla dimensions share the overworld's. The rules of the server (send_command_feedback, reduced_debug_info, the command limits ...) are the same everywhere.
 - `public override int GetHashCode()`
 - `public BlockInventory? GetInventory(BlockPos pos)`: The inventory of the block entity at a position (`BlockInventory.At`).
 - `public int HighestBlockY(int x, int z, HeightMap kind = HeightMap.MotionBlocking)`: The y of the highest block of a column (read from the chunk's height maps, so it is cheap).
 - `public bool IsBlockLoaded(BlockPos pos)`: Whether the block position is inside a loaded chunk and within the build height.
 - `public bool IsChunkLoaded(int chunkX, int chunkZ)`: Whether the chunk is loaded and ready (generated, lit, in memory). Blocks of other chunks read as air and cannot be changed.
 - `public int PlaySound(string sound, Vec3d position, SoundCategory category = SoundCategory.Master, float volume = 1f, float pitch = 1f)`: Plays a sound at a position to every player of the dimension who is close enough to hear it (16 blocks, or farther for a volume above 1).
+- `public Task SaveAsync()`: Saves a runtime world: an anvil world's chunks, entities and points of interest; a slime world's file. Nothing for a temporary world. The task completes on the tick thread, a tick or more later.
 - `public bool SetBlock(BlockPos pos, BlockState state, BlockUpdateFlags flags = BlockUpdateFlags.All)`: Changes a block, like `/setblock`: the old block entity goes away, the new block's placement logic and the neighbour updates run (per `flags`), the clients are told. No player event fires (this is not a player placing the block); the engine's own block events (a fire spreading, a piston moving) are the ones the block triggers itself.
 - `public bool SetBlock(BlockPos pos, string state, BlockUpdateFlags flags = BlockUpdateFlags.All)`: Changes a block to the state parsed from text (`"minecraft:oak_stairs[facing=north]"`).
 - `public bool SetBlockEntityData(BlockPos pos, NbtCompound data, bool merge = true)`: Changes the data of a block entity, like `/data merge block` (or `/data modify` with the full compound). The clients receive the new data.
+- `public bool SetGameRule(string name, string value)`: Sets a game rule in this world, like `/gamerule` run there (see `World.GetGameRule` for which worlds share which rules).
+- `public bool SetGameRule(string name, bool value)`: Sets a boolean game rule (see `World.SetGameRule`).
+- `public bool SetGameRule(string name, int value)`: Sets a numeric game rule (see `World.SetGameRule`).
 - `public bool SetSpawn(BlockPos pos, float yaw = 0f, float pitch = 0f)`: Changes the spawn point (like `/setworldspawn`; the clients are told the new position of the compass and of the respawn, and it is saved with the world).
 - `public bool SetWeather(WeatherType weather, int? durationTicks = null)`: Sets the weather like `/weather`. The change reaches the players immediately and fires `WeatherChangeEvent`.
 - `public Entity SpawnEntity(string type, Vec3d position, NbtCompound? nbt = null, float yaw = 0f, float pitch = 0f)`: Spawns an entity of a type, like `/summon`. Mobs the engine simulates (zombies, cows, creepers ...) get their normal spawn logic: with no NBT their random attributes and equipment are rolled; with NBT the data is applied as given (`{Health:5f,CustomName:'"Bob"'}`). Item entities (`minecraft:item` with `Item:{id:"minecraft:diamond",count:3}`) and experience orbs (`minecraft:experience_orb` with `Value`) are supported too. The spawn fires `EntitySpawnEvent` (reason `Plugin`) where the entity kind has that event, and a handler may cancel it.
@@ -3934,6 +4808,76 @@ A handle to a dimension (overworld, nether, end ...). Blittable. Dimensions live
 - `public bool TryGetBlock(BlockPos pos, out BlockState state)`: Reads a block state, saying whether the position was readable.
 - `public static bool operator !=(World a, World b)`: Inequality.
 - `public static bool operator ==(World a, World b)`: Equality.
+
+## WorldBorder (class, worlds)
+
+```csharp
+public sealed class WorldBorder
+```
+
+The world border of a dimension: the square the players are meant to stay in (vanilla's `WorldBorder`, the state `/worldborder` changes). Outside it a living entity takes damage per block beyond the safe zone, the collision of entities stops at it, and the clients draw it. Every setter goes through the same engine path as the command: the clients get the matching packets at once, the border is used by the physics from the next tick, and it is saved with the world. Get it from `World.Border`; it is a light view of the dimension's border (nothing is cached), so reading it again is cheap. This is the server's border. The client-only packets `Packets.Clientbound.SetBorderCenter`, `SetBorderSize` and `SetBorderLerpSize` change only what one client draws; they do not move this border.
+
+Everything here must be called on the tick thread (`WrongThreadException` otherwise). Values outside the command's limits throw `ArgumentOutOfRangeException` before anything changes.
+
+- `public const double MaxCenter = 29999984;`: The largest absolute coordinate of the centre (vanilla's absolute maximum, 29,999,984).
+- `public const double MaxSize = 59999968;`: The largest size of a border in blocks across (the command's limit, 5.9999968E7).
+- `public ValueTuple<double, double> Center { get; set; }`: The centre of the border (x, z) in blocks. Setting it moves the border (like `/worldborder center`); see `WorldBorder.SetCenter`.
+- `public double DamagePerBlock { get; set; }`: The damage a living entity takes per block it is outside the border (beyond the `WorldBorder.SafeZone`). Default 0.2. Not negative.
+- `public bool IsMoving { get; }`: Whether the border is moving to another size (a `WorldBorder.SetSize` with a lerp time, not finished yet).
+- `public long LerpTicksRemaining { get; }`: The ticks left until a moving border reaches its target size (0 when it stands still).
+- `public double SafeZone { get; set; }`: The distance inside the border, in blocks, where the damage does not start yet (the damage buffer of `/worldborder damage buffer`). Default 5. Not negative.
+- `public double Size { get; }`: The size of the border in blocks across. While the border moves (see `WorldBorder.IsMoving`) this is the size it has reached.
+- `public double TargetSize { get; }`: The size the border is moving to, or `WorldBorder.Size` when it stands still.
+- `public int WarningDistance { get; set; }`: How many blocks from the border the red warning shows on the client (default 5). Not negative.
+- `public int WarningTime { get; set; }`: The warning shown when the border is about to shrink onto a player, in ticks (default 300, 15 seconds). Not negative.
+- `public World World { get; }`: The dimension this border belongs to.
+- `public bool IsInside(BlockPos pos)`: Whether a block lies inside the border: its x and z (the block's minimum corner) are within the square, as the game decides it (x and z at or after the minimum, before the maximum).
+- `public bool IsInside(Location location)`: Whether a position lies inside the border. A location in another dimension is outside this border.
+- `public void SetCenter(double x, double z)`: Moves the centre of the border, like `/worldborder center`. The clients are told at once.
+- `public void SetSize(double size, long lerpTimeMs = 0)`: Sets the size of the border, like `/worldborder set <size> <time>`. With `lerpTimeMs` 0 the size changes at once (the clients are told the new size); above 0 the border moves to `size` over that time, the size being interpolated every tick (the clients are told the target and the time). The time is rounded up to whole ticks (50 ms each). Setting the current size is a no-op, like the command's "nochange": nothing is sent, and a border that is moving keeps moving (the current size is the interpolated one, so the no-op also holds while a lerp runs).
+
+## WorldGenerator (enum, worlds)
+
+```csharp
+public enum WorldGenerator : int
+```
+
+How a runtime world makes its terrain.
+
+- `Normal` = 0: The vanilla terrain of the dimension type (overworld, nether or end noise), with its biomes and structures.
+- `Flat` = 1: Superflat (overworld type only): `WorldOptions.FlatSettings`, or the classic preset (bedrock, two dirt, grass).
+- `Void` = 2: Nothing (overworld type only): every chunk is empty air. Build into it, or start it from a `WorldOptions.Template`.
+
+## WorldOptions (class, worlds)
+
+```csharp
+public sealed class WorldOptions
+```
+
+What `Server.CreateWorldAsync` makes. Only `WorldOptions.Name` is required.
+
+- `public WorldOptions(string name)`: Options for a world named `name`.
+- `public string? DimensionType { get; init; }`: The vanilla dimension type the world uses: `"minecraft:overworld"`, `"minecraft:the_nether"` or `"minecraft:the_end"` (height, sky, portals, fast lava). Null: the template's, or the overworld. Flat and void worlds use the overworld type.
+- `public string? FlatSettings { get; init; }`: The superflat layers and options of a `WorldGenerator.Flat` world as vanilla's `generator-settings` JSON (`{"layers":[{"block":"minecraft:stone","height":4}],"biome":"minecraft:plains"}`). Null: the classic preset.
+- `public WorldGenerator? Generator { get; init; }`: The terrain. Null: the template's generator, or `WorldGenerator.Normal`.
+- `public string Name { get; }`: The world's name (see the constructor).
+- `public long? Seed { get; init; }`: The generator's seed. Null: the template's, or a random one.
+- `public BlockPos? Spawn { get; init; }`: The world's spawn. Null: the template's, else the top of the layers of a flat world, else 0 64 0.
+- `public WorldStorage Storage { get; init; }`: Where a saved world keeps its data (default `WorldStorage.Anvil`). A world made from a `WorldOptions.Template` is temporary or slime.
+- `public bool Structures { get; init; }`: Villages, strongholds and the other structures of a normal or flat world (default true).
+- `public ReadOnlyMemory<byte>? Template { get; init; }`: A world blob from `World.ExportAsync` or `/world export`: the new world starts as a copy of it (its blocks, block entities, entities). Chunks the blob does not have are made by the generator (a void world: empty). The world must be `WorldOptions.Temporary` or `WorldStorage.Slime`. At most `[worlds] max_blob_mib` MiB.
+- `public bool Temporary { get; init; }`: True: the world lives in memory only and is gone when it is unloaded or the server stops (one world per match). `WorldOptions.Storage` is ignored. False: the world is saved and can be loaded again with `Server.LoadWorldAsync`.
+
+## WorldStorage (enum, worlds)
+
+```csharp
+public enum WorldStorage : int
+```
+
+Where a saved runtime world keeps its data.
+
+- `Anvil` = 0: Region files under `<world>/dimensions/<namespace>/<name>/`, like the vanilla dimensions. Always saved when unloaded.
+- `Slime` = 1: One file (`world.rjwb`) in the world's folder, written when the world is saved or unloaded, and every few minutes (`[worlds] slime_save_seconds`). In memory while the world is loaded: for small worlds (lobbies, arenas, templates).
 
 ## WrongThreadException (class, scheduler)
 
