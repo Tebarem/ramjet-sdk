@@ -15,6 +15,7 @@ Guides and references for writing C# plugins for a Ramjet Minecraft server. Plug
 - [Events](concepts/events.md): subscribing, priorities, cancellation, mutable fields, borrowed strings and custom events.
 - [Commands](concepts/commands.md): Brigadier command trees, typed arguments, suggestions, and the flat form.
 - [Permissions](concepts/permissions.md): nodes, defaults, wildcards, groups, replacing the backend, vanilla ops.
+- [Administration](concepts/administration.md): the operator list, the whitelist and the ban lists, the login order, and what a change does to online players.
 - [Config and data](concepts/config-and-data.md): typed JSON config with defaults, the data folder, atomic writes.
 - [Entities, handles and the ECS](concepts/entities-and-ecs.md): why an `Entity` is a handle, components, queries and the reference rule.
 - [Systems and tick phases](concepts/systems.md): per-tick systems, ordering against the server's own systems.
@@ -24,6 +25,8 @@ Guides and references for writing C# plugins for a Ramjet Minecraft server. Plug
 - [Logs and debugging](concepts/logging.md): the per-plugin log folder, exceptions, the compiler output of source plugins, and reading them with an agent.
 - [Performance rules](concepts/performance.md): allocation-free hot paths and what each call costs.
 - [Worlds, blocks and chunks](concepts/worlds.md): the three dimensions, reading and changing blocks, chunk tickets, entities and effects, time and weather, teleporting between worlds, what is saved.
+- [Loot tables and tags](concepts/loot-and-tags.md): rolling the datapack's loot tables with a context, seeded rolls, setting a container's loot, and the block, item, entity type and biome tags.
+- [Living entities](concepts/living-entities.md): health and damage, potion effects, attributes and modifiers, equipment, the mob flags and attack targets, through `LivingEntity`.
 
 ## Guides
 

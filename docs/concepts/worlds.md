@@ -94,6 +94,23 @@ In this server version **only the overworld has a day/night clock, weather and a
 | `Weather`, `IsRaining`, `IsThundering`, `SetWeather(type, durationTicks)` | like `/weather`; fires `WeatherChangeEvent`; `SetWeather` returns false where there is no weather |
 | `SpawnLocation`, `SetSpawn(pos, yaw, pitch)` | the world spawn (like `/setworldspawn`, saved with the world); `SetSpawn` returns false outside the overworld |
 
+## World border
+
+Every dimension has a **world border**: the square the server keeps players in, the one `/worldborder` changes. `world.Border` is the handle; it is a light view of the border, so read it again whenever you need the current state.
+
+| Member | Meaning |
+|---|---|
+| `Center` (get, set) | the centre `(x, z)`; setting it moves the border at once, like `/worldborder center` |
+| `Size`, `TargetSize`, `IsMoving`, `LerpTicksRemaining` | the size now, the size a moving border is heading to, whether a lerp is running and how many ticks it has left |
+| `SetSize(size, lerpTimeMs = 0)` | like `/worldborder set <size> <time>`: at once when the time is 0, otherwise the border moves to `size` over that time (rounded up to whole 50 ms ticks) |
+| `DamagePerBlock`, `SafeZone` (get, set) | the damage a living entity takes per block outside the border, and the distance inside it where the damage does not start yet (defaults 0.2 and 5) |
+| `WarningDistance`, `WarningTime` (get, set) | how many blocks from the border the red warning shows (default 5), and how long before the border reaches a player, in ticks (default 300) |
+| `IsInside(pos)`, `IsInside(location)` | whether a block or a position lies inside the square; a location in another dimension is outside |
+
+Sizes run from 1 to 59,999,968 blocks, centre coordinates up to 29,999,984 in absolute value, and the settings are not negative. Any other value throws `ArgumentOutOfRangeException` and changes nothing. Every change reaches the players of the dimension at once, the physics (collisions, mob spawning) uses the new square from the next tick, and the border is saved with the world. A moving border stops moving while the game is frozen (`/tick freeze`), as in vanilla.
+
+The packets `Packets.Clientbound.SetBorderCenter`, `SetBorderSize` and `SetBorderLerpSize` are a different thing: they change only what one client draws, so a border that exists for one player only. They do not move the server's border; use `world.Border` for that.
+
 ## Moving players between worlds
 
 `player.Teleport(location)` moves a player anywhere, **also into another dimension**: the `Location` carries the world.
@@ -125,6 +142,6 @@ These are not part of the plugin API in this version. Do not build on them; this
 
 - Creating, loading, unloading, copying or deleting worlds at run time (Bukkit's `WorldCreator`, Multiverse-style multi-world servers), world templates, temporary instanced worlds (one world per match or per party), and saving a world into or loading it from a single file or a database (SlimeWorldManager-style worlds). A server has exactly the three dimensions of its world folder.
 - A day/night clock, weather and a world spawn in the nether and the end.
-- Changing a world's game rules, difficulty or world border from the API (use the commands from the console).
+- Changing a world's game rules or difficulty from the API (use the commands from the console). The world border can be changed from the API (see [World border](#world-border)).
 
 Workarounds that work today: build arenas or lobbies in a far-away area of an existing dimension and keep their chunks loaded with tickets while they are in use; reset an arena by writing its blocks back from your own copy, spread over several ticks.

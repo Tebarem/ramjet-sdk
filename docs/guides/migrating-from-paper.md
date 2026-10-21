@@ -36,7 +36,7 @@ If you have written Paper plugins you already know most of the concepts. This pa
 | `Cancellable`, custom `Event` + `HandlerList` | a struct implementing `IEvent` with a `Key`; `Events.Fire(ref e)` |
 | `AsyncPlayerChatEvent` | `PlayerChatEvent` (synchronous, one event) |
 | `PlayerJoinEvent#setJoinMessage` | `e.SetJoinMessage(component)` |
-| the event catalogue | [78 events](../reference/events.md): player, block, entity, inventory, world, server. Paper has more; [Events compared with Paper](../reference/events-compared-with-paper.md) maps every Paper event to a Ramjet event and lists what is missing and planned |
+| the event catalogue | [89 events](../reference/events.md): player, block, entity, inventory, world, server. Paper has more; [Events compared with Paper](../reference/events-compared-with-paper.md) maps every Paper event to a Ramjet event and lists what is missing and planned |
 
 ### Scheduling and threads
 

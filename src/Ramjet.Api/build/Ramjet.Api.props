@@ -19,5 +19,6 @@
     <Using Include="Mc.Scripting.Nbt" />
     <Using Include="Mc.Scripting.Inventories" />
     <Using Include="Mc.Scripting.Content" />
+    <Using Include="Mc.Scripting.Loot" />
   </ItemGroup>
 </Project>

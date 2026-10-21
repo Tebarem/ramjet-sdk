@@ -51,6 +51,34 @@ Commands.Register("hello", ctx =>
 
 This registers a `hello` literal plus one greedy `args` argument, so the client shows no typed arguments and offers no completion. `CommandContext.Name`, `RawArgs` and `Args` give you the word and what followed. Prefer the Brigadier form for anything with arguments, suggestions or permissions.
 
+## Running a command line
+
+`Server.DispatchCommand` runs a command line as the console or as a player, through the server's own dispatcher. Vanilla commands and the plugin commands of the server both run:
+
+```csharp
+CommandResult done = Server.DispatchCommand("gamemode creative Steve");       // as the console (operator level 4)
+CommandResult asPlayer = Server.DispatchCommand(player, "home base");         // with the player's permissions
+
+if (!asPlayer.Success)
+    player.SendMessage(asPlayer.Error ?? "The command failed.");
+```
+
+- The console's feedback goes to the server log. A player's goes to the player's chat, as when the player types the line.
+- The line may start with a slash or not. It is limited to 32767 characters from the console and to 256 characters for a player (a chat line; a character is a UTF-16 unit, as in vanilla).
+- `Result` is the value the command returns (for vanilla, the number of successful runs). On failure, `Success` is false and `Error` holds the English message. The sender has already seen that message.
+- No `PlayerCommandEvent` fires for a dispatched line.
+- A command may dispatch another, up to 8 levels deep; a deeper dispatch fails.
+- Call it on the server tick thread (`Scheduler.RunSync` gets you there from elsewhere).
+
+**Plugin commands.** When plugins run in their own process (the default), `DispatchCommand` cannot run a plugin command, its own or another plugin's: the plugin waits for this call, so the command cannot run meanwhile, and the dispatch fails with a message that names `DispatchCommandAsync`. Use the queued form for those:
+
+```csharp
+// a kit that runs another plugin's /eco command: the line runs at the end of the tick, the task completes a tick later
+CommandResult eco = await Server.DispatchCommandAsync(player, "eco give Steve 100");
+```
+
+Use `DispatchCommand` when a vanilla command's result is needed at once, inside the code that runs. Use `DispatchCommandAsync` for anything else, plugin commands included. Its task completes on the server thread a tick after the line is queued. At most 64 lines are queued per tick and 1024 are pending; beyond that the task completes at once with a failure. A line queued by a queued command is one level deeper, and more than 8 levels fail.
+
 ## Intercepting commands: `PlayerCommandEvent`
 
 The server fires `PlayerCommandEvent` for every command a player types (the line without the leading slash). Use it to watch, rewrite or veto commands, including vanilla ones:

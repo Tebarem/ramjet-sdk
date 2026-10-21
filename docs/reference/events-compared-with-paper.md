@@ -2,13 +2,13 @@
 
 How the Ramjet event catalogue compares with the events of the Paper API (Bukkit and Paper's own events): what each Paper event maps to, what is missing and what is planned.
 
-Paper's API for Minecraft 26.3 defines **439 events** that a plugin can listen to (24 of them deprecated). Ramjet has **78 events** today, and 3 more are being added (combat tag start and end, and a pre-quit event). The two catalogues overlap less than the numbers suggest: Ramjet has several events Paper does not (see [Events Paper does not have](#events-paper-does-not-have)), and many Paper events exist only to work around Bukkit internals.
+Paper's API for Minecraft 26.3 defines **439 events** that a plugin can listen to (24 of them deprecated). Ramjet has **89 events** today. The two catalogues overlap less than the numbers suggest: Ramjet has several events Paper does not (see [Events Paper does not have](#events-paper-does-not-have)), and many Paper events exist only to work around Bukkit internals.
 
 | | Paper events |
 |---|---:|
-| Covered by a Ramjet event | 67 |
-| Partly covered (the Ramjet event exists, something is missing) | 18 |
-| Missing | 326 |
+| Covered by a Ramjet event | 75 |
+| Partly covered (the Ramjet event exists, something is missing) | 16 |
+| Missing | 320 |
 | Not applicable (deprecated aliases, Bukkit or Folia internals) | 28 |
 | **Total** | **439** |
 
@@ -18,7 +18,7 @@ How to read this page:
 
 - **Covered** means a plugin can do with the Ramjet event what the Paper event allows: observe it, cancel it where Paper allows, and change the data Paper lets you change. The Ramjet name is the Paper name without its package; the C# types are in `Mc.Scripting.Events` and listed in the [event catalogue](events.md).
 - **Partial** says what is missing.
-- **Planned next** (152 events) are the ones that several widely installed open-source plugins listen to (we counted the event types in the listeners of about twenty of them), plus the events that sit in the same piece of server code and cost little to add alongside. **Planned later** (30) are used by a few of those plugins, **not planned yet** (162) by none of them. If you need an event that is not planned next, say so in an issue on the SDK repository and it moves up.
+- **Planned next** (145 events) are the ones that several widely installed open-source plugins listen to (we counted the event types in the listeners of about twenty of them), plus the events that sit in the same piece of server code and cost little to add alongside. **Planned later** (30) are used by a few of those plugins, **not planned yet** (161) by none of them. If you need an event that is not planned next, say so in an issue on the SDK repository and it moves up.
 - An event nobody subscribes to costs one bit test on the server, so adding events does not slow it down. The work is placing each hook correctly in the ported vanilla code.
 
 ## Coverage by area
@@ -32,9 +32,9 @@ How to read this page:
 | Explosions and projectiles | 23 | 0 | 0 | 23 | 0 |
 | Vehicles and mounts | 13 | 0 | 0 | 13 | 0 |
 | Inventories, crafting and trading | 42 | 11 | 0 | 27 | 4 |
-| World and weather | 32 | 3 | 4 | 25 | 0 |
+| World and weather | 32 | 11 | 2 | 19 | 0 |
 | Server, commands and connections | 44 | 6 | 2 | 30 | 6 |
-| **All** | **439** | **67** | **18** | **326** | **28** |
+| **All** | **439** | **75** | **16** | **320** | **28** |
 
 ## Covered
 
@@ -128,10 +128,10 @@ Paper events that a Ramjet event replaces. Several Paper events map to one Ramje
 | `PlayerInteractAtEntityEvent` | `PlayerInteractEntityEvent` | PlayerInteractEntity has no click position on the entity (planned next) |
 | `PlayerKickEvent` | `PlayerKickEvent` | PlayerKick fires only for kicks by a command or a plugin; kicks the server decides itself (idle timeout, flying, invalid chat) fire nothing (planned next) |
 | `PlayerPostRespawnEvent` | `PlayerRespawnEvent` | PlayerRespawn fires before the respawn and carries the destination; no event after it (not planned yet) |
-| `ThunderChangeEvent` | `WeatherChangeEvent` | WeatherChange reports Thundering but cannot be cancelled (planned next) |
+| `ThunderChangeEvent` | `ThunderChangeEvent` | ThunderChange is cancellable and gives the cause; it fires before the thunder flips |
 | `TimeSkipEvent` | `TimeSkipEvent` | TimeSkip cannot be cancelled (not planned yet) |
 | `TrialSpawnerSpawnEvent` | `EntitySpawnEvent` | EntitySpawn has no trial spawner reason (planned next) |
-| `WeatherChangeEvent` | `WeatherChangeEvent` | WeatherChange (overworld only) cannot be cancelled (planned next) |
+| `WeatherChangeEvent` | `RainChangeEvent` | RainChange is cancellable and gives the cause; it fires before the rain flips. WeatherChange still reports the visible change |
 
 ## What is planned
 
@@ -173,9 +173,9 @@ The missing events by area. **Next** is what we add first; events that hook the 
 
 ### World and weather
 
-- **Next** (7): `LightningStrikeEvent`, `SpawnChangeEvent`, `ThunderChangeEvent`, `WeatherChangeEvent`, `WorldInitEvent`, `WorldLoadEvent`, `WorldUnloadEvent`
+- **Covered** (8): `LightningStrikeEvent`, `SpawnChangeEvent`, `ThunderChangeEvent`, `WeatherChangeEvent` (through `RainChange`), `WorldInitEvent`, `WorldLoadEvent`, `WorldSaveEvent`, `WorldUnloadEvent`
 - **Later** (8): `AsyncStructureSpawnEvent`, `ChunkPopulateEvent`, `EntitiesLoadEvent`, `EntitiesUnloadEvent`, `GenericGameEvent`, `RaidFinishEvent`, `RaidTriggerEvent`, `StructuresLocateEvent`
-- **Not planned yet** (14): `AsyncStructureGenerateEvent`, `ClockTimeSkipEvent`, `LootGenerateEvent`, `LootableInventoryReplenishEvent`, `MapInitializeEvent`, `RaidSpawnWaveEvent`, `RaidStopEvent`, `TimeSkipEvent`, `WorldBorderBoundsChangeEvent`, `WorldBorderBoundsChangeFinishEvent`, `WorldBorderCenterChangeEvent`, `WorldDifficultyChangeEvent`, `WorldGameRuleChangeEvent`, `WorldSaveEvent`
+- **Not planned yet** (13): `AsyncStructureGenerateEvent`, `ClockTimeSkipEvent`, `LootGenerateEvent`, `LootableInventoryReplenishEvent`, `MapInitializeEvent`, `RaidSpawnWaveEvent`, `RaidStopEvent`, `TimeSkipEvent`, `WorldBorderBoundsChangeEvent`, `WorldBorderBoundsChangeFinishEvent`, `WorldBorderCenterChangeEvent`, `WorldDifficultyChangeEvent`, `WorldGameRuleChangeEvent`
 
 ### Chat
 

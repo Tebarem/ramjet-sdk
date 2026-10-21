@@ -4,6 +4,45 @@ Versions of the `Ramjet.Api` and `Ramjet.Templates` packages. While the API is i
 breaking changes are listed under **Breaking**. `src/Ramjet.Api/Mc.Scripting.Api.surface.txt` lists the full public API, so
 `git diff v<old>..v<new> -- src/Ramjet.Api/Mc.Scripting.Api.surface.txt` shows every API change between two versions.
 
+## 1.0.0-preview.4
+
+A large step toward Paper's API: 155 new events (236 in all) and the APIs plugin authors asked for most.
+
+### Added: APIs
+- **Running commands:** `Server.DispatchCommand(line)` (as the console) and `Server.DispatchCommand(Player, line)` (with the player's
+  permissions) return a `CommandResult` (success, result count, error). `Server.DispatchCommandAsync(...)` queues the line and runs it
+  after the plugins' tick, so it can also run other plugins' commands.
+- **Living entities:** `Entity.AsLiving()` / `Player.AsLiving()` give a `LivingEntity`: health, max health, absorption, heal, damage
+  (by damage type and attacker), potion effects, attributes and modifiers, equipment and drop chances, silent / invulnerable /
+  glowing / invisible, no AI, persistence, custom name, attack target, riding (mount, dismount, eject, passengers).
+- **Administration:** `Server.Operators` (add, remove, check, list, offline players included) and `Server.Whitelist` (enabled,
+  enforced, add, remove, reload).
+- **World border:** `World.Border`: the server-side border (centre, size and lerp, damage, safe zone, warnings, `IsInside`).
+- **Loot and tags:** `LootTables.Generate(key, LootContext)`, `Exists`, `Keys`, `FillContainer`; `Tags.Blocks | Items | EntityTypes |
+  Biomes` (`Contains`, `Values`), `BlockState.IsIn`, `ItemStack.IsIn`.
+- `EquipmentSlot` (`MainHand`, `Feet`, `Legs`, `Chest`, `Head`, `OffHand`, `Body`, `Saddle`) is shared by the living-entity API and the
+  events.
+
+### Added: events
+Explosions and TNT, projectiles and bows, vehicles and mounts, item entities, pickups and XP, health, potion effects and knockback,
+taming, breeding, transformations and sitting, mob targeting and natural spawning, mobs changing blocks, leashes, dispensers and
+hoppers, furnaces, brewing, smithing, stonecutters, anvils and trading, buckets and shearing, item frames, armor stands and placed
+entities, signs, books and lecterns, food, fishing and item durability, beds, spawn points and player state, worlds, weather and
+lightning, block physics, fluids and growth, raids, chunks and structures, portals, teleports and entity removal, piglins, bells,
+beacons and sculk, unknown commands, tab completion, the command list, the server-full check, and the server list ping (icon, version
+name, shown protocol, player sample). The full list with Paper equivalents is on the
+[events compared with Paper](docs/reference/events-compared-with-paper.md) page.
+
+### Changed
+- `EntityExplode` / `BlockExplode` follow Paper: a cancel protects the blocks; entities are still damaged.
+- `EntityDeath` is cancellable and has mutable `DropItems` / `DropExperience`; `PlayerInteractEntity` has `ClickPos`; `PlayerKick`
+  has a `Cause`; `EntityCombust` has the source block; `EntitySpawn` has the `TrialSpawner` reason; `PlayerChat` routes expose their
+  audience.
+
+### Breaking
+- The constructors of `EntityDeath`, `PlayerKick`, `PlayerInteractEntity`, `EntityCombust` and `PlayerChat` gained parameters (only
+  plugins that construct these events themselves are affected).
+
 ## 1.0.0-preview.3
 
 The API the first-party plugins (chat, essentials, pvp, worldedit) use was missing from preview.2, so they did not compile against
