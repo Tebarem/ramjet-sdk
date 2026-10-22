@@ -4162,7 +4162,7 @@
             <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
         </member>
         <member name="T:Mc.Scripting.Events.WeatherChangeEvent">
-            <summary>The rain started or stopped (overworld weather).</summary>
+            <summary>The rain of a world became visible or stopped being visible: it fires when the rain level crosses 0.2, about 20 ticks after the rain starts and up to about 80 ticks after it stops (the level moves 0.01 a tick). A notification, not cancellable. It is not the counterpart of Paper's WeatherChangeEvent: that is RainChange (cancellable, before the flag flips, and at once when /weather or World.SetWeather changes the weather).</summary>
         </member>
         <member name="P:Mc.Scripting.Events.WeatherChangeEvent.CatalogueId">
             <summary>Catalogue id (stable ABI).</summary>
@@ -10593,7 +10593,8 @@
             <summary>The player.</summary>
         </member>
         <member name="P:Mc.Scripting.Inventories.PlayerInventory.SelectedSlot">
-            <summary>The selected hotbar slot (0-8); setting it tells the client.</summary>
+            <summary>The selected hotbar slot (0-8); setting it tells the client. Setting it does not fire <see cref="T:Mc.Scripting.Events.PlayerItemHeldEvent" /> (as Paper's
+            setHeldItemSlot): that event fires only when the client selects a slot itself, and a handler cannot veto a plugin's change.</summary>
         </member>
         <member name="P:Mc.Scripting.Inventories.PlayerInventory.MainHand">
             <summary>The stack in the main hand (the selected hotbar slot).</summary>
@@ -11561,29 +11562,33 @@
             <summary>The golden hearts of absorption in half hearts. Setting it is not clamped to the <c>minecraft:max_absorption</c> attribute (Paper semantics).</summary>
         </member>
         <member name="P:Mc.Scripting.Player.FoodLevel">
-            <summary>The food level, 0..20 (the hunger bar; below 7 sprinting stops, at 0 the player starves).</summary>
+            <summary>The food level, 0..20 (the hunger bar; below 7 sprinting stops, at 0 the player starves). Setting it does not fire
+            <see cref="T:Mc.Scripting.Events.FoodLevelChangeEvent" /> (as Paper's setFoodLevel): that event is for eating, starvation and the natural refill.</summary>
         </member>
         <member name="P:Mc.Scripting.Player.Saturation">
-            <summary>The saturation, 0..<see cref="P:Mc.Scripting.Player.FoodLevel" />: the buffer that is used up before the food level drops.</summary>
+            <summary>The saturation, 0..<see cref="P:Mc.Scripting.Player.FoodLevel" />: the buffer that is used up before the food level drops. Setting it fires no event (see <see cref="P:Mc.Scripting.Player.FoodLevel" />).</summary>
         </member>
         <member name="P:Mc.Scripting.Player.Exhaustion">
-            <summary>The exhaustion, 0..40: at 4 the saturation (or food level) drops by one.</summary>
+            <summary>The exhaustion, 0..40: at 4 the saturation (or food level) drops by one. Setting it fires no event (see <see cref="P:Mc.Scripting.Player.FoodLevel" />).</summary>
         </member>
         <member name="P:Mc.Scripting.Player.ExperienceLevel">
-            <summary>The experience level shown in the HUD. Setting resets the progress within the level.</summary>
+            <summary>The experience level shown in the HUD. Setting resets the progress within the level. Setting it does not fire
+            <see cref="T:Mc.Scripting.Events.PlayerExpChangeEvent" />: as in Paper, only experience orb pickups fire it.</summary>
         </member>
         <member name="P:Mc.Scripting.Player.ExperienceProgress">
-            <summary>The progress to the next level, 0..1 (the green bar). Stored exactly as a float: no rounding to whole points.</summary>
+            <summary>The progress to the next level, 0..1 (the green bar). Stored exactly as a float: no rounding to whole points. Setting it fires no event
+            (see <see cref="P:Mc.Scripting.Player.ExperienceLevel" />).</summary>
         </member>
         <member name="P:Mc.Scripting.Player.TotalExperience">
             <summary>The total experience points ever collected (drives the score on the death screen). Read only; use <see cref="M:Mc.Scripting.Player.GiveExperience(System.Int32)" />.</summary>
         </member>
         <member name="M:Mc.Scripting.Player.GiveExperience(System.Int32)">
-            <summary>Gives experience points (negative takes them away), levelling up as needed, like <c>/xp add</c>.</summary>
+            <summary>Gives experience points (negative takes them away), levelling up as needed, like <c>/xp add</c>. Does not fire
+            <see cref="T:Mc.Scripting.Events.PlayerExpChangeEvent" />: as in Paper, only experience orb pickups fire it.</summary>
             <param name="points">The points.</param>
         </member>
         <member name="M:Mc.Scripting.Player.GiveExperienceLevels(System.Int32)">
-            <summary>Gives whole experience levels (negative takes them away).</summary>
+            <summary>Gives whole experience levels (negative takes them away). Does not fire <see cref="T:Mc.Scripting.Events.PlayerExpChangeEvent" /> (see <see cref="M:Mc.Scripting.Player.GiveExperience(System.Int32)" />).</summary>
             <param name="levels">The levels.</param>
         </member>
         <member name="P:Mc.Scripting.Player.Air">
@@ -14776,9 +14781,12 @@
             <returns>The awaitable.</returns>
         </member>
         <member name="M:Mc.Scripting.Scheduler.Delay(System.Int64)">
-            <summary>Awaitable that resumes on the tick thread after <paramref name="ticks" /> ticks.</summary>
-            <param name="ticks">Ticks to wait.</param>
-            <returns>The task.</returns>
+            <summary>Completes on the tick thread after <paramref name="ticks" /> ticks: <c>await Scheduler.Delay(1);</c>.
+            Awaited right away (the normal case: the task is not complete at the await), the continuation runs inline on the tick thread
+            when the delay completes it. Awaited after it already completed, the continuation runs on the awaiting thread: use
+            <see cref="M:Mc.Scripting.Scheduler.EnsureTick" /> afterwards if unsure. If the plugin unloads first the task never completes (its continuation is dropped).</summary>
+            <param name="ticks">Ticks to wait (at least 1).</param>
+            <returns>A task that completes when the delay has passed.</returns>
         </member>
         <member name="T:Mc.Scripting.TickAwaitable">
             <summary>The awaitable returned by <see cref="M:Mc.Scripting.Scheduler.ToTick" /> / <see cref="M:Mc.Scripting.Scheduler.ToAsync" />.</summary>
@@ -14880,7 +14888,9 @@
             <summary>Runs a command line as the console: operator level 4, with the feedback in the server log. The line is the command as a player types it,
             with or without the leading slash, and it goes through the server's command dispatcher, so vanilla and plugin commands both run.</summary>
             <remarks>
-            Nothing is sent to the chat and no chat event fires. A line that is too long, has a control character, or names an unknown command fails with
+            Nothing is sent to the chat and no chat event fires: <see cref="T:Mc.Scripting.Events.PlayerCommandEvent" /> does not fire either (as Paper's dispatchCommand
+            does not fire PlayerCommandPreprocessEvent). No API fires it for a line a plugin runs: a plugin that wants its effect does that work itself.
+            A line that is too long, has a control character, or names an unknown command fails with
             a message and runs nothing. A dispatch may run another command (an <c>execute</c> that runs one), up to 8 levels deep; deeper fails.
             <para>
             When the plugins run in the plugin worker process, a dispatch made by a plugin cannot run a plugin command: the worker is blocked in this call
@@ -14900,7 +14910,7 @@
         <member name="M:Mc.Scripting.Server.DispatchCommand(Mc.Scripting.Player,System.String)">
             <summary>Runs a command line as a player: the player's own permissions decide what runs, and the feedback goes to the player's chat, as when the
             player types it. The line is limited to 256 characters (a chat line), with or without the leading slash. See
-            <see cref="M:Mc.Scripting.Server.DispatchCommand(System.String)" /> for the rules; a player who is offline fails at once. Inside an event handler, a system, a scheduler phase or another
+            <see cref="M:Mc.Scripting.Server.DispatchCommand(System.String)" /> for the rules (including that no <see cref="T:Mc.Scripting.Events.PlayerCommandEvent" /> fires); a player who is offline fails at once. Inside an event handler, a system, a scheduler phase or another
             plugin's call it fails with a message and runs nothing: use <see cref="M:Mc.Scripting.Server.DispatchCommandAsync(Mc.Scripting.Player,System.String)" /> there.</summary>
             <param name="player">The player who runs the command.</param>
             <param name="line">The command line (at most 256 characters after an optional leading slash).</param>
@@ -14912,6 +14922,7 @@
             <summary>Queues a command line to run as the console and returns a task for its outcome. Unlike <see cref="M:Mc.Scripting.Server.DispatchCommand(System.String)" /> it works for
             plugin commands too: the line runs at the end of the next tick, when the plugin worker is not in a call.</summary>
             <remarks>
+            Like <see cref="M:Mc.Scripting.Server.DispatchCommand(System.String)" />, no <see cref="T:Mc.Scripting.Events.PlayerCommandEvent" /> fires for the line.
             The task completes on the tick thread a tick after the line ran. At most 64 lines are accepted per tick and 1024 are pending; beyond that the
             task completes at once with a failure. A line queued by a command that runs from a queued line is one level deeper; a line nested more than 8 levels fails.
             </remarks>
@@ -14921,7 +14932,8 @@
             <exception cref="T:System.ArgumentNullException"><paramref name="line" /> is null.</exception>
         </member>
         <member name="M:Mc.Scripting.Server.DispatchCommandAsync(Mc.Scripting.Player,System.String)">
-            <summary>Queues a command line to run as a player, with that player's permissions and feedback. See <see cref="M:Mc.Scripting.Server.DispatchCommandAsync(System.String)" />.</summary>
+            <summary>Queues a command line to run as a player, with that player's permissions and feedback. See <see cref="M:Mc.Scripting.Server.DispatchCommandAsync(System.String)" />. No
+            <see cref="T:Mc.Scripting.Events.PlayerCommandEvent" /> fires for the line.</summary>
             <param name="player">The player who runs the command.</param>
             <param name="line">The command line (at most 256 characters after an optional leading slash).</param>
             <returns>A task that completes with the outcome; at once with a failure when the player is offline.</returns>
@@ -15031,8 +15043,9 @@
             <summary>Unloads a runtime world at the start of the next tick (Bukkit's <c>unloadWorld</c>). The vanilla dimensions stay loaded. Handles of the world are
             invalid afterwards (<see cref="P:Mc.Scripting.Worlds.World.IsValid" /> is false).</summary>
             <param name="world">The world.</param>
-            <param name="save">True: a slime world is written to its file. False: the changes since its last save are thrown away. A temporary world is dropped either
-            way; an anvil world is always saved (false is refused for it).</param>
+            <param name="save">True: a slime world is written to its file. False: the changes since its last save are thrown away (slime worlds only). A temporary
+            world is dropped either way. An anvil world is always saved: with false the task faults with <see cref="T:System.InvalidOperationException" />, and the
+            world stays loaded.</param>
             <param name="movePlayers">True: players still in the world are sent to the overworld spawn first. False: a world with players in it is refused (move them
             with <c>Teleport</c> first).</param>
             <returns>A task that completes on the tick thread when the world is gone.</returns>
@@ -16587,6 +16600,13 @@
         <member name="M:Mc.Scripting.Worlds.World.Explode(Mc.Scripting.Vec3d,System.Single,System.Boolean,System.Boolean,Mc.Scripting.Entity)">
             <summary>Creates an explosion like a creeper's: it damages and pushes entities (with exposure and distance falloff), destroys blocks (dropping loot, with decay), optionally
             lights fires, and the clients get the particles and the sound.</summary>
+            <remarks>
+            Events (as Paper's createExplosion): with <paramref name="breakBlocks" /> true, <see cref="T:Mc.Scripting.Events.EntityExplodeEvent" /> fires when
+            <paramref name="source" /> is an entity and <see cref="T:Mc.Scripting.Events.BlockExplodeEvent" /> when it is none. They fire after the entities are hurt; a cancel
+            protects the blocks and the fire. The event's block list holds the positions the explosion's rays reach (air included, as in vanilla), so in
+            practice it fires whenever <paramref name="breakBlocks" /> is true, even when no block is destroyed. With it false nothing fires.
+            <see cref="T:Mc.Scripting.Events.ExplosionPrimeEvent" /> is not fired.
+            </remarks>
             <param name="position">The centre.</param>
             <param name="power">The radius-like strength (TNT is 4, a creeper 3, a charged creeper 6; the work grows with its cube, so values above 32 are refused).</param>
             <param name="setFire">Whether fires start in the explosion's wake.</param>
@@ -16647,7 +16667,10 @@
             <summary>Whether a thunderstorm is going on.</summary>
         </member>
         <member name="M:Mc.Scripting.Worlds.World.SetWeather(Mc.Scripting.Worlds.WeatherType,System.Nullable{System.Int32})">
-            <summary>Sets the weather like <c>/weather</c>. The change reaches the players immediately and fires <see cref="T:Mc.Scripting.Events.WeatherChangeEvent" />.</summary>
+            <summary>Sets the weather like <c>/weather</c>. The change reaches the players immediately. <see cref="T:Mc.Scripting.Events.RainChangeEvent" /> and
+            <see cref="T:Mc.Scripting.Events.ThunderChangeEvent" /> fire at once, inside this call (a cancel keeps the old state). <see cref="T:Mc.Scripting.Events.WeatherChangeEvent" /> is a
+            notification that fires later, when the rain becomes visible or stops (see its doc); the counterpart of Paper's WeatherChangeEvent is
+            <see cref="T:Mc.Scripting.Events.RainChangeEvent" />.</summary>
             <param name="weather">The new weather.</param>
             <param name="durationTicks">How long it lasts before the natural cycle takes over, or null for the vanilla random duration.</param>
             <returns>False in dimensions without weather.</returns>

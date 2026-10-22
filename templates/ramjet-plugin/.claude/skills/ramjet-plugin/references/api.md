@@ -2012,7 +2012,7 @@ The inventory of a player: 41 slots numbered like the game's own inventory conta
 - `public ItemStack MainHand { get; set; }`: The stack in the main hand (the selected hotbar slot).
 - `public ItemStack OffHand { get; set; }`: The stack in the off hand.
 - `public Player Player { get; }`: The player.
-- `public int SelectedSlot { get; set; }`: The selected hotbar slot (0-8); setting it tells the client.
+- `public int SelectedSlot { get; set; }`: The selected hotbar slot (0-8); setting it tells the client. Setting it does not fire `PlayerItemHeldEvent` (as Paper's setHeldItemSlot): that event fires only when the client selects a slot itself, and a handler cannot veto a plugin's change.
 - `public override int Size { get; }`
 - `public int Give(ItemStack stack)`: Gives a stack to the player: what does not fit into the inventory is dropped at his feet (like picking up with a full inventory).
 - `public ItemStack Hotbar(int index)`: The stack in a hotbar slot.
@@ -3145,12 +3145,12 @@ A handle stays valid only while the player is online: after he leaves it goes st
 - `public bool AllowFlight { get; set; }`: Whether the player may fly (creative mode sets it automatically).
 - `public IReadOnlyList<string> Channels { get; }`: The channels the player's client registered (minecraft:register), in the order it sent them. Empty for a stale handle.
 - `public Component? DisplayName { get; set; }`: The name the server shows for this player where vanilla uses Player.getDisplayName: the join and leave lines, the chat sender, death and advancement messages (the team format applies to it). Null when none is set, and then the profile `Player.Name` is shown. Set it to null to clear it. Not persisted: it is cleared when the player leaves, so a plugin that keeps nicknames sets it again on join. The profile name stays the key of commands, the scoreboard and the click and insertion text of chat. Stale handles: reads give null, writes do nothing.
-- `public double Exhaustion { get; set; }`: The exhaustion, 0..40: at 4 the saturation (or food level) drops by one.
-- `public int ExperienceLevel { get; set; }`: The experience level shown in the HUD. Setting resets the progress within the level.
-- `public double ExperienceProgress { get; set; }`: The progress to the next level, 0..1 (the green bar). Stored exactly as a float: no rounding to whole points.
+- `public double Exhaustion { get; set; }`: The exhaustion, 0..40: at 4 the saturation (or food level) drops by one. Setting it fires no event (see `Player.FoodLevel`).
+- `public int ExperienceLevel { get; set; }`: The experience level shown in the HUD. Setting resets the progress within the level. Setting it does not fire `PlayerExpChangeEvent`: as in Paper, only experience orb pickups fire it.
+- `public double ExperienceProgress { get; set; }`: The progress to the next level, 0..1 (the green bar). Stored exactly as a float: no rounding to whole points. Setting it fires no event (see `Player.ExperienceLevel`).
 - `public int FireTicks { get; set; }`: The ticks the player will keep burning (0 when not on fire). Setting 0 extinguishes.
 - `public float FlySpeed { get; set; }`: The flying speed, 0..1 (default 0.05).
-- `public int FoodLevel { get; set; }`: The food level, 0..20 (the hunger bar; below 7 sprinting stops, at 0 the player starves).
+- `public int FoodLevel { get; set; }`: The food level, 0..20 (the hunger bar; below 7 sprinting stops, at 0 the player starves). Setting it does not fire `FoodLevelChangeEvent` (as Paper's setFoodLevel): that event is for eating, starvation and the natural refill.
 - `public GameMode GameMode { get; set; }`: The player's game mode. Setting it fires `PlayerGameModeChangeEvent` (a handler may cancel it).
 - `public double Health { get; set; }`: Health in half hearts (20 is full). Setting is clamped to 0..`Player.MaxHealth`; 0 kills the player through the normal death handling.
 - `public ItemStack HeldItem { get; }`: The stack in the player's main hand (empty for a stale handle).
@@ -3172,7 +3172,7 @@ A handle stays valid only while the player is online: after he leaves it goes st
 - `public int PermissionLevel { get; }`: The vanilla operator level of the player (0-4, from ops.json); 0 for an offline handle.
 - `public Vec3d Position { get; }`: The player's position (feet), `default` for a stale handle.
 - `public PvpFlags? PvpPolicyFlags { get; }`: The PvP flags last written with `Player.SetPvpPolicy`, or null when the player has no policy (or is not online).
-- `public double Saturation { get; set; }`: The saturation, 0..`Player.FoodLevel`: the buffer that is used up before the food level drops.
+- `public double Saturation { get; set; }`: The saturation, 0..`Player.FoodLevel`: the buffer that is used up before the food level drops. Setting it fires no event (see `Player.FoodLevel`).
 - `public int TotalExperience { get; }`: The total experience points ever collected (drives the score on the death screen). Read only; use `Player.GiveExperience`.
 - `public Uuid Uuid { get; }`: The player's profile id, `default` for a stale handle.
 - `public float WalkSpeed { get; set; }`: The walking speed, 0..1 (default 0.1).
@@ -3189,8 +3189,8 @@ A handle stays valid only while the player is online: after he leaves it goes st
 - `public ref T Get<T>() where T : unmanaged`: Reference to a plugin component on the player's entity; throws if the player lacks it. The reference points into ECS storage and dies with the next structural change: re-fetch instead of keeping it.
 - `public PotionEffect? GetEffect(string effect)`: The active effect of a kind, null when the player does not have it.
 - `public override int GetHashCode()`
-- `public void GiveExperience(int points)`: Gives experience points (negative takes them away), levelling up as needed, like `/xp add`.
-- `public void GiveExperienceLevels(int levels)`: Gives whole experience levels (negative takes them away).
+- `public void GiveExperience(int points)`: Gives experience points (negative takes them away), levelling up as needed, like `/xp add`. Does not fire `PlayerExpChangeEvent`: as in Paper, only experience orb pickups fire it.
+- `public void GiveExperienceLevels(int levels)`: Gives whole experience levels (negative takes them away). Does not fire `PlayerExpChangeEvent` (see `Player.GiveExperience`).
 - `public bool Has<T>() where T : unmanaged`: Whether the player has a plugin component.
 - `public bool HasPermission(string node)`: Whether the player has a permission node (groups, per-player entries, wildcards and node defaults are resolved by the permission backend).
 - `public void Kick(Component reason)`: Disconnects the player. Fires `PlayerKickEvent` first (a handler may cancel it).
@@ -3667,7 +3667,7 @@ Tick-based scheduling (20 ticks = 1 second) and the bridge between the tick thre
 
 `Scheduler.RunLater`/`Scheduler.RunEvery` must be called on the tick thread. `Scheduler.Post`, `Scheduler.RunSync`, `Scheduler.RunAsync` and the awaiters are thread-safe.
 
-- `public Task Delay(long ticks)`: Awaitable that resumes on the tick thread after `ticks` ticks.
+- `public Task Delay(long ticks)`: Completes on the tick thread after `ticks` ticks: `await Scheduler.Delay(1);`. Awaited right away (the normal case: the task is not complete at the await), the continuation runs inline on the tick thread when the delay completes it. Awaited after it already completed, the continuation runs on the awaiting thread: use `Scheduler.EnsureTick` afterwards if unsure. If the plugin unloads first the task never completes (its continuation is dropped).
 - `public TickAwaitable EnsureTick()`: Awaitable that resumes on the tick thread: `await Scheduler.EnsureTick();`. Already on the tick thread it continues synchronously (no hop); otherwise it resumes at the next tick boundary, like `Scheduler.ToTick`. If the plugin unloads first the continuation is dropped.
 - `public void Post(Action action)`: Thread-safe: queue `action` to run on the tick thread next tick (fire and forget).
 - `public Task RunAsync(Action action)`: Runs `action` on the .NET thread pool. Must not touch game APIs (use `Scheduler.RunSync` to hop back).
@@ -3745,9 +3745,9 @@ Everything here except `Server.IsTickThread` and `Server.CurrentTick` must be ca
 - `public static void Broadcast(Component message)`: Sends a rich text message to every online player and logs its plain text on the console.
 - `public static Task<World> CreateWorldAsync(WorldOptions options)`: Makes a runtime world (Bukkit's `WorldCreator`): saved (anvil or slime storage) or temporary, normal, flat or void terrain, empty or a copy of a `WorldOptions.Template`. The world is built at the start of the next tick; the task completes then, on the tick thread, so the code after `await` can use the world at once. Move players in with `player.Teleport(new Location(world, x, y, z))`.
 - `public static CommandResult DispatchCommand(string line)`: Runs a command line as the console: operator level 4, with the feedback in the server log. The line is the command as a player types it, with or without the leading slash, and it goes through the server's command dispatcher, so vanilla and plugin commands both run.
-- `public static CommandResult DispatchCommand(Player player, string line)`: Runs a command line as a player: the player's own permissions decide what runs, and the feedback goes to the player's chat, as when the player types it. The line is limited to 256 characters (a chat line), with or without the leading slash. See `Server.DispatchCommand` for the rules; a player who is offline fails at once. Inside an event handler, a system, a scheduler phase or another plugin's call it fails with a message and runs nothing: use `Server.DispatchCommandAsync` there.
+- `public static CommandResult DispatchCommand(Player player, string line)`: Runs a command line as a player: the player's own permissions decide what runs, and the feedback goes to the player's chat, as when the player types it. The line is limited to 256 characters (a chat line), with or without the leading slash. See `Server.DispatchCommand` for the rules (including that no `PlayerCommandEvent` fires); a player who is offline fails at once. Inside an event handler, a system, a scheduler phase or another plugin's call it fails with a message and runs nothing: use `Server.DispatchCommandAsync` there.
 - `public static Task<CommandResult> DispatchCommandAsync(string line)`: Queues a command line to run as the console and returns a task for its outcome. Unlike `Server.DispatchCommand` it works for plugin commands too: the line runs at the end of the next tick, when the plugin worker is not in a call.
-- `public static Task<CommandResult> DispatchCommandAsync(Player player, string line)`: Queues a command line to run as a player, with that player's permissions and feedback. See `Server.DispatchCommandAsync`.
+- `public static Task<CommandResult> DispatchCommandAsync(Player player, string line)`: Queues a command line to run as a player, with that player's permissions and feedback. See `Server.DispatchCommandAsync`. No `PlayerCommandEvent` fires for the line.
 - `public static Player? GetPlayer(string name)`: Finds an online player by name (case-insensitive).
 - `public static Player? GetPlayer(Uuid uuid)`: Finds an online player by uuid.
 - `public static World? GetWorld(string key)`: Finds a live world by key ("minecraft:the_nether", "ramjet:arena"). A name without a namespace is looked up as `minecraft:` first, then as `ramjet:` (the namespace of runtime worlds made without one): "the_nether", "arena".
@@ -4801,7 +4801,7 @@ A handle to a world: a vanilla dimension (overworld, nether, end), which lives a
 - `public bool SetGameRule(string name, bool value)`: Sets a boolean game rule (see `World.SetGameRule`).
 - `public bool SetGameRule(string name, int value)`: Sets a numeric game rule (see `World.SetGameRule`).
 - `public bool SetSpawn(BlockPos pos, float yaw = 0f, float pitch = 0f)`: Changes the spawn point (like `/setworldspawn`; the clients are told the new position of the compass and of the respawn, and it is saved with the world).
-- `public bool SetWeather(WeatherType weather, int? durationTicks = null)`: Sets the weather like `/weather`. The change reaches the players immediately and fires `WeatherChangeEvent`.
+- `public bool SetWeather(WeatherType weather, int? durationTicks = null)`: Sets the weather like `/weather`. The change reaches the players immediately. `RainChangeEvent` and `ThunderChangeEvent` fire at once, inside this call (a cancel keeps the old state). `WeatherChangeEvent` is a notification that fires later, when the rain becomes visible or stops (see its doc); the counterpart of Paper's WeatherChangeEvent is `RainChangeEvent`.
 - `public Entity SpawnEntity(string type, Vec3d position, NbtCompound? nbt = null, float yaw = 0f, float pitch = 0f)`: Spawns an entity of a type, like `/summon`. Mobs the engine simulates (zombies, cows, creepers ...) get their normal spawn logic: with no NBT their random attributes and equipment are rolled; with NBT the data is applied as given (`{Health:5f,CustomName:'"Bob"'}`). Item entities (`minecraft:item` with `Item:{id:"minecraft:diamond",count:3}`) and experience orbs (`minecraft:experience_orb` with `Value`) are supported too. The spawn fires `EntitySpawnEvent` (reason `Plugin`) where the entity kind has that event, and a handler may cancel it.
 - `public int SpawnParticle(string particle, Vec3d position, int count = 1, Vec3d offset = default, float speed = 0f, bool force = false)`: Shows a particle effect at a position to the players of the dimension within 32 blocks (512 with `force`).
 - `public override string ToString()`

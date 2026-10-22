@@ -41,7 +41,7 @@ dotnet build -c Release
 
 Server operators can list and restart plugins with `/plugins` and `/plugins reload`.
 
-> **Preview:** both packages are `1.0.0-preview.5`. The API can still change before 1.0; breaking changes are listed in the
+> **Preview:** both packages are `1.0.0-preview.6`. The API can still change before 1.0; breaking changes are listed in the
 > [changelog](CHANGELOG.md).
 
 ## Samples
@@ -51,7 +51,7 @@ Each folder under [`samples/`](samples/) is a complete plugin that builds with `
 
 ## Releases
 
-Pushing a version tag (`v1.0.0-preview.5`) runs [the publish workflow](.github/workflows/publish-nuget.yml): CI packs `Ramjet.Api` (after
+Pushing a version tag (`v1.0.0-preview.6`) runs [the publish workflow](.github/workflows/publish-nuget.yml): CI packs `Ramjet.Api` (after
 the API check) and `Ramjet.Templates`, builds every sample and a fresh template project against them, and publishes both to nuget.org
 with a GitHub release. The reference assembly is updated together with the server, so changes to `src/Ramjet.Api/ref/` come from
 there; pull requests for docs, samples and the template are welcome.

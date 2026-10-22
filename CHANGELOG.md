@@ -4,6 +4,29 @@ Versions of the `Ramjet.Api` and `Ramjet.Templates` packages. While the API is i
 breaking changes are listed under **Breaking**. `src/Ramjet.Api/Mc.Scripting.Api.surface.txt` lists the full public API, so
 `git diff v<old>..v<new> -- src/Ramjet.Api/Mc.Scripting.Api.surface.txt` shows every API change between two versions.
 
+## 1.0.0-preview.6
+
+Fixes for the bugs found by live testing of preview.5 (thank you for the report). Needs a server updated to the same release.
+
+### Fixed
+- `World.Explode(..., source: entity)` fires `EntityExplodeEvent` naming the source, also when the source was spawned in the same tick
+  (it fired `BlockExplodeEvent` before). An explosion that reaches no block still fires its event.
+- `Entity.IsAlive` is false right after `Entity.Despawn()` (as Paper's `isValid()`); a second `Despawn()` returns false.
+- `await Scheduler.Delay(n)` resumes on the tick thread, as documented (it resumed on a thread-pool thread, so the next API call threw
+  `WrongThreadException`). It still returns a `Task`.
+
+### Changed
+- When the plugin worker process ends unexpectedly, the server log now says how (exit code, or the signal, e.g. `SIGKILL` from an
+  out-of-memory kill) and shows the last lines the worker wrote to stderr (an unhandled .NET exception, for example). If you saw
+  `worker dropped (worker process exited)` with nothing else, the next occurrence explains itself: please send us those lines.
+- The "event not answered in time ... (worker busy)" warning names the plugin that was running and the loaded plugins.
+- Documentation (as in Paper, these calls fire no event): `Player.GiveExperience` (`PlayerExpChangeEvent` is for experience orbs
+  only), setting `Player.FoodLevel`, setting `PlayerInventory.SelectedSlot`, `Server.DispatchCommand` / `DispatchCommandAsync`
+  (no `PlayerCommandEvent`), and `World.Explode` fires no `ExplosionPrimeEvent`. `WeatherChangeEvent` fires when the rain becomes
+  visible or stops being visible, about 20 ticks after `World.SetWeather` (later when it stops); `RainChangeEvent` is the counterpart
+  of Paper's `WeatherChangeEvent` and fires inside the call. `Server.UnloadWorldAsync(world, save: false)` throws for a saved
+  (anvil) world, which is always saved when unloaded.
+
 ## 1.0.0-preview.5
 
 Fixes for the bugs found by live testing of preview.4 (thank you for the detailed report). Needs a server updated to the same release.
