@@ -1235,6 +1235,8 @@ public Mc.Scripting.Events.ChunkUnloadEvent.ChunkUnloadEvent()
 public Mc.Scripting.Events.ChunkUnloadEvent.ChunkUnloadEvent(int dimension, int x, int z)
 public Mc.Scripting.Events.ClientTickEndEvent.ClientTickEndEvent()
 public Mc.Scripting.Events.ClientTickEndEvent.ClientTickEndEvent(Mc.Scripting.Player player)
+public Mc.Scripting.Events.ClockTimeSkipEvent.ClockTimeSkipEvent()
+public Mc.Scripting.Events.ClockTimeSkipEvent.ClockTimeSkipEvent(Mc.Scripting.Worlds.World world, Mc.Scripting.Utf8String clock, Mc.Scripting.TimeSkipReason reason, long skipAmount)
 public Mc.Scripting.Events.CombatTagEndEvent.CombatTagEndEvent()
 public Mc.Scripting.Events.CombatTagEndEvent.CombatTagEndEvent(Mc.Scripting.Player player, Mc.Scripting.CombatTagEndReason reason)
 public Mc.Scripting.Events.CombatTagStartEvent.CombatTagStartEvent()
@@ -1558,6 +1560,8 @@ public Mc.Scripting.Events.PlayerGameModeChangeEvent.PlayerGameModeChangeEvent()
 public Mc.Scripting.Events.PlayerGameModeChangeEvent.PlayerGameModeChangeEvent(Mc.Scripting.Player player, Mc.Scripting.GameMode oldMode, Mc.Scripting.GameMode newMode, Mc.Scripting.GameModeChangeCause cause)
 public Mc.Scripting.Events.PlayerHarvestBlockEvent.PlayerHarvestBlockEvent()
 public Mc.Scripting.Events.PlayerHarvestBlockEvent.PlayerHarvestBlockEvent(Mc.Scripting.Player player, Mc.Scripting.BlockPos pos, Mc.Scripting.Inventories.ItemView item, Mc.Scripting.NativeBytes items, Mc.Scripting.Utf8String keep)
+public Mc.Scripting.Events.PlayerHideEntityEvent.PlayerHideEntityEvent()
+public Mc.Scripting.Events.PlayerHideEntityEvent.PlayerHideEntityEvent(Mc.Scripting.Player player, Mc.Scripting.Entity entity)
 public Mc.Scripting.Events.PlayerInputEvent.PlayerInputEvent()
 public Mc.Scripting.Events.PlayerInputEvent.PlayerInputEvent(Mc.Scripting.Player player, bool forward, bool backward, bool left, bool right, bool jump, bool sneak, bool sprint)
 public Mc.Scripting.Events.PlayerInsertLecternBookEvent.PlayerInsertLecternBookEvent()
@@ -1660,6 +1664,8 @@ public Mc.Scripting.Events.PlayerShearEntityEvent.PlayerShearEntityEvent()
 public Mc.Scripting.Events.PlayerShearEntityEvent.PlayerShearEntityEvent(Mc.Scripting.Player player, Mc.Scripting.Entity target, Mc.Scripting.Inventories.ItemView item)
 public Mc.Scripting.Events.PlayerShieldDisableEvent.PlayerShieldDisableEvent()
 public Mc.Scripting.Events.PlayerShieldDisableEvent.PlayerShieldDisableEvent(Mc.Scripting.Player player, Mc.Scripting.Entity attacker, int cooldownTicks)
+public Mc.Scripting.Events.PlayerShowEntityEvent.PlayerShowEntityEvent()
+public Mc.Scripting.Events.PlayerShowEntityEvent.PlayerShowEntityEvent(Mc.Scripting.Player player, Mc.Scripting.Entity entity)
 public Mc.Scripting.Events.PlayerSignCommandPreprocessEvent.PlayerSignCommandPreprocessEvent()
 public Mc.Scripting.Events.PlayerSignCommandPreprocessEvent.PlayerSignCommandPreprocessEvent(Mc.Scripting.Player player, Mc.Scripting.BlockPos pos, bool front, Mc.Scripting.Utf8String command)
 public Mc.Scripting.Events.PlayerSpawnLocationEvent.PlayerSpawnLocationEvent()
@@ -1688,12 +1694,16 @@ public Mc.Scripting.Events.PlayerToggleSneakEvent.PlayerToggleSneakEvent()
 public Mc.Scripting.Events.PlayerToggleSneakEvent.PlayerToggleSneakEvent(Mc.Scripting.Player player, bool sneaking)
 public Mc.Scripting.Events.PlayerToggleSprintEvent.PlayerToggleSprintEvent()
 public Mc.Scripting.Events.PlayerToggleSprintEvent.PlayerToggleSprintEvent(Mc.Scripting.Player player, bool sprinting)
+public Mc.Scripting.Events.PlayerTrackEntityEvent.PlayerTrackEntityEvent()
+public Mc.Scripting.Events.PlayerTrackEntityEvent.PlayerTrackEntityEvent(Mc.Scripting.Player player, Mc.Scripting.Entity entity)
 public Mc.Scripting.Events.PlayerTradeEvent.PlayerTradeEvent()
 public Mc.Scripting.Events.PlayerTradeEvent.PlayerTradeEvent(Mc.Scripting.Player player, Mc.Scripting.Entity merchant, Mc.Scripting.Inventories.ItemView buyA, Mc.Scripting.Inventories.ItemView buyB, Mc.Scripting.Inventories.ItemView sell, bool rewardExp, bool increaseUses)
 public Mc.Scripting.Events.PlayerUnleashEntityEvent.PlayerUnleashEntityEvent()
 public Mc.Scripting.Events.PlayerUnleashEntityEvent.PlayerUnleashEntityEvent(Mc.Scripting.Player player, Mc.Scripting.Entity entity, bool dropLead)
 public Mc.Scripting.Events.PlayerUnregisterChannelEvent.PlayerUnregisterChannelEvent()
 public Mc.Scripting.Events.PlayerUnregisterChannelEvent.PlayerUnregisterChannelEvent(ulong connection, Mc.Scripting.Uuid uuid, Mc.Scripting.Utf8String channel)
+public Mc.Scripting.Events.PlayerUntrackEntityEvent.PlayerUntrackEntityEvent()
+public Mc.Scripting.Events.PlayerUntrackEntityEvent.PlayerUntrackEntityEvent(Mc.Scripting.Player player, Mc.Scripting.Entity entity)
 public Mc.Scripting.Events.PlayerUseUnknownEntityEvent.PlayerUseUnknownEntityEvent()
 public Mc.Scripting.Events.PlayerUseUnknownEntityEvent.PlayerUseUnknownEntityEvent(Mc.Scripting.Player player, int entityId, bool attack, Mc.Scripting.Hand hand, Mc.Scripting.Vec3d clickPos, bool hasClickPos)
 public Mc.Scripting.Events.PlayerVelocityEvent.PlayerVelocityEvent()
@@ -1784,6 +1794,10 @@ public Mc.Scripting.Events.SulfurCubeSwallowItemEvent.SulfurCubeSwallowItemEvent
 public Mc.Scripting.Events.SulfurCubeSwallowItemEvent.SulfurCubeSwallowItemEvent(Mc.Scripting.Entity entity, Mc.Scripting.Player player, Mc.Scripting.Entity itemEntity, Mc.Scripting.Inventories.ItemView item)
 public Mc.Scripting.Events.TabCompleteEvent.TabCompleteEvent()
 public Mc.Scripting.Events.TabCompleteEvent.TabCompleteEvent(Mc.Scripting.Entity player, Mc.Scripting.Utf8String buffer, Mc.Scripting.Utf8String completions, bool handled)
+public Mc.Scripting.Events.TameableDeathMessageEvent.TameableDeathMessageEvent()
+public Mc.Scripting.Events.TameableDeathMessageEvent.TameableDeathMessageEvent(Mc.Scripting.Entity entity, Mc.Scripting.Player owner, Mc.Scripting.Utf8String message)
+public Mc.Scripting.Events.TargetHitEvent.TargetHitEvent()
+public Mc.Scripting.Events.TargetHitEvent.TargetHitEvent(Mc.Scripting.Entity projectile, Mc.Scripting.Worlds.World world, Mc.Scripting.BlockPos pos, Mc.Scripting.BlockFace face, int signalStrength)
 public Mc.Scripting.Events.ThrownEggHatchEvent.ThrownEggHatchEvent()
 public Mc.Scripting.Events.ThrownEggHatchEvent.ThrownEggHatchEvent(Mc.Scripting.Entity egg, bool hatching, byte numHatches, int hatchingType)
 public Mc.Scripting.Events.ThunderChangeEvent.ThunderChangeEvent()
@@ -2507,6 +2521,7 @@ public bool Mc.Scripting.Events.CampfireCookEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.CampfireStartEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.CartographyItemEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.CauldronLevelChangeEvent.Cancelled { get; set; }
+public bool Mc.Scripting.Events.ClockTimeSkipEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.CompostItemEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.CompostItemEvent.WillRaiseLevel { get; set; }
 public bool Mc.Scripting.Events.CrafterCraftEvent.Cancelled { get; set; }
@@ -2697,6 +2712,7 @@ public bool Mc.Scripting.Events.PlayerToggleEntityAgeLockEvent.Cancelled { get; 
 public bool Mc.Scripting.Events.PlayerToggleFlightEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.PlayerToggleSneakEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.PlayerToggleSprintEvent.Cancelled { get; set; }
+public bool Mc.Scripting.Events.PlayerTrackEntityEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.PlayerTradeEvent.IncreaseUses { get; set; }
 public bool Mc.Scripting.Events.PlayerTradeEvent.RewardExp { get; set; }
 public bool Mc.Scripting.Events.PlayerUnleashEntityEvent.Cancelled { get; set; }
@@ -2740,8 +2756,11 @@ public bool Mc.Scripting.Events.StructuresLocateEvent.HasResult { get; set; }
 public bool Mc.Scripting.Events.SulfurCubeSwallowItemEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.TabCompleteEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.TabCompleteEvent.Handled { get; set; }
+public bool Mc.Scripting.Events.TameableDeathMessageEvent.Cancelled { get; set; }
+public bool Mc.Scripting.Events.TargetHitEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.ThrownEggHatchEvent.Hatching { get; set; }
 public bool Mc.Scripting.Events.ThunderChangeEvent.Cancelled { get; set; }
+public bool Mc.Scripting.Events.TimeSkipEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.TntPrimeEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.TradeSelectEvent.Cancelled { get; set; }
 public bool Mc.Scripting.Events.TurtleGoHomeEvent.Cancelled { get; set; }
@@ -2864,6 +2883,7 @@ public bool Mc.Scripting.Permissions.PluginPermissions.Has(Mc.Scripting.Player p
 public bool Mc.Scripting.Permissions.PluginPermissions.Has(Mc.Scripting.Uuid player, string node)
 public bool Mc.Scripting.Player.AddEffect(Mc.Scripting.PotionEffect effect)
 public bool Mc.Scripting.Player.AllowFlight { get; set; }
+public bool Mc.Scripting.Player.CanSee(Mc.Scripting.Entity entity)
 public bool Mc.Scripting.Player.ClearEffects()
 public bool Mc.Scripting.Player.ClearFakeBlock(Mc.Scripting.BlockPos position)
 public bool Mc.Scripting.Player.Equals(Mc.Scripting.Player other)
@@ -3187,6 +3207,7 @@ public int Mc.Scripting.Events.ServerListPingEvent.ShownProtocol { get; set; }
 public int Mc.Scripting.Events.SheepDyeWoolEvent.Color { get; set; }
 public int Mc.Scripting.Events.SlimeSplitEvent.Count { get; set; }
 public int Mc.Scripting.Events.StructuresLocateEvent.Radius { get; set; }
+public int Mc.Scripting.Events.TargetHitEvent.SignalStrength { get; set; }
 public int Mc.Scripting.Events.TurtleLayEggEvent.EggCount { get; set; }
 public int Mc.Scripting.Events.VillagerAcquireTradeEvent.MaxUses { get; set; }
 public int Mc.Scripting.Events.VillagerAcquireTradeEvent.VillagerXp { get; set; }
@@ -3280,6 +3301,8 @@ public int? Mc.Scripting.TabEntry.Latency { get; init; }
 public int? Mc.Scripting.TabEntry.Order { get; init; }
 public int[] Mc.Scripting.Nbt.NbtIntArray.Value { get; set; }
 public long Mc.Scripting.Commands.CommandContext.GetLong(string name)
+public long Mc.Scripting.Events.ClockTimeSkipEvent.SkipAmount { get; set; }
+public long Mc.Scripting.Events.TimeSkipEvent.SkipAmount { get; set; }
 public long Mc.Scripting.Events.WorldBorderBoundsChangeEvent.DurationMs { get; set; }
 public long Mc.Scripting.Nbt.NbtCompound.GetLong(string key, [long fallback = 0])
 public long Mc.Scripting.Nbt.NbtLong.Value { get; set; }
@@ -3489,6 +3512,7 @@ public readonly Mc.Scripting.BlockFace Mc.Scripting.Events.PlayerBucketEmptyEven
 public readonly Mc.Scripting.BlockFace Mc.Scripting.Events.PlayerBucketFillEvent.Face { get; }
 public readonly Mc.Scripting.BlockFace Mc.Scripting.Events.PlayerInteractEvent.Face { get; }
 public readonly Mc.Scripting.BlockFace Mc.Scripting.Events.ProjectileHitEvent.HitFace { get; }
+public readonly Mc.Scripting.BlockFace Mc.Scripting.Events.TargetHitEvent.Face { get; }
 public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.AnvilDamagedEvent.Pos { get; }
 public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.BeaconActivatedEvent.Pos { get; }
 public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.BeaconDeactivatedEvent.Pos { get; }
@@ -3607,6 +3631,7 @@ public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.SignChangeEvent.Pos { 
 public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.SpawnChangeEvent.NewPos { get; }
 public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.SpawnChangeEvent.OldPos { get; }
 public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.StructureGrowEvent.Pos { get; }
+public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.TargetHitEvent.Pos { get; }
 public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.TntPrimeEvent.Pos { get; }
 public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.TntPrimeEvent.PrimingBlock { get; }
 public readonly Mc.Scripting.BlockPos Mc.Scripting.Events.TurtleLayEggEvent.Pos { get; }
@@ -3764,6 +3789,7 @@ public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerEggThrowEvent.Egg 
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerExpChangeEvent.Source { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerFishEvent.Caught { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerFishEvent.Hook { get; }
+public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerHideEntityEvent.Entity { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerInteractEntityEvent.Target { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerItemFrameChangeEvent.Entity { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerLaunchProjectileEvent.Projectile { get; }
@@ -3776,12 +3802,15 @@ public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerPickupExperienceEv
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerPickupItemEvent.ItemEntity { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerShearEntityEvent.Target { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerShieldDisableEvent.Attacker { get; }
+public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerShowEntityEvent.Entity { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerStartSpectatingEvent.Current { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerStartSpectatingEvent.Target { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerStopSpectatingEvent.Target { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerToggleEntityAgeLockEvent.Entity { get; }
+public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerTrackEntityEvent.Entity { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerTradeEvent.Merchant { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerUnleashEntityEvent.Entity { get; }
+public readonly Mc.Scripting.Entity Mc.Scripting.Events.PlayerUntrackEntityEvent.Entity { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PotionSplashEvent.HitEntity { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PotionSplashEvent.Potion { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.PotionSplashEvent.Shooter { get; }
@@ -3807,6 +3836,8 @@ public readonly Mc.Scripting.Entity Mc.Scripting.Events.SlimeWanderEvent.Entity 
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.SulfurCubeSwallowItemEvent.Entity { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.SulfurCubeSwallowItemEvent.ItemEntity { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.TabCompleteEvent.Player { get; }
+public readonly Mc.Scripting.Entity Mc.Scripting.Events.TameableDeathMessageEvent.Entity { get; }
+public readonly Mc.Scripting.Entity Mc.Scripting.Events.TargetHitEvent.Projectile { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.ThrownEggHatchEvent.Egg { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.TntPrimeEvent.PrimingEntity { get; }
 public readonly Mc.Scripting.Entity Mc.Scripting.Events.TradeSelectEvent.Merchant { get; }
@@ -4128,6 +4159,7 @@ public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerFishEvent.Player {
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerFlowerPotManipulateEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerGameModeChangeEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerHarvestBlockEvent.Player { get; }
+public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerHideEntityEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerInputEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerInsertLecternBookEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerInteractBlockEvent.Player { get; }
@@ -4175,6 +4207,7 @@ public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerSetSpawnEvent.Play
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerShearBlockEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerShearEntityEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerShieldDisableEvent.Player { get; }
+public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerShowEntityEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerSignCommandPreprocessEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerStartSpectatingEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerStatisticIncrementEvent.Player { get; }
@@ -4188,8 +4221,10 @@ public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerToggleEntityAgeLoc
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerToggleFlightEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerToggleSneakEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerToggleSprintEvent.Player { get; }
+public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerTrackEntityEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerTradeEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerUnleashEntityEvent.Player { get; }
+public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerUntrackEntityEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerUseUnknownEntityEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PlayerVelocityEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.PrePlayerAttackEntityEvent.Player { get; }
@@ -4208,6 +4243,7 @@ public readonly Mc.Scripting.Player Mc.Scripting.Events.SmithItemEvent.Player { 
 public readonly Mc.Scripting.Player Mc.Scripting.Events.StonecutterSelectEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.StructureGrowEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.SulfurCubeSwallowItemEvent.Player { get; }
+public readonly Mc.Scripting.Player Mc.Scripting.Events.TameableDeathMessageEvent.Owner { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.TradeSelectEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.UncheckedSignChangeEvent.Player { get; }
 public readonly Mc.Scripting.Player Mc.Scripting.Events.VaultChangeStateEvent.Player { get; }
@@ -4249,7 +4285,9 @@ public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.PlayerServerFull
 public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.PrivateMessageEvent.Decoration { get; }
 public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.ProfileWhitelistVerifyEvent.KickMessage { get; }
 public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.ServerListPingEvent.Motd { get; }
+public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.TameableDeathMessageEvent.Message { get; }
 public readonly Mc.Scripting.Text.Component Mc.Scripting.Events.UnknownCommandEvent.Message { get; }
+public readonly Mc.Scripting.TimeSkipReason Mc.Scripting.Events.ClockTimeSkipEvent.Reason { get; }
 public readonly Mc.Scripting.TimeSkipReason Mc.Scripting.Events.TimeSkipEvent.Reason { get; }
 public readonly Mc.Scripting.TntPrimeCause Mc.Scripting.Events.TntPrimeEvent.Cause { get; }
 public readonly Mc.Scripting.TransformReason Mc.Scripting.Events.EntityTransformEvent.Reason { get; }
@@ -4264,6 +4302,7 @@ public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.BlockExplodeEvent.Ke
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.BlockLockCheckEvent.LockMessageJson { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.BlockReceiveGameEventEvent.GameEvent { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.BroadcastMessageEvent.Message { get; }
+public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.ClockTimeSkipEvent.Clock { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.CraftItemEvent.Recipe { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.CrafterCraftEvent.Recipe { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.CustomBlockBreakEvent.CustomId { get; }
@@ -4363,6 +4402,7 @@ public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.SignChangeEvent.Line
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.StructuresLocateEvent.Structures { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.TabCompleteEvent.Buffer { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.TabCompleteEvent.Completions { get; }
+public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.TameableDeathMessageEvent.MessageJson { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.UncheckedSignChangeEvent.Line0 { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.UncheckedSignChangeEvent.Line1 { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.UncheckedSignChangeEvent.Line2 { get; }
@@ -4504,6 +4544,7 @@ public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.CampfireCookEvent.
 public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.CampfireStartEvent.World { get; }
 public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.CauldronLevelChangeEvent.World { get; }
 public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.ChunkPopulateEvent.World { get; }
+public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.ClockTimeSkipEvent.World { get; }
 public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.CompostItemEvent.World { get; }
 public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.CrafterCraftEvent.World { get; }
 public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.CustomBlockBreakEvent.World { get; }
@@ -4564,6 +4605,7 @@ public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.SculkBloomEvent.Wo
 public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.SpawnChangeEvent.World { get; }
 public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.StructureGrowEvent.World { get; }
 public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.StructuresLocateEvent.World { get; }
+public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.TargetHitEvent.World { get; }
 public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.ThunderChangeEvent.World { get; }
 public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.TimeSkipEvent.World { get; }
 public readonly Mc.Scripting.Worlds.World Mc.Scripting.Events.TntPrimeEvent.World { get; }
@@ -4798,7 +4840,6 @@ public readonly int Mc.Scripting.Events.VillagerReplenishTradeEvent.Index { get;
 public readonly int Mc.Scripting.Events.WardenAngerChangeEvent.OldAnger { get; }
 public readonly int Mc.Scripting.Worlds.World.Index readonly
 public readonly long Mc.Scripting.Events.TickEndEvent.TickNanos { get; }
-public readonly long Mc.Scripting.Events.TimeSkipEvent.SkipAmount { get; }
 public readonly long Mc.Scripting.Events.WorldBorderBoundsChangeFinishEvent.DurationMs { get; }
 public readonly string Mc.Scripting.Events.EntityConstructEvent.EntityType { get; }
 public readonly string Mc.Scripting.Events.EntityDamageEvent.DamageType { get; }
@@ -5143,6 +5184,7 @@ public static bool Mc.Scripting.Events.ChunkLoadEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.ChunkPopulateEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.ChunkUnloadEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.ClientTickEndEvent.IsCancellable { get; }
+public static bool Mc.Scripting.Events.ClockTimeSkipEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.CombatTagEndEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.CombatTagStartEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.CommandsRegisteredEvent.IsCancellable { get; }
@@ -5305,6 +5347,7 @@ public static bool Mc.Scripting.Events.PlayerFishEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerFlowerPotManipulateEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerGameModeChangeEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerHarvestBlockEvent.IsCancellable { get; }
+public static bool Mc.Scripting.Events.PlayerHideEntityEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerInputEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerInsertLecternBookEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerInteractBlockEvent.IsCancellable { get; }
@@ -5356,6 +5399,7 @@ public static bool Mc.Scripting.Events.PlayerSetSpawnEvent.IsCancellable { get; 
 public static bool Mc.Scripting.Events.PlayerShearBlockEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerShearEntityEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerShieldDisableEvent.IsCancellable { get; }
+public static bool Mc.Scripting.Events.PlayerShowEntityEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerSignCommandPreprocessEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerSpawnLocationEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerStartSpectatingEvent.IsCancellable { get; }
@@ -5370,9 +5414,11 @@ public static bool Mc.Scripting.Events.PlayerToggleEntityAgeLockEvent.IsCancella
 public static bool Mc.Scripting.Events.PlayerToggleFlightEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerToggleSneakEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerToggleSprintEvent.IsCancellable { get; }
+public static bool Mc.Scripting.Events.PlayerTrackEntityEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerTradeEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerUnleashEntityEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerUnregisterChannelEvent.IsCancellable { get; }
+public static bool Mc.Scripting.Events.PlayerUntrackEntityEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerUseUnknownEntityEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PlayerVelocityEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.PluginDisableEvent.IsCancellable { get; }
@@ -5419,6 +5465,8 @@ public static bool Mc.Scripting.Events.StructureGrowEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.StructuresLocateEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.SulfurCubeSwallowItemEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.TabCompleteEvent.IsCancellable { get; }
+public static bool Mc.Scripting.Events.TameableDeathMessageEvent.IsCancellable { get; }
+public static bool Mc.Scripting.Events.TargetHitEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.ThrownEggHatchEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.ThunderChangeEvent.IsCancellable { get; }
 public static bool Mc.Scripting.Events.TickEndEvent.IsCancellable { get; }
@@ -5619,6 +5667,7 @@ public static string Mc.Scripting.Events.ChunkLoadEvent.Key { get; }
 public static string Mc.Scripting.Events.ChunkPopulateEvent.Key { get; }
 public static string Mc.Scripting.Events.ChunkUnloadEvent.Key { get; }
 public static string Mc.Scripting.Events.ClientTickEndEvent.Key { get; }
+public static string Mc.Scripting.Events.ClockTimeSkipEvent.Key { get; }
 public static string Mc.Scripting.Events.CombatTagEndEvent.Key { get; }
 public static string Mc.Scripting.Events.CombatTagStartEvent.Key { get; }
 public static string Mc.Scripting.Events.CommandsRegisteredEvent.Key { get; }
@@ -5781,6 +5830,7 @@ public static string Mc.Scripting.Events.PlayerFishEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerFlowerPotManipulateEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerGameModeChangeEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerHarvestBlockEvent.Key { get; }
+public static string Mc.Scripting.Events.PlayerHideEntityEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerInputEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerInsertLecternBookEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerInteractBlockEvent.Key { get; }
@@ -5832,6 +5882,7 @@ public static string Mc.Scripting.Events.PlayerSetSpawnEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerShearBlockEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerShearEntityEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerShieldDisableEvent.Key { get; }
+public static string Mc.Scripting.Events.PlayerShowEntityEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerSignCommandPreprocessEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerSpawnLocationEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerStartSpectatingEvent.Key { get; }
@@ -5846,9 +5897,11 @@ public static string Mc.Scripting.Events.PlayerToggleEntityAgeLockEvent.Key { ge
 public static string Mc.Scripting.Events.PlayerToggleFlightEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerToggleSneakEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerToggleSprintEvent.Key { get; }
+public static string Mc.Scripting.Events.PlayerTrackEntityEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerTradeEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerUnleashEntityEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerUnregisterChannelEvent.Key { get; }
+public static string Mc.Scripting.Events.PlayerUntrackEntityEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerUseUnknownEntityEvent.Key { get; }
 public static string Mc.Scripting.Events.PlayerVelocityEvent.Key { get; }
 public static string Mc.Scripting.Events.PluginDisableEvent.Key { get; }
@@ -5895,6 +5948,8 @@ public static string Mc.Scripting.Events.StructureGrowEvent.Key { get; }
 public static string Mc.Scripting.Events.StructuresLocateEvent.Key { get; }
 public static string Mc.Scripting.Events.SulfurCubeSwallowItemEvent.Key { get; }
 public static string Mc.Scripting.Events.TabCompleteEvent.Key { get; }
+public static string Mc.Scripting.Events.TameableDeathMessageEvent.Key { get; }
+public static string Mc.Scripting.Events.TargetHitEvent.Key { get; }
 public static string Mc.Scripting.Events.ThrownEggHatchEvent.Key { get; }
 public static string Mc.Scripting.Events.ThunderChangeEvent.Key { get; }
 public static string Mc.Scripting.Events.TickEndEvent.Key { get; }
@@ -6000,6 +6055,7 @@ public static ushort Mc.Scripting.Events.ChunkLoadEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.ChunkPopulateEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.ChunkUnloadEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.ClientTickEndEvent.CatalogueId { get; }
+public static ushort Mc.Scripting.Events.ClockTimeSkipEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.CombatTagEndEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.CombatTagStartEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.CommandsRegisteredEvent.CatalogueId { get; }
@@ -6162,6 +6218,7 @@ public static ushort Mc.Scripting.Events.PlayerFishEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerFlowerPotManipulateEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerGameModeChangeEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerHarvestBlockEvent.CatalogueId { get; }
+public static ushort Mc.Scripting.Events.PlayerHideEntityEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerInputEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerInsertLecternBookEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerInteractBlockEvent.CatalogueId { get; }
@@ -6213,6 +6270,7 @@ public static ushort Mc.Scripting.Events.PlayerSetSpawnEvent.CatalogueId { get; 
 public static ushort Mc.Scripting.Events.PlayerShearBlockEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerShearEntityEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerShieldDisableEvent.CatalogueId { get; }
+public static ushort Mc.Scripting.Events.PlayerShowEntityEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerSignCommandPreprocessEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerSpawnLocationEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerStartSpectatingEvent.CatalogueId { get; }
@@ -6227,9 +6285,11 @@ public static ushort Mc.Scripting.Events.PlayerToggleEntityAgeLockEvent.Catalogu
 public static ushort Mc.Scripting.Events.PlayerToggleFlightEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerToggleSneakEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerToggleSprintEvent.CatalogueId { get; }
+public static ushort Mc.Scripting.Events.PlayerTrackEntityEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerTradeEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerUnleashEntityEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerUnregisterChannelEvent.CatalogueId { get; }
+public static ushort Mc.Scripting.Events.PlayerUntrackEntityEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerUseUnknownEntityEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PlayerVelocityEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.PluginDisableEvent.CatalogueId { get; }
@@ -6276,6 +6336,8 @@ public static ushort Mc.Scripting.Events.StructureGrowEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.StructuresLocateEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.SulfurCubeSwallowItemEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.TabCompleteEvent.CatalogueId { get; }
+public static ushort Mc.Scripting.Events.TameableDeathMessageEvent.CatalogueId { get; }
+public static ushort Mc.Scripting.Events.TargetHitEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.ThrownEggHatchEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.ThunderChangeEvent.CatalogueId { get; }
 public static ushort Mc.Scripting.Events.TickEndEvent.CatalogueId { get; }
@@ -6599,6 +6661,7 @@ public void Mc.Scripting.Events.SignChangeEvent.SetLine3(string value)
 public void Mc.Scripting.Events.SignChangeEvent.SetLine4(string value)
 public void Mc.Scripting.Events.StructuresLocateEvent.SetStructures(string value)
 public void Mc.Scripting.Events.TabCompleteEvent.SetCompletions(string value)
+public void Mc.Scripting.Events.TameableDeathMessageEvent.SetMessage(Mc.Scripting.Text.Component value)
 public void Mc.Scripting.Events.UnknownCommandEvent.SetMessage(Mc.Scripting.Text.Component value)
 public void Mc.Scripting.Events.WaterBottleSplashEvent.SetKeep(string value)
 public void Mc.Scripting.Events.WitchConsumePotionEvent.SetPotion(string value)
@@ -6656,6 +6719,8 @@ public void Mc.Scripting.Player.ClearFakeBlocks()
 public void Mc.Scripting.Player.ClearTitle([bool resetTimes = false])
 public void Mc.Scripting.Player.GiveExperience(int points)
 public void Mc.Scripting.Player.GiveExperienceLevels(int levels)
+public void Mc.Scripting.Player.HideEntity(Mc.Scripting.Entity entity)
+public void Mc.Scripting.Player.HideEntity(Mc.Scripting.Plugin plugin, Mc.Scripting.Entity entity)
 public void Mc.Scripting.Player.Kick(Mc.Scripting.Text.Component reason)
 public void Mc.Scripting.Player.PlaySound(string sound, Mc.Scripting.Vec3d position, [Mc.Scripting.SoundCategory category = Mc.Scripting.SoundCategory.Master], [float volume = 1], [float pitch = 1])
 public void Mc.Scripting.Player.PlaySound(string sound, [Mc.Scripting.SoundCategory category = Mc.Scripting.SoundCategory.Master], [float volume = 1], [float pitch = 1])
@@ -6667,6 +6732,8 @@ public void Mc.Scripting.Player.SendResourcePack(Mc.Scripting.ResourcePack pack)
 public void Mc.Scripting.Player.SetListName(Mc.Scripting.Text.Component? name)
 public void Mc.Scripting.Player.SetPvpPolicy(Mc.Scripting.PvpFlags flags, int tagTicks)
 public void Mc.Scripting.Player.SetTabList(Mc.Scripting.Text.Component? header, Mc.Scripting.Text.Component? footer)
+public void Mc.Scripting.Player.ShowEntity(Mc.Scripting.Entity entity)
+public void Mc.Scripting.Player.ShowEntity(Mc.Scripting.Plugin plugin, Mc.Scripting.Entity entity)
 public void Mc.Scripting.Player.ShowSubtitle(Mc.Scripting.Text.Component subtitle)
 public void Mc.Scripting.Player.ShowTitle(Mc.Scripting.Text.Component title, [Mc.Scripting.Text.Component? subtitle = null], [Mc.Scripting.TitleTimes? times = null])
 public void Mc.Scripting.Player.StopSound([string? sound = null], [Mc.Scripting.SoundCategory? category = null])
@@ -6804,6 +6871,7 @@ ref ref struct Mc.Scripting.Events.ChunkLoadEvent [interface Mc.Scripting.IEvent
 ref ref struct Mc.Scripting.Events.ChunkPopulateEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.ChunkUnloadEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.ClientTickEndEvent [interface Mc.Scripting.IEvent]
+ref ref struct Mc.Scripting.Events.ClockTimeSkipEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.CombatTagEndEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.CombatTagStartEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.CommandsRegisteredEvent [interface Mc.Scripting.IEvent]
@@ -6966,6 +7034,7 @@ ref ref struct Mc.Scripting.Events.PlayerFishEvent [interface Mc.Scripting.IEven
 ref ref struct Mc.Scripting.Events.PlayerFlowerPotManipulateEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerGameModeChangeEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerHarvestBlockEvent [interface Mc.Scripting.IEvent]
+ref ref struct Mc.Scripting.Events.PlayerHideEntityEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerInputEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerInsertLecternBookEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerInteractBlockEvent [interface Mc.Scripting.IEvent]
@@ -7017,6 +7086,7 @@ ref ref struct Mc.Scripting.Events.PlayerSetSpawnEvent [interface Mc.Scripting.I
 ref ref struct Mc.Scripting.Events.PlayerShearBlockEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerShearEntityEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerShieldDisableEvent [interface Mc.Scripting.IEvent]
+ref ref struct Mc.Scripting.Events.PlayerShowEntityEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerSignCommandPreprocessEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerSpawnLocationEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerStartSpectatingEvent [interface Mc.Scripting.IEvent]
@@ -7031,9 +7101,11 @@ ref ref struct Mc.Scripting.Events.PlayerToggleEntityAgeLockEvent [interface Mc.
 ref ref struct Mc.Scripting.Events.PlayerToggleFlightEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerToggleSneakEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerToggleSprintEvent [interface Mc.Scripting.IEvent]
+ref ref struct Mc.Scripting.Events.PlayerTrackEntityEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerTradeEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerUnleashEntityEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerUnregisterChannelEvent [interface Mc.Scripting.IEvent]
+ref ref struct Mc.Scripting.Events.PlayerUntrackEntityEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerUseUnknownEntityEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PlayerVelocityEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.PluginDisableEvent [interface Mc.Scripting.IEvent]
@@ -7080,6 +7152,8 @@ ref ref struct Mc.Scripting.Events.StructureGrowEvent [interface Mc.Scripting.IE
 ref ref struct Mc.Scripting.Events.StructuresLocateEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.SulfurCubeSwallowItemEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.TabCompleteEvent [interface Mc.Scripting.IEvent]
+ref ref struct Mc.Scripting.Events.TameableDeathMessageEvent [interface Mc.Scripting.IEvent]
+ref ref struct Mc.Scripting.Events.TargetHitEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.ThrownEggHatchEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.ThunderChangeEvent [interface Mc.Scripting.IEvent]
 ref ref struct Mc.Scripting.Events.TickEndEvent [interface Mc.Scripting.IEvent]

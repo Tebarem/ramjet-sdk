@@ -4138,7 +4138,7 @@
             <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
         </member>
         <member name="T:Mc.Scripting.Events.TimeSkipEvent">
-            <summary>The day time jumped (sleeping through the night, /time set or /time add).</summary>
+            <summary>The day time is about to jump (sleeping through the night, /time set or /time add, or a plugin's world clock). Fired on the tick thread before the clock moves, after ClockTimeSkip (which it follows only when that one was not cancelled). Cancel to keep the clock where it is. A changed skip_amount is applied as an add to the current time.</summary>
         </member>
         <member name="P:Mc.Scripting.Events.TimeSkipEvent.CatalogueId">
             <summary>Catalogue id (stable ABI).</summary>
@@ -4156,7 +4156,10 @@
             <summary>Why.</summary>
         </member>
         <member name="P:Mc.Scripting.Events.TimeSkipEvent.SkipAmount">
-            <summary>Ticks the clock advanced.</summary>
+            <summary>Ticks the clock advances: the amount ClockTimeSkip left, when it ran.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TimeSkipEvent.Cancelled">
+            <summary>Cancelling stops lower-priority handlers (unless they opt in) and the action itself.</summary>
         </member>
         <member name="M:Mc.Scripting.Events.TimeSkipEvent.#ctor(Mc.Scripting.Worlds.World,Mc.Scripting.TimeSkipReason,System.Int64)">
             <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
@@ -13071,6 +13074,189 @@
         <member name="M:Mc.Scripting.Events.PlayerLinksSendEvent.#ctor(System.UInt64,Mc.Scripting.Uuid,Mc.Scripting.Utf8String)">
             <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
         </member>
+        <member name="T:Mc.Scripting.Events.TargetHitEvent">
+            <summary>A projectile hit a target block (Paper TargetHitEvent; TargetBlock.onProjectileHit): the target is about to emit a redstone signal. Cancel to emit none, and then the shooter gets no target_hit statistic or trigger. signal_strength may be changed; it is clamped to 0..15 and 0 emits nothing (the shooter still gets the statistic and trigger, with 0). Fires on the tick thread, while the projectile hits.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TargetHitEvent.CatalogueId">
+            <summary>Catalogue id (stable ABI).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TargetHitEvent.Key">
+            <summary>Registry key of the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TargetHitEvent.IsCancellable">
+            <summary>Whether handlers can cancel the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TargetHitEvent.Projectile">
+            <summary>The projectile that hit the target.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TargetHitEvent.World">
+            <summary>The dimension.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TargetHitEvent.Pos">
+            <summary>The target block.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TargetHitEvent.Face">
+            <summary>The face of the target the projectile hit.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TargetHitEvent.SignalStrength">
+            <summary>The signal the target emits: 1..15 by how near the hit is to the centre of the face (vanilla).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TargetHitEvent.Cancelled">
+            <summary>Cancelling stops lower-priority handlers (unless they opt in) and the action itself.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.TargetHitEvent.#ctor(Mc.Scripting.Entity,Mc.Scripting.Worlds.World,Mc.Scripting.BlockPos,Mc.Scripting.BlockFace,System.Int32)">
+            <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Events.TameableDeathMessageEvent">
+            <summary>A tamed animal dies and its owner, an online player, is about to get the death message (TamableAnimal.die: the message is CombatTracker.getDeathMessage, sent only when show_death_messages holds in the animal's level). Fired on the tick thread, before the EntityDeath event: a cancel of EntityDeath does not unsend it. Cancel: the owner gets nothing. A changed Message is what the owner gets.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TameableDeathMessageEvent.CatalogueId">
+            <summary>Catalogue id (stable ABI).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TameableDeathMessageEvent.Key">
+            <summary>Registry key of the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TameableDeathMessageEvent.IsCancellable">
+            <summary>Whether handlers can cancel the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TameableDeathMessageEvent.Entity">
+            <summary>The tamed animal that died.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TameableDeathMessageEvent.Owner">
+            <summary>The owner, the player the message is sent to.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TameableDeathMessageEvent.MessageJson">
+            <summary>The death message the owner gets. as JSON text (borrowed).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TameableDeathMessageEvent.Message">
+            <summary>The death message the owner gets. (parsed on access; allocates).</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.TameableDeathMessageEvent.SetMessage(Mc.Scripting.Text.Component)">
+            <summary>Replaces <see cref="P:Mc.Scripting.Events.TameableDeathMessageEvent.Message" />; an empty component clears it where the event says so.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.TameableDeathMessageEvent.Cancelled">
+            <summary>Cancelling stops lower-priority handlers (unless they opt in) and the action itself.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.TameableDeathMessageEvent.#ctor(Mc.Scripting.Entity,Mc.Scripting.Player,Mc.Scripting.Utf8String)">
+            <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Events.ClockTimeSkipEvent">
+            <summary>A world clock is about to jump: the night skip of sleeping (only when it moves the overworld clock to the wake-up marker), /time set or /time add, or a plugin's world clock. Fired on the tick thread before the clock moves; a /time set to the time the clock already has does not fire it. Cancel to keep the clock where it is and send no clock update. A changed skip_amount is applied as an add to the current time. TimeSkip follows it for the same change (not after a cancel). Paper ClockTimeSkipEvent.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.ClockTimeSkipEvent.CatalogueId">
+            <summary>Catalogue id (stable ABI).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.ClockTimeSkipEvent.Key">
+            <summary>Registry key of the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.ClockTimeSkipEvent.IsCancellable">
+            <summary>Whether handlers can cancel the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.ClockTimeSkipEvent.World">
+            <summary>The dimension the clock belongs to.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.ClockTimeSkipEvent.Clock">
+            <summary>The clock's id, for example minecraft:overworld.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.ClockTimeSkipEvent.Reason">
+            <summary>Why.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.ClockTimeSkipEvent.SkipAmount">
+            <summary>Ticks the clock advances.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.ClockTimeSkipEvent.Cancelled">
+            <summary>Cancelling stops lower-priority handlers (unless they opt in) and the action itself.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.ClockTimeSkipEvent.#ctor(Mc.Scripting.Worlds.World,Mc.Scripting.Utf8String,Mc.Scripting.TimeSkipReason,System.Int64)">
+            <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Events.PlayerTrackEntityEvent">
+            <summary>An entity is about to become visible to a player: it came into the player's tracking range, was just spawned near the player, or was shown again after Player.HideEntity, and its spawn packets are about to be sent to that client (Paper PlayerTrackEntityEvent). Fired on the tick thread once per pair, only while a handler listens, for players and for mobs, projectiles and items. Cancel to send nothing for this pair: the client does not see the entity, and the engine asks again in every following tick for as long as the entity stays in range. A hidden entity (Player.HideEntity) is never asked. The handler must not be slow: it runs for every pair that begins.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerTrackEntityEvent.CatalogueId">
+            <summary>Catalogue id (stable ABI).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerTrackEntityEvent.Key">
+            <summary>Registry key of the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerTrackEntityEvent.IsCancellable">
+            <summary>Whether handlers can cancel the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerTrackEntityEvent.Player">
+            <summary>The player who would start to see the entity.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerTrackEntityEvent.Entity">
+            <summary>The entity that would become visible.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerTrackEntityEvent.Cancelled">
+            <summary>Cancelling stops lower-priority handlers (unless they opt in) and the action itself.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.PlayerTrackEntityEvent.#ctor(Mc.Scripting.Player,Mc.Scripting.Entity)">
+            <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Events.PlayerUntrackEntityEvent">
+            <summary>An entity stopped being visible to a player: it left the player's tracking range, was hidden with Player.HideEntity, or was removed from the world (Paper PlayerUntrackEntityEvent). Fired on the tick thread, only while a handler listens, after the removal packet was queued. Not fired for the entities a leaving player was tracking. Observed only.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerUntrackEntityEvent.CatalogueId">
+            <summary>Catalogue id (stable ABI).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerUntrackEntityEvent.Key">
+            <summary>Registry key of the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerUntrackEntityEvent.IsCancellable">
+            <summary>Whether handlers can cancel the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerUntrackEntityEvent.Player">
+            <summary>The player who stopped seeing the entity.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerUntrackEntityEvent.Entity">
+            <summary>The entity. It may already be dead (a removed entity).</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.PlayerUntrackEntityEvent.#ctor(Mc.Scripting.Player,Mc.Scripting.Entity)">
+            <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Events.PlayerHideEntityEvent">
+            <summary>An entity became hidden from a player: Player.HideEntity by a plugin, and no plugin had hidden it from that player before. Not fired again when a second plugin hides it too. Fired on the tick thread after the entity was removed from the client. Observed only.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerHideEntityEvent.CatalogueId">
+            <summary>Catalogue id (stable ABI).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerHideEntityEvent.Key">
+            <summary>Registry key of the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerHideEntityEvent.IsCancellable">
+            <summary>Whether handlers can cancel the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerHideEntityEvent.Player">
+            <summary>The player the entity is hidden from.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerHideEntityEvent.Entity">
+            <summary>The hidden entity.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.PlayerHideEntityEvent.#ctor(Mc.Scripting.Player,Mc.Scripting.Entity)">
+            <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Events.PlayerShowEntityEvent">
+            <summary>An entity is no longer hidden from a player: every plugin that hid it called Player.ShowEntity, or the plugin that hid it unloaded. It is paired again in the next tick (PlayerTrackEntity is asked then). Not fired when another plugin still hides it. Fired on the tick thread. Observed only.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerShowEntityEvent.CatalogueId">
+            <summary>Catalogue id (stable ABI).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerShowEntityEvent.Key">
+            <summary>Registry key of the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerShowEntityEvent.IsCancellable">
+            <summary>Whether handlers can cancel the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerShowEntityEvent.Player">
+            <summary>The player the entity is shown to again.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerShowEntityEvent.Entity">
+            <summary>The entity.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.PlayerShowEntityEvent.#ctor(Mc.Scripting.Player,Mc.Scripting.Entity)">
+            <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
+        </member>
         <member name="T:Mc.Scripting.GameMode">
             <summary>Vanilla game mode (the numbers are the protocol ids).</summary>
         </member>
@@ -15818,6 +16004,52 @@
         <member name="M:Mc.Scripting.Player.RemoveAllResourcePacks">
             <summary>Removes every resource pack the server pushed.</summary>
         </member>
+        <member name="M:Mc.Scripting.Player.HideEntity(Mc.Scripting.Entity)">
+            <summary>
+            Hides an entity from this player, for the plugin that is running (Paper <c>Player.hideEntity</c>). The player's client forgets the entity at once
+            and the server does not send it to him again, however close it is, until it is shown. Hiding a player also removes him from this player's tab list
+            (showing him adds the entry back before the entity is sent again). Hides are counted per plugin: the entity is visible again only when every
+            plugin that hid it has called <see cref="M:Mc.Scripting.Player.ShowEntity(Mc.Scripting.Entity)" /> (or has unloaded). A plugin's hides end when it unloads. They are not saved: they
+            end when either player leaves or the entity is removed.
+            </summary>
+            <remarks>
+            <see cref="T:Mc.Scripting.Events.PlayerHideEntityEvent" /> fires when the entity was visible before (not when a second plugin hides it too);
+            <see cref="T:Mc.Scripting.Events.PlayerUntrackEntityEvent" /> fires when the player was tracking it. Does nothing for a stale or untracked entity, for
+            the player himself, for a player who is not online, and once the player already has 4096 hidden entities. A hidden entity is not asked
+            <see cref="T:Mc.Scripting.Events.PlayerTrackEntityEvent" />. Needs a running plugin; use <see cref="M:Mc.Scripting.Player.HideEntity(Mc.Scripting.Plugin,Mc.Scripting.Entity)" /> from code that runs
+            outside one.
+            </remarks>
+            <param name="entity">The entity to hide.</param>
+            <exception cref="T:System.InvalidOperationException">No plugin is running.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Player.HideEntity(Mc.Scripting.Plugin,Mc.Scripting.Entity)">
+            <summary>Hides an entity from this player on behalf of a plugin (see <see cref="M:Mc.Scripting.Player.HideEntity(Mc.Scripting.Entity)" />).</summary>
+            <param name="plugin">The plugin the hide belongs to; it is released when the plugin unloads.</param>
+            <param name="entity">The entity to hide.</param>
+        </member>
+        <member name="M:Mc.Scripting.Player.ShowEntity(Mc.Scripting.Entity)">
+            <summary>
+            Takes back the running plugin's hide of an entity (Paper <c>Player.showEntity</c>). The entity is visible again only when no other plugin still
+            hides it; then it is sent to the player when he is in range (the next tick; <see cref="T:Mc.Scripting.Events.PlayerTrackEntityEvent" /> is asked
+            then), a player's tab entry is added back first, and <see cref="T:Mc.Scripting.Events.PlayerShowEntityEvent" /> fires. Does nothing when this plugin
+            had not hidden the entity.
+            </summary>
+            <param name="entity">The entity to show.</param>
+            <exception cref="T:System.InvalidOperationException">No plugin is running.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Player.ShowEntity(Mc.Scripting.Plugin,Mc.Scripting.Entity)">
+            <summary>Takes back a plugin's hide of an entity (see <see cref="M:Mc.Scripting.Player.ShowEntity(Mc.Scripting.Entity)" />).</summary>
+            <param name="plugin">The plugin that hid the entity.</param>
+            <param name="entity">The entity to show.</param>
+        </member>
+        <member name="M:Mc.Scripting.Player.CanSee(Mc.Scripting.Entity)">
+            <summary>
+            Whether this player can see an entity as far as plugins are concerned (Paper <c>Player.canSee</c>): false when a plugin hides it from him
+            (<see cref="M:Mc.Scripting.Player.HideEntity(Mc.Scripting.Entity)" />). It does not tell whether the entity is in range or loaded for the client. True for the player himself; false
+            for a stale handle.
+            </summary>
+            <param name="entity">The entity.</param>
+        </member>
         <member name="M:Mc.Scripting.Player.ShowBlock(Mc.Scripting.BlockPos,Mc.Scripting.Worlds.BlockState)">
             <summary>Shows a block state at a position to this player only. The world keeps its real block; the server still collides with the real one, and the
             client predicts collisions against what it sees. The fake block is re-sent with its chunk and after real changes of its position, and dropped when the
@@ -16683,12 +16915,14 @@
         <member name="M:Mc.Scripting.Packets.On``1(System.Action{Mc.Scripting.PacketEvent{``0}},Mc.Scripting.PacketMode,Mc.Scripting.EventPriority)">
             <summary>Subscribes to one packet type. In <see cref="F:Mc.Scripting.PacketMode.Observe" /> the handler sees a copy of each packet; in
             <see cref="F:Mc.Scripting.PacketMode.Intercept" /> it may cancel the packet or change its fields. Handlers run in priority order (lowest first).
+            A packet sent with <see cref="M:Mc.Scripting.Packets.Send(Mc.Scripting.Player,Mc.Scripting.PacketBase)" /> is not seen: a plugin's own sends skip every plugin's handlers.
             Returns the subscription: dispose it to unsubscribe (also done when the plugin unloads).</summary>
             <exception cref="T:System.InvalidOperationException">The packet cannot be observed or intercepted (its catalogue row has no such hook).</exception>
         </member>
         <member name="M:Mc.Scripting.Packets.Send(Mc.Scripting.Player,Mc.Scripting.PacketBase)">
             <summary>Sends a packet to a player. The packet is encoded by the engine, after the engine checks its values (ranges, registry ids, entity
-            ids: an entity a plugin creates needs <see cref="M:Mc.Scripting.Packets.AllocateEntityId" />). It is written in order with the engine's own packets of the tick.</summary>
+            ids: an entity a plugin creates needs <see cref="M:Mc.Scripting.Packets.AllocateEntityId" />). It is written in order with the engine's own packets of the tick.
+            The packet does not reach the handlers of <see cref="M:Mc.Scripting.Packets.On``1(System.Action{Mc.Scripting.PacketEvent{``0}},Mc.Scripting.PacketMode,Mc.Scripting.EventPriority)" />, this plugin's or another's.</summary>
         </member>
         <member name="M:Mc.Scripting.Packets.AllocateEntityId">
             <summary>A new entity id for a fake entity (an AddEntity of this plugin). The ids are reserved for plugins, so they never collide with a

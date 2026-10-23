@@ -72,7 +72,7 @@ Every event of the plugin API. "Engine: fired" means the engine has a firing sit
 | `PacketSendEvent` | 41 | yes | fired | - | Connection:ulong, Player:player, State:byte, PacketId:int, Payload:NativeBytes |
 | `ChunkLoadEvent` | 50 | no | fired | - | Dimension:int, X:int, Z:int, NewlyGenerated:bool |
 | `ChunkUnloadEvent` | 51 | no | fired | - | Dimension:int, X:int, Z:int |
-| `TimeSkipEvent` | 300 | no | fired | - | World:world, Reason:enum:TimeSkipReason, SkipAmount:long |
+| `TimeSkipEvent` | 300 | yes | fired | SkipAmount | World:world, Reason:enum:TimeSkipReason |
 | `WeatherChangeEvent` | 301 | no | fired | - | World:world, Raining:bool, Thundering:bool |
 | `PortalCreateEvent` | 303 | yes | fired | - | World:world, Reason:enum:PortalCreateReason, BlockCount:int |
 | `MenuClickEvent` | 270 | yes | fired | Allow | Player:player, Menu:int, Slot:int, ClickType:enum:ClickType, Button:int, Clicked:item, Cursor:item |
@@ -376,6 +376,13 @@ Every event of the plugin API. "Engine: fired" means the engine has a firing sit
 | `PlayerAdvancementCriterionGrantEvent` | 337 | yes | fired | - | Player:player, Advancement:Utf8String, Criterion:Utf8String |
 | `PlayerRecipeDiscoverEvent` | 338 | yes | fired | - | Player:player, Recipe:Utf8String |
 | `PlayerLinksSendEvent` | 437 | yes | fired | Links | Connection:ulong, Uuid:Uuid |
+| `TargetHitEvent` | 471 | yes | fired | SignalStrength | Projectile:Entity, World:world, Pos:BlockPos, Face:enum:BlockFace |
+| `TameableDeathMessageEvent` | 472 | yes | fired | Message | Entity:Entity, Owner:player |
+| `ClockTimeSkipEvent` | 473 | yes | fired | SkipAmount | World:world, Clock:Utf8String, Reason:enum:TimeSkipReason |
+| `PlayerTrackEntityEvent` | 474 | yes | fired | - | Player:player, Entity:Entity |
+| `PlayerUntrackEntityEvent` | 475 | no | fired | - | Player:player, Entity:Entity |
+| `PlayerHideEntityEvent` | 476 | no | fired | - | Player:player, Entity:Entity |
+| `PlayerShowEntityEvent` | 477 | no | fired | - | Player:player, Entity:Entity |
 
 ## Command argument types (vanilla registry)
 

@@ -4,6 +4,31 @@ Versions of the `Ramjet.Api` and `Ramjet.Templates` packages. While the API is i
 breaking changes are listed under **Breaking**. `src/Ramjet.Api/Mc.Scripting.Api.surface.txt` lists the full public API, so
 `git diff v<old>..v<new> -- src/Ramjet.Api/Mc.Scripting.Api.surface.txt` shows every API change between two versions.
 
+## 1.0.0-preview.8
+
+7 new events (379 in all) and a hide/show API for entities, covering the events preview.7 still listed as not available. Needs a server
+updated to the same release.
+
+### Added
+- `Player.HideEntity(Entity)`, `Player.ShowEntity(Entity)`, `Player.CanSee(Entity)`, with `(Plugin, Entity)` overloads (Paper
+  `hideEntity` / `showEntity` / `canSee`). Hides are counted per plugin: an entity is shown again once every plugin that hid it showed it.
+  A hidden player also leaves the viewer's tab list, and his chat reaches that viewer as an unsigned message. Hides last until the viewer
+  disconnects, the entity is removed or the plugin unloads (not across a restart); they survive respawns and dimension changes.
+- Events: `PlayerTrackEntity` (cancellable: the client is not sent the entity; asked again after a growing delay),
+  `PlayerUntrackEntity`, `PlayerHideEntity`, `PlayerShowEntity`, `TargetHit` (change or cancel the target block's signal),
+  `TameableDeathMessage`, `ClockTimeSkip`.
+
+### Changed
+- `TimeSkip` is cancellable and fires before the clock moves; `SkipAmount` can be changed. `ClockTimeSkip` fires first, for any world
+  clock. Cancelling the night skip still wakes the sleepers.
+- A tamed animal's owner gets its death message, as in vanilla (Ramjet sent nothing before).
+- `Packets.On` in Observe mode sees broadcast packets too (`Server.Broadcast`, the scoreboard, the world border, weather and game rule
+  events, block changes). A plugin's own `Packets.Send` is never observed.
+
+### Fixed
+- The plugin worker no longer exits with "PacketIntercept outside a tick window" when a handler sends a packet another plugin observes
+  at the end of a tick.
+
 ## 1.0.0-preview.7
 
 136 new events (372 in all), covering most of the Paper events the preview.5 report listed as missing. Needs a server updated to the
