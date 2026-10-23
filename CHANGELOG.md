@@ -4,6 +4,52 @@ Versions of the `Ramjet.Api` and `Ramjet.Templates` packages. While the API is i
 breaking changes are listed under **Breaking**. `src/Ramjet.Api/Mc.Scripting.Api.surface.txt` lists the full public API, so
 `git diff v<old>..v<new> -- src/Ramjet.Api/Mc.Scripting.Api.surface.txt` shows every API change between two versions.
 
+## 1.0.0-preview.7
+
+136 new events (372 in all), covering most of the Paper events the preview.5 report listed as missing. Needs a server updated to the
+same release.
+
+### Added
+- Players: `PlayerAdvancementCriterionGrant`, `PlayerBedFailEnter`, `PlayerBundleItemSelect`, `PlayerChangeBeaconEffect`,
+  `PlayerChangedMainHand`, `PlayerChunkLoad`, `PlayerChunkUnload`, `PlayerClientLoadedWorld`, `PlayerClientOptionsChange`,
+  `PlayerCodeOfConductSend`, `PlayerConnectionClose`, `PlayerConnectionInitialConfigure`, `PlayerCustomClick`, `PlayerDeepSleep`,
+  `PlayerElytraBoost`, `PlayerExpCooldownChange`, `PlayerFailMove`, `PlayerFlowerPotManipulate`, `PlayerHarvestBlock`, `PlayerInput`,
+  `PlayerInsertLecternBook`, `PlayerInventorySlotChange`, `PlayerItemCooldown`, `PlayerItemGroupCooldown`, `PlayerLecternPageChange`,
+  `PlayerLinksSend`, `PlayerLoomPatternSelect`, `PlayerMapFilled`, `PlayerNameEntity`, `PlayerPickBlock`, `PlayerPickEntity`,
+  `PlayerPostRespawn`, `PlayerReadyArrow`, `PlayerRecipeBookSettingsChange`, `PlayerRecipeDiscover`, `PlayerRegisterChannel`,
+  `PlayerUnregisterChannel`, `PlayerShearBlock`, `PlayerShieldDisable`, `PlayerSignCommandPreprocess`, `PlayerSpawnLocation`,
+  `PlayerStatisticIncrement`, `PlayerStopUsingItem`, `PlayerSwapWithEquipmentSlot`, `PlayerToggleEntityAgeLock`,
+  `PlayerUseUnknownEntity`, `PrePlayerAttackEntity`.
+- Entities: `ArrowBodyCountChange`, `EntityAddToWorld`, `EntityRemoveFromWorld`, `EntityAirChange`, `EntityAttemptSmashAttack`,
+  `EntityAttemptSpinAttack`, `EntityCompostItem`, `EntityConstruct`, `EntityDamageItem`, `EntityDye`, `EntityEffectTick`,
+  `EntityEnterBlock`, `EntityEquipmentChanged`, `EntityLoadCrossbow`, `EntityLunge`, `EntityMove`, `EntityPortalReady`,
+  `EntitySpellCast`, `FishHookStateChange`, `ThrownEggHatch`, `WaterBottleSplash`.
+- Mobs and raids: `BatToggleSleep`, `CreeperIgnite`, `ElderGuardianAppearance`, `EnderDragonChangePhase`, `EnderDragonFireballHit`,
+  `EnderDragonFlame`, `EnderDragonShootFireball`, `EndermanAttackPlayer`, `EndermanEscape`, `PhantomPreSpawn`, `PigZombieAnger`,
+  `PufferFishStateChange`, `RaidSpawnWave`, `RaidStop`, `SheepRegrowWool`, `ShulkerDuplicate`, `SkeletonHorseTrap`,
+  `SlimeChangeDirection`, `SlimeSwim`, `SlimeWander`, `SulfurCubeSwallowItem`, `TurtleGoHome`, `TurtleLayEgg`, `TurtleStartDigging`,
+  `VillagerAcquireTrade`, `VillagerCareerChange`, `VillagerReplenishTrade`, `WardenAngerChange`, `WitchConsumePotion`,
+  `WitchReadyPotion`, `WitchThrowPotion`.
+- Blocks, items and containers: `BeaconActivated`, `BeaconDeactivated`, `BellResonate`, `BlockBreakBlock`,
+  `BlockBreakProgressUpdate`, `BlockDamageAbort`, `BlockDispenseLoot`, `BlockFailedDispense`, `BlockLockCheck`, `BrewingStandFuel`,
+  `CartographyItem`, `CompostItem`, `CrafterCraft`, `DragonEggForm`, `HopperInventorySearch`, `ItemCrafted`, `LootGenerate`,
+  `MapInitialize`, `NotePlay`, `PrepareGrindstone`, `PrepareHopperTransfer`, `PrepareItemEnchant`, `SculkBloom`,
+  `UncheckedSignChange`, `VaultChangeState`, `VaultDisplayItem`.
+- Server and worlds: `BroadcastMessage`, `ClientTickEnd`, `ProfileWhitelistVerify`, `ServerResourcesReloaded`,
+  `WhitelistStateUpdate`, `WhitelistToggle`, `WorldBorderBoundsChange`, `WorldBorderBoundsChangeFinish`, `WorldBorderCenterChange`,
+  `WorldDifficultyChange`, `WorldGameRuleChange`.
+
+### Changed
+- `EntityExplodeEvent` / `BlockExplodeEvent`: the block list holds only real blocks, as in Paper (it also listed the air cells the
+  blast crossed). A blast never hurts its own source entity.
+- `PlayerChunkLoad` / `PlayerChunkUnload` fire at the start of the tick after the chunk packet was sent.
+- Bells resonate as in vanilla: raiders within range glow when a bell rings (this did nothing before).
+- The console logs vanilla's "moved too quickly" / "moved wrongly" warnings, at most one per second per player.
+
+### Not yet
+- `TameableDeathMessage`, `TargetHit`, `PlayerTrackEntity` / `PlayerUntrackEntity` and some of the remaining Paper events are not
+  available yet.
+
 ## 1.0.0-preview.6
 
 Fixes for the bugs found by live testing of preview.5 (thank you for the report). Needs a server updated to the same release.

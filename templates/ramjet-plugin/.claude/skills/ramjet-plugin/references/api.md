@@ -56,6 +56,22 @@ The base and the modified value of an attribute of a living entity.
 - `public double Base { get; init; }`: The base value (what `LivingEntity.SetAttributeBase` writes).
 - `public double Value { get; init; }`: The value with every modifier applied.
 
+## BedEnterProblem (enum, other)
+
+```csharp
+public enum BedEnterProblem : byte
+```
+
+Why a bed refuses a player (PlayerBedFailEnter).
+
+- `NotPossibleHere` = 0: The dimension does not let the player sleep here: the bed explodes or breaks (see will_explode).
+- `NotPossibleNow` = 1: Sleeping is not possible at this time (the overworld by day).
+- `TooFarAway` = 2: The bed is out of reach.
+- `Obstructed` = 3: Something blocks the space above the bed.
+- `NotSafe` = 4: Monsters are near the bed.
+- `Occupied` = 5: Another player sleeps in the bed.
+- `Other` = 6: Any other reason.
+
 ## BedEnterResult (enum, other)
 
 ```csharp
@@ -125,6 +141,17 @@ Integer block coordinates.
 - `public override bool Equals(object? obj)`: Equality.
 - `public override int GetHashCode()`: Hash code.
 - `public override string ToString()`: Text form.
+
+## BorderChangeKind (enum, other)
+
+```csharp
+public enum BorderChangeKind : byte
+```
+
+How a world border changes its size (WorldBorderBoundsChange).
+
+- `Instant` = 0: The size is set at once (/worldborder set without a time, or a plugin change with no duration).
+- `StartMove` = 1: The border starts moving to the new size over the duration (/worldborder set or add with a time).
 
 ## BossBar (class, display)
 
@@ -202,6 +229,17 @@ public sealed class BossBars
 Creates boss bars owned by a plugin (`plugin.BossBars`).
 
 - `public BossBar Create(string name, Component title, BossBarColor color = BossBarColor.Pink, BossBarStyle style = BossBarStyle.Solid, float progress = 1f)`: Creates a boss bar with nobody watching; add viewers to show it.
+
+## CareerChangeReason (enum, other)
+
+```csharp
+public enum CareerChangeReason : byte
+```
+
+Why a villager's profession changes (VillagerCareerChange).
+
+- `Employed` = 0: The villager claimed a job site and took its profession.
+- `Losing` = 1: The villager lost its job site and became unemployed.
 
 ## CauldronChangeReason (enum, other)
 
@@ -320,6 +358,18 @@ Restricts who gets a chat message while its handler runs. Signed chat stays sign
 
 - `public static IReadOnlyList<Player> Audience()`: The audience of the running handler: the players who would get the line now. Without a restriction that is every player who accepts chat (a `PlayerChatEvent` line); after {{cref:M:Mc.Scripting.ChatRoute.Restrict(System.Collections.Generic.IEnumerable{Mc.Scripting.Player})}} it is the restricted list. Offline profiles are left out.
 - `public static int Restrict(IEnumerable<Player> recipients)`: Restricts the recipients of the chat message of the running handler. Only the listed players get the line. Works in a `PlayerChatEvent` or a `PrivateMessageEvent` handler; the restriction applies to that one message only and ends when the dispatch is over. A second call replaces the list. An empty list means nobody gets the line. Offline handles are left out.
+
+## ChatVisibility (enum, other)
+
+```csharp
+public enum ChatVisibility : byte
+```
+
+What chat a client shows (the protocol ids).
+
+- `Full` = 0: All chat messages.
+- `System` = 1: Only system messages (commands and server messages), no player chat.
+- `Hidden` = 2: No chat at all.
 
 ## ClickType (enum, inventories)
 
@@ -1060,6 +1110,26 @@ Kind of inventory drag.
 - `Single` = 1: Right drag: one item per slot.
 - `Clone` = 2: Middle drag (creative).
 
+## DragonPhase (enum, other)
+
+```csharp
+public enum DragonPhase : byte
+```
+
+An ender dragon phase (EnderDragonPhase, the order of its ids).
+
+- `HoldingPattern` = 0: Circles the pillars and picks a new target; may strafe a player or land.
+- `StrafePlayer` = 1: Flies around a player and shoots fireballs at them.
+- `LandingApproach` = 2: Flies to the exit portal to land.
+- `Landing` = 3: Lands on the exit portal.
+- `Takeoff` = 4: Takes off from the exit portal.
+- `SittingFlaming` = 5: Sits on the portal and breathes dragon breath clouds.
+- `SittingScanning` = 6: Sits on the portal and looks for a player.
+- `SittingAttacking` = 7: Sits on the portal and attacks the player it found.
+- `ChargingPlayer` = 8: Charges straight at a target position.
+- `Dying` = 9: Dies: falls and spins before it is removed.
+- `Hovering` = 10: Hovers in place (the phase of a new dragon and of a dead fight).
+
 ## Ecs (class, ecs)
 
 ```csharp
@@ -1235,6 +1305,20 @@ What caused a potion effect change (EntityPotionEffect). Unknown when the call s
 - `TrialSpawner` = 25: A trial spawner gives its trial omen. Ramjet extra, not in Paper.
 - `Block` = 26: A block gives the effect (a potent sulfur block). Ramjet extra, not in Paper.
 - `Nautilus` = 27: A nautilus gives its rider an effect. Ramjet extra, not in Paper.
+
+## EndermanEscapeReason (enum, other)
+
+```csharp
+public enum EndermanEscapeReason : byte
+```
+
+Why an enderman teleports away (EndermanEscape).
+
+- `Indirect` = 0: A projectile hit it (indirect damage): the teleport avoids the hit. A cancel lets the hit do its damage.
+- `Runaway` = 1: The daylight teleport after it stopped attacking and ran away.
+- `Stare` = 2: A player stares at it from within 4 blocks during a fight.
+- `Drench` = 3: Drowning damage (water or rain): it teleports away from the water.
+- `CriticalHit` = 4: Reserved for the critical hit escape of Paper. This server never fires it.
 
 ## Entity (struct, ecs)
 
@@ -1463,6 +1547,17 @@ What caused food exhaustion (PlayerExhaustion).
 - `WalkUnderwater` = 10: The player walked under water.
 - `Unknown` = 11: Any other source (a hunger effect, a plugin).
 
+## ExpCooldownReason (enum, other)
+
+```csharp
+public enum ExpCooldownReason : byte
+```
+
+Why a player's experience pickup delay is set (PlayerExpCooldownChange).
+
+- `PickupOrb` = 0: The delay was set by picking up an experience orb (2 ticks).
+- `Plugin` = 1: A plugin set the delay. Reserved: Ramjet has no plugin setter for the delay yet.
+
 ## ExplosionResult (enum, other)
 
 ```csharp
@@ -1490,6 +1585,18 @@ Values of the protocol enum Facing (the wire carries the ordinal).
 - `South` = 3: Facing south (ordinal 3).
 - `West` = 4: Facing west (ordinal 4).
 - `East` = 5: Facing east (ordinal 5).
+
+## FishHookState (enum, other)
+
+```csharp
+public enum FishHookState : byte
+```
+
+The state of a fishing hook (FishHookStateChange).
+
+- `Flying` = 0: The hook flies through the air.
+- `HookedInEntity` = 1: The hook hangs on an entity.
+- `Bobbing` = 2: The hook floats in water and waits for a bite.
 
 ## FishState (enum, other)
 
@@ -1661,6 +1768,17 @@ Creates holograms for this plugin. Everything made here is removed when the plug
 
 - `public Hologram Create(World world, Vec3d position, Component text, HologramOptions? options = null)`: Creates a hologram that everybody sees.
 - `public Hologram Create(World world, Vec3d position, IEnumerable<string> lines, HologramOptions? options = null)`: Creates a hologram from plain lines (one per line of text).
+
+## HopperSearchKind (enum, other)
+
+```csharp
+public enum HopperSearchKind : byte
+```
+
+Which container a hopper looks for (HopperInventorySearch).
+
+- `Source` = 0: The container the hopper takes items from.
+- `Destination` = 1: The container the hopper puts items into.
 
 ## Http (class, server)
 
@@ -2198,6 +2316,18 @@ A position with a rotation in a world.
 - `public float Yaw { get; init; }`: Yaw in degrees (0 = south, 90 = west).
 - `public double Z { get; }`: Z coordinate.
 
+## LockResult (enum, other)
+
+```csharp
+public enum LockResult : byte
+```
+
+The verdict of a lock check (BlockLockCheck).
+
+- `Default` = 0: The vanilla check: the key decides, a spectator passes.
+- `Allow` = 1: The container opens whatever the key or the game mode.
+- `Deny` = 2: The container stays closed for the player.
+
 ## Log (class, server)
 
 ```csharp
@@ -2304,6 +2434,17 @@ A roll checks the context the way vanilla checks a `LootParams`: every parameter
 - `public static IReadOnlyList<ItemStack> Generate(string key, LootContext context)`: Rolls a loot table with a context and returns what it drops.
 - `public static IReadOnlyList<string> Keys()`: Every loot table id of the datapack (`"minecraft:chests/simple_dungeon"`, `"minecraft:blocks/stone"`, ...).
 
+## MainArm (enum, other)
+
+```csharp
+public enum MainArm : byte
+```
+
+The arm a player uses by default (the setting, not the item hands of Hand).
+
+- `Left` = 0: The left arm.
+- `Right` = 1: The right arm.
+
 ## McPermissionAttribute (class, permissions)
 
 ```csharp
@@ -2354,6 +2495,17 @@ Why a plugin menu was closed for a player.
 - `Quit` = 3: The player left the server.
 - `Replaced` = 4: Another container was opened for the player.
 - `Invalid` = 5: The server closed it (death, dimension change, the menu no longer valid).
+
+## MoveFailReason (enum, other)
+
+```csharp
+public enum MoveFailReason : byte
+```
+
+Which check refused a player's move (PlayerFailMove).
+
+- `MovedTooQuickly` = 0: The client moved farther in one tick than its allowance (vanilla: moved too quickly).
+- `MovedWrongly` = 1: The client's position is more than 0.25 blocks from the server's own movement check (vanilla: moved wrongly).
 
 ## MoveInitiator (enum, other)
 
@@ -2920,6 +3072,17 @@ Typed packets: send a packet to a player, and observe, change or cancel the pack
 - `public static bool ReleaseEntityId(int id)`: Gives back an id from `Packets.AllocateEntityId`. False when this plugin does not hold it.
 - `public static PacketSendStatus Send(Player player, PacketBase packet)`: Sends a packet to a player. The packet is encoded by the engine, after the engine checks its values (ranges, registry ids, entity ids: an entity a plugin creates needs `Packets.AllocateEntityId`). It is written in order with the engine's own packets of the tick.
 - `public static PacketSendStatus SendPacket(Player player, PacketBase packet)`: Shorthand for `Packets.Send`: `player.SendPacket(new Packets.Clientbound.AddEntity { ... })`.
+
+## PageDirection (enum, other)
+
+```csharp
+public enum PageDirection : byte
+```
+
+Which way a lectern page turn moves (PlayerLecternPageChange).
+
+- `Left` = 0: Back to an earlier page (the previous button, or a jump backwards).
+- `Right` = 1: Forward to a later page (the next button, or a jump forward).
 
 ## Particle (class, players)
 
@@ -3583,6 +3746,33 @@ A query over three component types.
 
 - `public void Each(QueryAction<T1, T2, T3> action)`: Calls `action` for every matching entity.
 
+## RaidStopReason (enum, other)
+
+```csharp
+public enum RaidStopReason : byte
+```
+
+Why a raid stopped without a victory or a defeat (RaidStop). Paper's Reason has the same cases under other names.
+
+- `Peaceful` = 0: The difficulty is peaceful, so raids do not run.
+- `Timeout` = 1: The raid ran 48000 ticks with its centre loaded.
+- `Unspawnable` = 2: No spawn position for a wave was found in five attempts.
+- `NotVillage` = 3: Before the first wave the raid centre stopped being a village.
+- `RaidsDisabled` = 4: The raids game rule is off.
+
+## RecipeBookType (enum, other)
+
+```csharp
+public enum RecipeBookType : byte
+```
+
+A recipe book of the client (PlayerRecipeBookSettingsChange): the crafting book of the player's inventory and crafting table, or the book of a workstation.
+
+- `Crafting` = 0: The crafting recipe book (the inventory and the crafting table).
+- `Furnace` = 1: The furnace recipe book.
+- `BlastFurnace` = 2: The blast furnace recipe book.
+- `Smoker` = 3: The smoker recipe book.
+
 ## RegainReason (enum, other)
 
 ```csharp
@@ -3600,6 +3790,18 @@ Why an entity regains health (EntityRegainHealth). Custom is the default of ever
 - `MagicRegen` = 6: The regeneration effect, one heal per tick it applies.
 - `WitherSpawn` = 7: The wither heals while it is summoned (the spawn sequence).
 - `Wither` = 8: A wither skull hit heals the wither.
+
+## ReloadCause (enum, other)
+
+```csharp
+public enum ReloadCause : byte
+```
+
+What reloaded the server resources (ServerResourcesReloaded).
+
+- `Command` = 0: The /reload command.
+- `Plugin` = 1: A plugin asked for the reload. No host call does this yet, so no event carries it.
+- `Datapack` = 2: /datapack enable or /datapack disable selected the pack again and the functions were read again.
 
 ## ResourcePack (class, players)
 
@@ -4159,6 +4361,21 @@ Why a player's spawn point is set (PlayerSetSpawn.Cause).
 - `RespawnAnchor` = 1: A respawn anchor was charged.
 - `Command` = 2: A command set the point.
 
+## SpellKind (enum, other)
+
+```csharp
+public enum SpellKind : byte
+```
+
+The spell an evoker or illusioner casts (EntitySpellCast).
+
+- `None` = 0: No spell.
+- `SummonVex` = 1: Summons vexes around the evoker.
+- `Fangs` = 2: Evoker fangs erupt towards the target.
+- `Wololo` = 3: The evoker turns a sheep red.
+- `Disappear` = 4: The illusioner makes itself invisible.
+- `Blindness` = 5: The illusioner blinds its target.
+
 ## Subscription (class, events)
 
 ```csharp
@@ -4520,6 +4737,18 @@ Why a mob is transformed into another mob (EntityTransform).
 - `Sheared` = 7: A mooshroom is sheared into a cow.
 - `Frozen` = 8: A skeleton is frozen in powder snow and becomes a stray.
 
+## TriState (enum, other)
+
+```csharp
+public enum TriState : byte
+```
+
+A plugin's answer to a decision the server already made: Default keeps the server's answer, Allow and Deny override it.
+
+- `Default` = 0: Keep the answer the server found.
+- `Allow` = 1: Allow it even though the server said no.
+- `Deny` = 2: Deny it even though the server said yes.
+
 ## UnleashReason (enum, other)
 
 ```csharp
@@ -4578,6 +4807,19 @@ Java-style UUID (two big-endian halves).
 - `public static bool operator !=(Uuid a, Uuid b)`: Inequality.
 - `public static bool operator ==(Uuid a, Uuid b)`: Equality.
 
+## VaultState (enum, other)
+
+```csharp
+public enum VaultState : byte
+```
+
+The state of a trial chamber vault (VaultChangeState, the vault's vault_state block property).
+
+- `Inactive` = 0: No player is near enough: the vault is closed and shows no item.
+- `Active` = 1: A player is in range: the vault shows its items and accepts a key.
+- `Unlocking` = 2: A key was inserted: the vault unlocks for a moment.
+- `Ejecting` = 3: The vault is ejecting its reward items, one every 20 ticks.
+
 ## Vec3d (struct, primitives)
 
 ```csharp
@@ -4626,6 +4868,17 @@ Why the rain or the thunder of a world changes (RainChange, ThunderChange).
 - `Sleep` = 2: Everyone slept through the night: the weather is cleared.
 - `Plugin` = 3: A plugin.
 - `Unknown` = 4: Not known.
+
+## WhitelistStatus (enum, other)
+
+```csharp
+public enum WhitelistStatus : byte
+```
+
+A whitelist change of one profile (WhitelistStateUpdate).
+
+- `Added` = 0: The profile is added to the whitelist.
+- `Removed` = 1: The profile is removed from the whitelist.
 
 ## WorldSaveCause (enum, other)
 

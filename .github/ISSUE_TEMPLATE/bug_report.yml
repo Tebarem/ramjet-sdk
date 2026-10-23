@@ -25,6 +25,6 @@ body:
     id: version
     attributes:
       label: Ramjet.Api version
-      placeholder: 1.0.0-preview.6
+      placeholder: 1.0.0-preview.7
     validations:
       required: true

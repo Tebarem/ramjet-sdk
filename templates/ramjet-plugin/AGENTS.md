@@ -48,7 +48,7 @@ in `OnEnable`, `ResourcePackBuilder` and `ResourcePackHost`. Everything is tick-
 ## What the engine actually fires and wires
 
 <!-- BEGIN GENERATED:status -->
-- Events the engine fires today: ServerStartEvent, ServerStopEvent, TickStartEvent, TickEndEvent, ServerListPingEvent, CommandsRegisteredEvent, PluginEnableEvent, PluginDisableEvent, PermissionChangedEvent, PermissionsReloadedEvent, PlayerPreLoginEvent, PlayerJoinEvent, PlayerQuitEvent, PlayerMoveEvent, PlayerChatEvent, PrivateMessageEvent, PlayerCommandEvent, PlayerInteractBlockEvent, PlayerKickEvent, PlayerRespawnEvent, PlayerDeathEvent, PlayerCreativeSlotEvent, PlayerItemHeldEvent, PlayerSwapHandsEvent, PlayerDropItemEvent, PlayerPickupItemEvent, PlayerConsumeEvent, PlayerInteractEvent, PlayerInteractEntityEvent, PlayerToggleSneakEvent, PlayerToggleSprintEvent, PlayerToggleFlightEvent, PlayerGameModeChangeEvent, PlayerTeleportEvent, PlayerPortalEvent, PlayerChangedWorldEvent, PlayerResourcePackStatusEvent, PlayerLevelChangeEvent, BlockBreakEvent, BlockPlaceEvent, BlockDamageEvent, BlockIgniteEvent, BlockBurnEvent, BlockSpreadEvent, BlockFadeEvent, BlockFormEvent, BlockGrowEvent, BlockPistonExtendEvent, BlockPistonRetractEvent, BlockRedstoneEvent, EntitySpawnEvent, EntityDamageEvent, EntityDeathEvent, EntityCombustEvent, InventoryOpenEvent, InventoryCloseEvent, InventoryClickEvent, InventoryDragEvent, CraftItemEvent, PrepareCraftEvent, FurnaceSmeltEvent, FurnaceBurnEvent, EnchantItemEvent, PrepareAnvilEvent, PacketReceiveEvent, PacketSendEvent, ChunkLoadEvent, ChunkUnloadEvent, TimeSkipEvent, WeatherChangeEvent, PortalCreateEvent, MenuClickEvent, MenuCloseEvent, CustomItemUseEvent, CustomBlockPlaceEvent, CustomBlockBreakEvent, CustomBlockInteractEvent, NpcInteractEvent, PlayerPreQuitEvent, CombatTagStartEvent, CombatTagEndEvent, SignChangeEvent, PlayerTakeLecternBookEvent, PlayerEditBookEvent, PlayerOpenSignEvent, WorldLoadEvent, WorldInitEvent, WorldUnloadEvent, RainChangeEvent, ThunderChangeEvent, LightningStrikeEvent, SpawnChangeEvent, ExplosionPrimeEvent, EntityExplodeEvent, BlockExplodeEvent, BlockFromToEvent, FluidLevelChangeEvent, LeavesDecayEvent, MoistureChangeEvent, BlockPhysicsEvent, BlockDestroyEvent, CauldronLevelChangeEvent, BlockFertilizeEvent, EntityBlockFormEvent, StructureGrowEvent, PlayerRecipeBookClickEvent, WorldSaveEvent, TntPrimeEvent, PlayerBucketEmptyEvent, PlayerBucketFillEvent, PlayerBucketEntityEvent, PlayerShearEntityEvent, BlockShearEntityEvent, BlockMultiPlaceEvent, BlockCanBuildEvent, PiglinBarterEvent, BellRingEvent, BeaconEffectEvent, BlockReceiveGameEventEvent, ChunkPopulateEvent, EntitiesLoadEvent, EntitiesUnloadEvent, StructuresLocateEvent, RaidTriggerEvent, RaidFinishEvent, GenericGameEventEvent, PlayerBedEnterEvent, PlayerBedLeaveEvent, PlayerLocaleChangeEvent, PlayerArmSwingEvent, PlayerArmorChangeEvent, PlayerJumpEvent, PlayerSetSpawnEvent, PlayerStartSpectatingEvent, PlayerStopSpectatingEvent, BlockDispenseEvent, BlockPreDispenseEvent, BlockDispenseArmorEvent, InventoryMoveItemEvent, InventoryPickupItemEvent, UnknownCommandEvent, ServerCommandEvent, TabCompleteEvent, PlayerCommandSendEvent, PlayerServerFullCheckEvent, VehicleCreateEvent, VehicleDamageEvent, VehicleDestroyEvent, VehicleMoveEvent, VehicleBlockCollisionEvent, VehicleEntityCollisionEvent, VehicleEnterEvent, VehicleExitEvent, VehicleUpdateEvent, EntityMountEvent, EntityDismountEvent, HorseJumpEvent, EntityRegainHealthEvent, EntityPotionEffectEvent, EntityKnockbackEvent, EntityResurrectEvent, EntityToggleGlideEvent, EntityToggleSwimEvent, EntityPoseChangeEvent, PlayerFishEvent, FoodLevelChangeEvent, PlayerItemBreakEvent, PlayerItemDamageEvent, PlayerItemMendEvent, PlayerExhaustionEvent, PlayerVelocityEvent, PlayerAdvancementDoneEvent, BlockDropItemEvent, BlockExpEvent, FurnaceStartSmeltEvent, FurnaceExtractEvent, BrewingStartEvent, BrewEvent, CampfireStartEvent, CampfireCookEvent, PrepareSmithingEvent, SmithItemEvent, StonecutterSelectEvent, AnvilDamagedEvent, TradeSelectEvent, PlayerTradeEvent, EntityPortalEnterEvent, EntityPortalEvent, EntityPortalExitEvent, EntityRemoveEvent, EntityTeleportEvent, ProjectileLaunchEvent, ProjectileHitEvent, PlayerLaunchProjectileEvent, EntityShootBowEvent, PlayerPickupArrowEvent, PlayerRiptideEvent, FireworkExplodeEvent, PotionSplashEvent, LingeringPotionSplashEvent, AreaEffectCloudApplyEvent, ExpBottleEvent, PlayerEggThrowEvent, EntityChangeBlockEvent, EntityInteractEvent, PlayerLeashEntityEvent, EntityBreakDoorEvent, PlayerUnleashEntityEvent, EntityUnleashEvent, ItemDespawnEvent, ItemMergeEvent, EntityDropItemEvent, EntityPickupItemEvent, PlayerExpChangeEvent, PlayerPickupExperienceEvent, ExperienceOrbMergeEvent, HangingPlaceEvent, HangingBreakEvent, HangingBreakByEntityEvent, PlayerArmorStandManipulateEvent, EntityPlaceEvent, EntityBreakEvent, EntityBreakByEntityEvent, PlayerItemFrameChangeEvent, EntityTransformEvent, EntityTameEvent, EntityBreedEvent, EntityEnterLoveModeEvent, EntityToggleSitEvent, SlimeSplitEvent, CreeperPowerEvent, SheepDyeWoolEvent, EntityFertilizeEggEvent, EntityTargetEvent, PreCreatureSpawnEvent, PlayerNaturalSpawnRangeEvent.
+- Events the engine fires today: ServerStartEvent, ServerStopEvent, TickStartEvent, TickEndEvent, ServerListPingEvent, CommandsRegisteredEvent, PluginEnableEvent, PluginDisableEvent, PermissionChangedEvent, PermissionsReloadedEvent, PlayerPreLoginEvent, PlayerJoinEvent, PlayerQuitEvent, PlayerMoveEvent, PlayerChatEvent, PrivateMessageEvent, PlayerCommandEvent, PlayerInteractBlockEvent, PlayerKickEvent, PlayerRespawnEvent, PlayerDeathEvent, PlayerCreativeSlotEvent, PlayerItemHeldEvent, PlayerSwapHandsEvent, PlayerDropItemEvent, PlayerPickupItemEvent, PlayerConsumeEvent, PlayerInteractEvent, PlayerInteractEntityEvent, PlayerToggleSneakEvent, PlayerToggleSprintEvent, PlayerToggleFlightEvent, PlayerGameModeChangeEvent, PlayerTeleportEvent, PlayerPortalEvent, PlayerChangedWorldEvent, PlayerResourcePackStatusEvent, PlayerLevelChangeEvent, BlockBreakEvent, BlockPlaceEvent, BlockDamageEvent, BlockIgniteEvent, BlockBurnEvent, BlockSpreadEvent, BlockFadeEvent, BlockFormEvent, BlockGrowEvent, BlockPistonExtendEvent, BlockPistonRetractEvent, BlockRedstoneEvent, EntitySpawnEvent, EntityDamageEvent, EntityDeathEvent, EntityCombustEvent, InventoryOpenEvent, InventoryCloseEvent, InventoryClickEvent, InventoryDragEvent, CraftItemEvent, PrepareCraftEvent, FurnaceSmeltEvent, FurnaceBurnEvent, EnchantItemEvent, PrepareAnvilEvent, PacketReceiveEvent, PacketSendEvent, ChunkLoadEvent, ChunkUnloadEvent, TimeSkipEvent, WeatherChangeEvent, PortalCreateEvent, MenuClickEvent, MenuCloseEvent, CustomItemUseEvent, CustomBlockPlaceEvent, CustomBlockBreakEvent, CustomBlockInteractEvent, NpcInteractEvent, PlayerPreQuitEvent, CombatTagStartEvent, CombatTagEndEvent, SignChangeEvent, PlayerTakeLecternBookEvent, PlayerEditBookEvent, PlayerOpenSignEvent, WorldLoadEvent, WorldInitEvent, WorldUnloadEvent, RainChangeEvent, ThunderChangeEvent, LightningStrikeEvent, SpawnChangeEvent, ExplosionPrimeEvent, EntityExplodeEvent, BlockExplodeEvent, BlockFromToEvent, FluidLevelChangeEvent, LeavesDecayEvent, MoistureChangeEvent, BlockPhysicsEvent, BlockDestroyEvent, CauldronLevelChangeEvent, BlockFertilizeEvent, EntityBlockFormEvent, StructureGrowEvent, PlayerRecipeBookClickEvent, WorldSaveEvent, TntPrimeEvent, PlayerBucketEmptyEvent, PlayerBucketFillEvent, PlayerBucketEntityEvent, PlayerShearEntityEvent, BlockShearEntityEvent, BlockMultiPlaceEvent, BlockCanBuildEvent, PiglinBarterEvent, BellRingEvent, BeaconEffectEvent, BlockReceiveGameEventEvent, ChunkPopulateEvent, EntitiesLoadEvent, EntitiesUnloadEvent, StructuresLocateEvent, RaidTriggerEvent, RaidFinishEvent, GenericGameEventEvent, PlayerBedEnterEvent, PlayerBedLeaveEvent, PlayerLocaleChangeEvent, PlayerArmSwingEvent, PlayerArmorChangeEvent, PlayerJumpEvent, PlayerSetSpawnEvent, PlayerStartSpectatingEvent, PlayerStopSpectatingEvent, BlockDispenseEvent, BlockPreDispenseEvent, BlockDispenseArmorEvent, InventoryMoveItemEvent, InventoryPickupItemEvent, UnknownCommandEvent, ServerCommandEvent, TabCompleteEvent, PlayerCommandSendEvent, PlayerServerFullCheckEvent, VehicleCreateEvent, VehicleDamageEvent, VehicleDestroyEvent, VehicleMoveEvent, VehicleBlockCollisionEvent, VehicleEntityCollisionEvent, VehicleEnterEvent, VehicleExitEvent, VehicleUpdateEvent, EntityMountEvent, EntityDismountEvent, HorseJumpEvent, EntityRegainHealthEvent, EntityPotionEffectEvent, EntityKnockbackEvent, EntityResurrectEvent, EntityToggleGlideEvent, EntityToggleSwimEvent, EntityPoseChangeEvent, PlayerFishEvent, FoodLevelChangeEvent, PlayerItemBreakEvent, PlayerItemDamageEvent, PlayerItemMendEvent, PlayerExhaustionEvent, PlayerVelocityEvent, PlayerAdvancementDoneEvent, BlockDropItemEvent, BlockExpEvent, FurnaceStartSmeltEvent, FurnaceExtractEvent, BrewingStartEvent, BrewEvent, CampfireStartEvent, CampfireCookEvent, PrepareSmithingEvent, SmithItemEvent, StonecutterSelectEvent, AnvilDamagedEvent, TradeSelectEvent, PlayerTradeEvent, EntityPortalEnterEvent, EntityPortalEvent, EntityPortalExitEvent, EntityRemoveEvent, EntityTeleportEvent, ProjectileLaunchEvent, ProjectileHitEvent, PlayerLaunchProjectileEvent, EntityShootBowEvent, PlayerPickupArrowEvent, PlayerRiptideEvent, FireworkExplodeEvent, PotionSplashEvent, LingeringPotionSplashEvent, AreaEffectCloudApplyEvent, ExpBottleEvent, PlayerEggThrowEvent, EntityChangeBlockEvent, EntityInteractEvent, PlayerLeashEntityEvent, EntityBreakDoorEvent, PlayerUnleashEntityEvent, EntityUnleashEvent, ItemDespawnEvent, ItemMergeEvent, EntityDropItemEvent, EntityPickupItemEvent, PlayerExpChangeEvent, PlayerPickupExperienceEvent, ExperienceOrbMergeEvent, HangingPlaceEvent, HangingBreakEvent, HangingBreakByEntityEvent, PlayerArmorStandManipulateEvent, EntityPlaceEvent, EntityBreakEvent, EntityBreakByEntityEvent, PlayerItemFrameChangeEvent, EntityTransformEvent, EntityTameEvent, EntityBreedEvent, EntityEnterLoveModeEvent, EntityToggleSitEvent, SlimeSplitEvent, CreeperPowerEvent, SheepDyeWoolEvent, EntityFertilizeEggEvent, EntityTargetEvent, PreCreatureSpawnEvent, PlayerNaturalSpawnRangeEvent, EntityAddToWorldEvent, EntityRemoveFromWorldEvent, EntityMoveEvent, EntityPortalReadyEvent, BroadcastMessageEvent, EntityEnterBlockEvent, DragonEggFormEvent, EntityConstructEvent, EntityAirChangeEvent, ArrowBodyCountChangeEvent, EntityDamageItemEvent, PlayerShieldDisableEvent, PlayerExpCooldownChangeEvent, WaterBottleSplashEvent, ThrownEggHatchEvent, FishHookStateChangeEvent, TurtleGoHomeEvent, TurtleStartDiggingEvent, TurtleLayEggEvent, PufferFishStateChangeEvent, ElderGuardianAppearanceEvent, SkeletonHorseTrapEvent, WardenAngerChangeEvent, SulfurCubeSwallowItemEvent, ShulkerDuplicateEvent, ClientTickEndEvent, PlayerClientLoadedWorldEvent, PlayerClientOptionsChangeEvent, PlayerChangedMainHandEvent, PlayerCustomClickEvent, PlayerBundleItemSelectEvent, PlayerUseUnknownEntityEvent, PrePlayerAttackEntityEvent, PlayerPostRespawnEvent, PlayerFailMoveEvent, PlayerChunkLoadEvent, PlayerChunkUnloadEvent, BlockDamageAbortEvent, BlockBreakProgressUpdateEvent, EntityAttemptSmashAttackEvent, EntityAttemptSpinAttackEvent, EntityLungeEvent, EntityLoadCrossbowEvent, PlayerReadyArrowEvent, PlayerStopUsingItemEvent, PlayerSwapWithEquipmentSlotEvent, PlayerItemCooldownEvent, PlayerItemGroupCooldownEvent, PlayerElytraBoostEvent, PlayerConnectionInitialConfigureEvent, PlayerConnectionCloseEvent, PlayerCodeOfConductSendEvent, PlayerSpawnLocationEvent, PlayerRegisterChannelEvent, PlayerUnregisterChannelEvent, ProfileWhitelistVerifyEvent, WhitelistToggleEvent, WhitelistStateUpdateEvent, ServerResourcesReloadedEvent, SlimeChangeDirectionEvent, SlimeSwimEvent, SlimeWanderEvent, WitchReadyPotionEvent, WitchConsumePotionEvent, WitchThrowPotionEvent, EndermanAttackPlayerEvent, EndermanEscapeEvent, PigZombieAngerEvent, CreeperIgniteEvent, EntitySpellCastEvent, BatToggleSleepEvent, WorldBorderBoundsChangeEvent, WorldBorderBoundsChangeFinishEvent, WorldBorderCenterChangeEvent, WorldDifficultyChangeEvent, WorldGameRuleChangeEvent, MapInitializeEvent, LootGenerateEvent, RaidSpawnWaveEvent, RaidStopEvent, PlayerFlowerPotManipulateEvent, PlayerHarvestBlockEvent, PlayerShearBlockEvent, EntityCompostItemEvent, NotePlayEvent, PlayerBedFailEnterEvent, PlayerDeepSleepEvent, BlockBreakBlockEvent, BrewingStandFuelEvent, CartographyItemEvent, PlayerLoomPatternSelectEvent, PrepareItemEnchantEvent, PrepareGrindstoneEvent, CrafterCraftEvent, ItemCraftedEvent, BlockFailedDispenseEvent, HopperInventorySearchEvent, PrepareHopperTransferEvent, CompostItemEvent, PlayerInventorySlotChangeEvent, BlockLockCheckEvent, EnderDragonChangePhaseEvent, EnderDragonShootFireballEvent, EnderDragonFireballHitEvent, EnderDragonFlameEvent, VillagerAcquireTradeEvent, VillagerCareerChangeEvent, VillagerReplenishTradeEvent, BellResonateEvent, BeaconActivatedEvent, BeaconDeactivatedEvent, PlayerChangeBeaconEffectEvent, SculkBloomEvent, VaultChangeStateEvent, VaultDisplayItemEvent, BlockDispenseLootEvent, PlayerInsertLecternBookEvent, PlayerLecternPageChangeEvent, PlayerSignCommandPreprocessEvent, UncheckedSignChangeEvent, PlayerNameEntityEvent, EntityDyeEvent, PlayerStatisticIncrementEvent, EntityEquipmentChangedEvent, PlayerInputEvent, PlayerPickBlockEvent, PlayerPickEntityEvent, PlayerRecipeBookSettingsChangeEvent, PhantomPreSpawnEvent, EntityEffectTickEvent, SheepRegrowWoolEvent, PlayerToggleEntityAgeLockEvent, PlayerMapFilledEvent, PlayerAdvancementCriterionGrantEvent, PlayerRecipeDiscoverEvent, PlayerLinksSendEvent.
 - `Server.SendMessage` / `Broadcast` reach players: yes.
 - `Server.CurrentTick` is real: yes.
 - Plugin commands (`Commands.Register`) run from in-game chat: yes.
@@ -300,6 +300,142 @@ Lower priority value runs first (`Lowest` ... `Monitor`). `e.Cancelled = true` v
 | `EntityTargetEvent` | 248 | yes | fired | Target | Entity:Entity, OldTarget:Entity, Reason:enum:TargetReason |
 | `PreCreatureSpawnEvent` | 249 | yes | fired | AbortAttempt | Dimension:int, EntityType:key.entity_type, Position:Vec3d, Reason:enum:SpawnReason, HasSpawner:bool, SpawnerPos:BlockPos |
 | `PlayerNaturalSpawnRangeEvent` | 250 | yes | fired | - | Player:player |
+| `EntityAddToWorldEvent` | 478 | no | fired | - | Entity:Entity, World:world |
+| `EntityRemoveFromWorldEvent` | 479 | no | fired | - | Entity:Entity, World:world |
+| `EntityMoveEvent` | 480 | yes | fired | - | Entity:Entity, From:Vec3d, To:Vec3d, FromYaw:float, FromPitch:float, ToYaw:float, ToPitch:float |
+| `EntityPortalReadyEvent` | 481 | yes | fired | TargetWorld | Entity:Entity, Portal:enum:TeleportCause, FromWorld:world |
+| `BroadcastMessageEvent` | 482 | yes | fired | Message | - |
+| `EntityEnterBlockEvent` | 483 | yes | fired | - | Entity:Entity, Pos:BlockPos |
+| `DragonEggFormEvent` | 484 | yes | fired | - | World:world, Pos:BlockPos |
+| `EntityConstructEvent` | 485 | yes | fired | - | EntityType:key.entity_type, Position:BlockPos, World:world |
+| `EntityAirChangeEvent` | 462 | yes | fired | Amount | Entity:Entity |
+| `ArrowBodyCountChangeEvent` | 463 | yes | fired | NewAmount | Entity:Entity, OldAmount:int, IsReset:bool |
+| `EntityDamageItemEvent` | 464 | yes | fired | Damage | Entity:Entity, Item:item |
+| `PlayerShieldDisableEvent` | 465 | yes | fired | CooldownTicks | Player:player, Attacker:Entity |
+| `PlayerExpCooldownChangeEvent` | 466 | no | fired | NewCooldown | Player:player, Reason:enum:ExpCooldownReason |
+| `WaterBottleSplashEvent` | 467 | yes | fired | Keep | Projectile:Entity, Position:Vec3d, Affected:NativeBytes |
+| `ThrownEggHatchEvent` | 468 | no | fired | Hatching, NumHatches, HatchingType | Egg:Entity |
+| `FishHookStateChangeEvent` | 469 | no | fired | - | Hook:Entity, State:enum:FishHookState |
+| `TurtleGoHomeEvent` | 199 | yes | fired | - | Entity:Entity |
+| `TurtleStartDiggingEvent` | 200 | yes | fired | - | Entity:Entity, Pos:BlockPos |
+| `TurtleLayEggEvent` | 201 | yes | fired | EggCount | Entity:Entity, Pos:BlockPos |
+| `PufferFishStateChangeEvent` | 202 | yes | fired | - | Entity:Entity, NewState:int |
+| `ElderGuardianAppearanceEvent` | 203 | yes | fired | - | Entity:Entity, Player:player |
+| `SkeletonHorseTrapEvent` | 204 | yes | fired | - | Entity:Entity, Player:player |
+| `WardenAngerChangeEvent` | 205 | yes | fired | NewAnger | Entity:Entity, Target:Entity, OldAnger:int |
+| `SulfurCubeSwallowItemEvent` | 206 | yes | fired | - | Entity:Entity, Player:player, ItemEntity:Entity, Item:item |
+| `ShulkerDuplicateEvent` | 207 | yes | fired | - | Entity:Entity, Parent:Entity |
+| `ClientTickEndEvent` | 420 | no | fired | - | Player:player |
+| `PlayerClientLoadedWorldEvent` | 421 | no | fired | - | Player:player, TimedOut:bool |
+| `PlayerClientOptionsChangeEvent` | 422 | no | fired | - | Player:player, OldLocale:Utf8String, NewLocale:Utf8String, OldViewDistance:int, NewViewDistance:int, OldChatVisibility:enum:ChatVisibility, NewChatVisibility:enum:ChatVisibility, OldChatColors:bool, NewChatColors:bool, OldSkinParts:byte, NewSkinParts:byte, OldMainHand:enum:MainArm, NewMainHand:enum:MainArm, OldTextFiltering:bool, NewTextFiltering:bool, OldAllowListing:bool, NewAllowListing:bool |
+| `PlayerChangedMainHandEvent` | 423 | no | fired | - | Player:player, OldHand:enum:MainArm, NewHand:enum:MainArm |
+| `PlayerCustomClickEvent` | 424 | no | fired | - | Player:player, Id:Utf8String, Payload:Utf8String |
+| `PlayerBundleItemSelectEvent` | 425 | yes | fired | - | Player:player, Slot:int, SelectedIndex:int |
+| `PlayerUseUnknownEntityEvent` | 426 | no | fired | - | Player:player, EntityId:int, Attack:bool, Hand:enum:Hand, ClickPos:Vec3d, HasClickPos:bool |
+| `PrePlayerAttackEntityEvent` | 427 | yes | fired | - | Player:player, Target:Entity, WillAttack:bool |
+| `PlayerPostRespawnEvent` | 428 | no | fired | - | Player:player, Position:Vec3d, World:world, IsBedSpawn:bool |
+| `PlayerFailMoveEvent` | 429 | no | fired | Allowed, LogWarning | Player:player, FailReason:enum:MoveFailReason, From:Vec3d, To:Vec3d |
+| `PlayerChunkLoadEvent` | 430 | no | fired | - | Player:player, World:world, ChunkX:int, ChunkZ:int |
+| `PlayerChunkUnloadEvent` | 431 | no | fired | - | Player:player, World:world, ChunkX:int, ChunkZ:int |
+| `BlockDamageAbortEvent` | 448 | no | fired | - | Player:player, Pos:BlockPos, Item:item |
+| `BlockBreakProgressUpdateEvent` | 449 | no | fired | - | Pos:BlockPos, Progress:float, Entity:Entity |
+| `EntityAttemptSmashAttackEvent` | 450 | no | fired | Result | Attacker:player, Target:Entity, Item:item, OriginalResult:bool |
+| `EntityAttemptSpinAttackEvent` | 451 | yes | fired | - | Entity:Entity, Target:Entity |
+| `EntityLungeEvent` | 452 | yes | fired | LungePower | Entity:Entity, Item:item |
+| `EntityLoadCrossbowEvent` | 453 | yes | fired | ConsumeItem | Entity:Entity, Crossbow:item, Hand:enum:Hand |
+| `PlayerReadyArrowEvent` | 454 | yes | fired | - | Player:player, Bow:item, Arrow:item |
+| `PlayerStopUsingItemEvent` | 455 | no | fired | - | Player:player, Item:item, TicksHeld:int |
+| `PlayerSwapWithEquipmentSlotEvent` | 456 | yes | fired | - | Player:player, Item:item, Slot:enum:EquipmentSlot |
+| `PlayerItemCooldownEvent` | 457 | yes | fired | CooldownTicks | Player:player, Item:item |
+| `PlayerItemGroupCooldownEvent` | 458 | yes | fired | CooldownTicks | Player:player, Group:Utf8String |
+| `PlayerElytraBoostEvent` | 459 | yes | fired | ConsumeItem | Player:player, Item:item, Hand:enum:Hand |
+| `PlayerConnectionInitialConfigureEvent` | 434 | no | fired | - | Connection:ulong, Uuid:Uuid, Username:Utf8String |
+| `PlayerConnectionCloseEvent` | 435 | no | fired | - | Connection:ulong, Uuid:Uuid, Username:Utf8String, Address:Utf8String, Reason:Utf8String |
+| `PlayerCodeOfConductSendEvent` | 436 | yes | fired | Text | Connection:ulong, Uuid:Uuid |
+| `PlayerSpawnLocationEvent` | 438 | no | fired | Position, World, Yaw, Pitch | Uuid:Uuid, NewPlayer:bool |
+| `PlayerRegisterChannelEvent` | 439 | no | fired | - | Connection:ulong, Uuid:Uuid, Channel:Utf8String |
+| `PlayerUnregisterChannelEvent` | 440 | no | fired | - | Connection:ulong, Uuid:Uuid, Channel:Utf8String |
+| `ProfileWhitelistVerifyEvent` | 441 | no | fired | Whitelisted, KickMessage | Uuid:Uuid, Username:Utf8String, WhitelistEnabled:bool, IsOp:bool |
+| `WhitelistToggleEvent` | 442 | yes | fired | - | Enabled:bool |
+| `WhitelistStateUpdateEvent` | 443 | yes | fired | - | Uuid:Uuid, Username:Utf8String, Status:enum:WhitelistStatus |
+| `ServerResourcesReloadedEvent` | 444 | no | fired | - | Cause:enum:ReloadCause |
+| `SlimeChangeDirectionEvent` | 500 | yes | fired | NewYaw | Entity:Entity |
+| `SlimeSwimEvent` | 501 | yes | fired | - | Entity:Entity |
+| `SlimeWanderEvent` | 502 | yes | fired | - | Entity:Entity |
+| `WitchReadyPotionEvent` | 503 | yes | fired | Potion | Entity:Entity |
+| `WitchConsumePotionEvent` | 504 | yes | fired | Potion | Entity:Entity |
+| `WitchThrowPotionEvent` | 505 | yes | fired | Potion | Entity:Entity, Target:Entity |
+| `EndermanAttackPlayerEvent` | 506 | yes | fired | - | Entity:Entity, Player:player |
+| `EndermanEscapeEvent` | 507 | yes | fired | - | Entity:Entity, Reason:enum:EndermanEscapeReason |
+| `PigZombieAngerEvent` | 508 | yes | fired | AngerTicks | Entity:Entity, Target:Entity |
+| `CreeperIgniteEvent` | 509 | yes | fired | - | Entity:Entity, Player:player |
+| `EntitySpellCastEvent` | 510 | yes | fired | - | Entity:Entity, Spell:enum:SpellKind |
+| `BatToggleSleepEvent` | 511 | yes | fired | - | Entity:Entity, Awake:bool |
+| `WorldBorderBoundsChangeEvent` | 488 | yes | fired | NewSize, DurationMs | World:world, Kind:enum:BorderChangeKind, OldSize:double |
+| `WorldBorderBoundsChangeFinishEvent` | 489 | no | fired | - | World:world, OldSize:double, NewSize:double, DurationMs:long |
+| `WorldBorderCenterChangeEvent` | 490 | yes | fired | NewX, NewZ | World:world, OldX:double, OldZ:double |
+| `WorldDifficultyChangeEvent` | 491 | no | fired | - | World:world, OldDifficulty:byte, NewDifficulty:byte |
+| `WorldGameRuleChangeEvent` | 492 | yes | fired | Value | World:world, Rule:Utf8String, OldValue:Utf8String |
+| `MapInitializeEvent` | 493 | no | fired | - | World:world, MapId:int, CenterX:int, CenterZ:int, Scale:int |
+| `LootGenerateEvent` | 494 | yes | fired | Keep | World:world, Table:Utf8String, Pos:BlockPos, HasPos:bool, Holder:Entity, Items:NativeBytes |
+| `RaidSpawnWaveEvent` | 495 | no | fired | - | World:world, Center:BlockPos, Wave:int, Raiders:int, Leader:Entity |
+| `RaidStopEvent` | 496 | no | fired | - | World:world, Center:BlockPos, Reason:enum:RaidStopReason |
+| `PlayerFlowerPotManipulateEvent` | 61 | yes | fired | - | Player:player, Pos:BlockPos, Item:item, Placing:bool |
+| `PlayerHarvestBlockEvent` | 62 | yes | fired | Keep | Player:player, Pos:BlockPos, Item:item, Items:NativeBytes |
+| `PlayerShearBlockEvent` | 63 | yes | fired | - | Player:player, Pos:BlockPos, Item:item, Hand:enum:Hand |
+| `EntityCompostItemEvent` | 64 | yes | fired | WillRaiseLevel | Entity:Entity, Pos:BlockPos, Item:item |
+| `NotePlayEvent` | 65 | yes | fired | Note | World:world, Pos:BlockPos, Instrument:Utf8String |
+| `PlayerBedFailEnterEvent` | 66 | yes | fired | Message | Player:player, Bed:BlockPos, Problem:enum:BedEnterProblem, WillExplode:bool |
+| `PlayerDeepSleepEvent` | 67 | yes | fired | - | Player:player |
+| `BlockBreakBlockEvent` | 68 | no | fired | Keep | World:world, Pos:BlockPos, BlockState:blockstate, Source:BlockPos, Drops:NativeBytes |
+| `BrewingStandFuelEvent` | 374 | yes | fired | FuelPower, Consuming | World:world, Pos:BlockPos, Fuel:item |
+| `CartographyItemEvent` | 375 | yes | fired | - | Player:player, Result:item |
+| `PlayerLoomPatternSelectEvent` | 376 | yes | fired | - | Player:player, Pattern:Utf8String, Button:int |
+| `PrepareItemEnchantEvent` | 377 | yes | fired | Cost0, Cost1, Cost2 | Player:player, Item:item, Bookshelves:int, Hint0:Utf8String, Hint0Level:int, Hint1:Utf8String, Hint1Level:int, Hint2:Utf8String, Hint2Level:int |
+| `PrepareGrindstoneEvent` | 378 | yes | fired | - | Player:player, Result:item |
+| `CrafterCraftEvent` | 379 | yes | fired | - | World:world, Pos:BlockPos, Recipe:Utf8String, Result:item |
+| `ItemCraftedEvent` | 380 | no | fired | - | Player:player, Item:item, Amount:int |
+| `BlockFailedDispenseEvent` | 381 | no | fired | PlayEffect | World:world, Pos:BlockPos |
+| `HopperInventorySearchEvent` | 382 | yes | fired | - | World:world, Pos:BlockPos, Kind:enum:HopperSearchKind, SearchPos:BlockPos, Found:bool |
+| `PrepareHopperTransferEvent` | 383 | yes | fired | - | World:world, Initiator:enum:MoveInitiator, InitiatorPos:BlockPos, HasSourcePos:bool, SourcePos:BlockPos, SourceEntity:Entity, HasDestPos:bool, DestPos:BlockPos, DestEntity:Entity |
+| `CompostItemEvent` | 384 | yes | fired | WillRaiseLevel | World:world, Pos:BlockPos, Item:item |
+| `PlayerInventorySlotChangeEvent` | 385 | no | fired | ShouldTriggerAdvancements | Player:player, RawSlot:int, Slot:int, OldItem:item, NewItem:item |
+| `BlockLockCheckEvent` | 386 | no | fired | Result, LockMessage | Player:player, Pos:BlockPos |
+| `EnderDragonChangePhaseEvent` | 80 | yes | fired | NewPhase | Entity:Entity, OldPhase:enum:DragonPhase |
+| `EnderDragonShootFireballEvent` | 81 | yes | fired | - | Entity:Entity, Target:Vec3d |
+| `EnderDragonFireballHitEvent` | 82 | yes | fired | - | Fireball:Entity, Position:Vec3d, Hit:NativeBytes |
+| `EnderDragonFlameEvent` | 83 | yes | fired | - | Entity:Entity, Position:Vec3d |
+| `VillagerAcquireTradeEvent` | 84 | yes | fired | MaxUses, VillagerXp, RewardExp | Entity:Entity, Result:item, First:item, Second:item |
+| `VillagerCareerChangeEvent` | 85 | yes | fired | - | Entity:Entity, OldProfession:Utf8String, NewProfession:Utf8String, Reason:enum:CareerChangeReason |
+| `VillagerReplenishTradeEvent` | 86 | yes | fired | - | Entity:Entity, Index:int, BonusUses:int |
+| `BellResonateEvent` | 137 | yes | fired | Keep | World:world, Pos:BlockPos, Raiders:NativeBytes |
+| `BeaconActivatedEvent` | 138 | no | fired | - | World:world, Pos:BlockPos, Levels:int |
+| `BeaconDeactivatedEvent` | 139 | no | fired | - | World:world, Pos:BlockPos |
+| `PlayerChangeBeaconEffectEvent` | 140 | yes | fired | Primary, Secondary, ConsumeItem | World:world, Pos:BlockPos, Player:player |
+| `SculkBloomEvent` | 141 | yes | fired | Charge | World:world, Pos:BlockPos |
+| `VaultChangeStateEvent` | 142 | yes | fired | - | World:world, Pos:BlockPos, Player:player, OldState:enum:VaultState, NewState:enum:VaultState |
+| `VaultDisplayItemEvent` | 143 | yes | fired | - | World:world, Pos:BlockPos, Item:item |
+| `BlockDispenseLootEvent` | 144 | yes | fired | Keep | World:world, Pos:BlockPos, Player:player, Items:Utf8String |
+| `PlayerInsertLecternBookEvent` | 393 | yes | fired | - | Player:player, Pos:BlockPos, Book:item |
+| `PlayerLecternPageChangeEvent` | 394 | yes | fired | NewPage | Player:player, Pos:BlockPos, OldPage:int, Direction:enum:PageDirection |
+| `PlayerSignCommandPreprocessEvent` | 395 | yes | fired | Command | Player:player, Pos:BlockPos, Front:bool |
+| `UncheckedSignChangeEvent` | 396 | no | fired | - | Player:player, Pos:BlockPos, Front:bool, Line0:Utf8String, Line1:Utf8String, Line2:Utf8String, Line3:Utf8String |
+| `PlayerNameEntityEvent` | 397 | yes | fired | Name, Persistent | Player:player, Entity:Entity |
+| `EntityDyeEvent` | 398 | yes | fired | Color | Entity:Entity, Player:player |
+| `PlayerStatisticIncrementEvent` | 331 | yes | fired | NewValue | Player:player, StatType:Utf8String, Stat:Utf8String, OldValue:int |
+| `EntityEquipmentChangedEvent` | 332 | no | fired | - | Entity:Entity, ChangedSlots:uint |
+| `PlayerInputEvent` | 333 | no | fired | - | Player:player, Forward:bool, Backward:bool, Left:bool, Right:bool, Jump:bool, Sneak:bool, Sprint:bool |
+| `PlayerPickBlockEvent` | 334 | yes | fired | SourceSlot, TargetSlot | Player:player, Pos:BlockPos, IncludeData:bool |
+| `PlayerPickEntityEvent` | 335 | yes | fired | SourceSlot, TargetSlot | Player:player, Entity:Entity |
+| `PlayerRecipeBookSettingsChangeEvent` | 336 | no | fired | - | Player:player, BookType:enum:RecipeBookType, Open:bool, Filtering:bool |
+| `PhantomPreSpawnEvent` | 486 | yes | fired | AbortAttempt | Player:player, Position:Vec3d |
+| `EntityEffectTickEvent` | 470 | yes | fired | - | Entity:Entity, Effect:Utf8String, Amplifier:int |
+| `SheepRegrowWoolEvent` | 208 | yes | fired | - | Entity:Entity |
+| `PlayerToggleEntityAgeLockEvent` | 399 | yes | fired | - | Player:player, Entity:Entity, Lock:bool |
+| `PlayerMapFilledEvent` | 497 | no | fired | - | Player:player, MapId:int |
+| `PlayerAdvancementCriterionGrantEvent` | 337 | yes | fired | - | Player:player, Advancement:Utf8String, Criterion:Utf8String |
+| `PlayerRecipeDiscoverEvent` | 338 | yes | fired | - | Player:player, Recipe:Utf8String |
+| `PlayerLinksSendEvent` | 437 | yes | fired | Links | Connection:ulong, Uuid:Uuid |
 <!-- END GENERATED:events-table -->
 
 ## Testing
