@@ -120,6 +120,24 @@ Mc.Scripting.DamageCause.Suffocation = 4
 Mc.Scripting.DamageCause.Thorns = 17
 Mc.Scripting.DamageCause.Void = 11
 Mc.Scripting.DamageCause.Wither = 15
+Mc.Scripting.Dialogs.DialogActionType.Callback = 3
+Mc.Scripting.Dialogs.DialogActionType.CommandTemplate = 1
+Mc.Scripting.Dialogs.DialogActionType.Custom = 2
+Mc.Scripting.Dialogs.DialogActionType.Static = 0
+Mc.Scripting.Dialogs.DialogAfterAction.Close = 0
+Mc.Scripting.Dialogs.DialogAfterAction.None = 1
+Mc.Scripting.Dialogs.DialogAfterAction.WaitForResponse = 2
+Mc.Scripting.Dialogs.DialogBodyType.Item = 1
+Mc.Scripting.Dialogs.DialogBodyType.PlainMessage = 0
+Mc.Scripting.Dialogs.DialogInputType.Bool = 1
+Mc.Scripting.Dialogs.DialogInputType.NumberRange = 3
+Mc.Scripting.Dialogs.DialogInputType.SingleOption = 2
+Mc.Scripting.Dialogs.DialogInputType.Text = 0
+Mc.Scripting.Dialogs.DialogType.Confirmation = 1
+Mc.Scripting.Dialogs.DialogType.DialogList = 4
+Mc.Scripting.Dialogs.DialogType.MultiAction = 2
+Mc.Scripting.Dialogs.DialogType.Notice = 0
+Mc.Scripting.Dialogs.DialogType.ServerLinks = 3
 Mc.Scripting.DisplaySlot.BelowName = 2
 Mc.Scripting.DisplaySlot.List = 0
 Mc.Scripting.DisplaySlot.Sidebar = 1
@@ -595,8 +613,10 @@ Mc.Scripting.TeleportCause.TamedOwner = 13
 Mc.Scripting.TeleportCause.Unknown = 0
 Mc.Scripting.Text.ClickAction.ChangePage = 4
 Mc.Scripting.Text.ClickAction.CopyToClipboard = 3
+Mc.Scripting.Text.ClickAction.Custom = 6
 Mc.Scripting.Text.ClickAction.OpenUrl = 0
 Mc.Scripting.Text.ClickAction.RunCommand = 1
+Mc.Scripting.Text.ClickAction.ShowDialog = 5
 Mc.Scripting.Text.ClickAction.SuggestCommand = 2
 Mc.Scripting.TimeSkipReason.Commands = 0
 Mc.Scripting.TimeSkipReason.Custom = 2
@@ -696,6 +716,7 @@ delegate Mc.Scripting.Commands.AsyncSuggestionProvider : class System.MulticastD
 delegate Mc.Scripting.Commands.CommandExecutor : class System.MulticastDelegate
 delegate Mc.Scripting.Commands.CommandHandler : class System.MulticastDelegate
 delegate Mc.Scripting.Commands.SuggestionProvider : class System.MulticastDelegate
+delegate Mc.Scripting.Dialogs.DialogCallback : class System.MulticastDelegate
 delegate Mc.Scripting.EventListener<T> where T : struct, Mc.Scripting.IEvent, allows ref struct : class System.MulticastDelegate
 delegate Mc.Scripting.PluginMessageHandler : class System.MulticastDelegate
 delegate Mc.Scripting.QueryAction<T1, T2, T3> : class System.MulticastDelegate
@@ -741,6 +762,16 @@ enum Mc.Scripting.Content.ItemRarity
 enum Mc.Scripting.Content.ItemRarity enum : int
 enum Mc.Scripting.DamageCause
 enum Mc.Scripting.DamageCause enum : byte
+enum Mc.Scripting.Dialogs.DialogActionType
+enum Mc.Scripting.Dialogs.DialogActionType enum : int
+enum Mc.Scripting.Dialogs.DialogAfterAction
+enum Mc.Scripting.Dialogs.DialogAfterAction enum : int
+enum Mc.Scripting.Dialogs.DialogBodyType
+enum Mc.Scripting.Dialogs.DialogBodyType enum : int
+enum Mc.Scripting.Dialogs.DialogInputType
+enum Mc.Scripting.Dialogs.DialogInputType enum : int
+enum Mc.Scripting.Dialogs.DialogType
+enum Mc.Scripting.Dialogs.DialogType enum : int
 enum Mc.Scripting.DisplaySlot
 enum Mc.Scripting.DisplaySlot enum : int
 enum Mc.Scripting.DragType
@@ -1084,6 +1115,34 @@ public Mc.Scripting.Content.ResourcePackBuilder Mc.Scripting.Content.ResourcePac
 public Mc.Scripting.Content.ResourcePackBuilder Mc.Scripting.Content.ResourcePackBuilder.PackFormat(int format)
 public Mc.Scripting.Content.ResourcePackFile Mc.Scripting.Content.ResourcePackBuilder.Build()
 public Mc.Scripting.DamageCause.DamageCause()
+public Mc.Scripting.Dialogs.ClickCallbackOptions Mc.Scripting.Dialogs.ClickCallbackOptions.<Clone>$()
+public Mc.Scripting.Dialogs.ClickCallbackOptions.ClickCallbackOptions()
+public Mc.Scripting.Dialogs.DialogAction? Mc.Scripting.Dialogs.DialogButton.Action { get; }
+public Mc.Scripting.Dialogs.DialogActionType Mc.Scripting.Dialogs.DialogAction.Type { get; }
+public Mc.Scripting.Dialogs.DialogActionType.DialogActionType()
+public Mc.Scripting.Dialogs.DialogAfterAction Mc.Scripting.Dialogs.DialogBase.AfterAction { get; }
+public Mc.Scripting.Dialogs.DialogAfterAction.DialogAfterAction()
+public Mc.Scripting.Dialogs.DialogBase Mc.Scripting.Dialogs.Dialog.Base { get; }
+public Mc.Scripting.Dialogs.DialogBase Mc.Scripting.Dialogs.DialogBase.AddBody(params Mc.Scripting.Dialogs.DialogBody[] body)
+public Mc.Scripting.Dialogs.DialogBase Mc.Scripting.Dialogs.DialogBase.AddInputs(params Mc.Scripting.Dialogs.DialogInput[] inputs)
+public Mc.Scripting.Dialogs.DialogBase Mc.Scripting.Dialogs.DialogBase.WithAfterAction(Mc.Scripting.Dialogs.DialogAfterAction afterAction)
+public Mc.Scripting.Dialogs.DialogBase Mc.Scripting.Dialogs.DialogBase.WithCanCloseWithEscape(bool canClose)
+public Mc.Scripting.Dialogs.DialogBase Mc.Scripting.Dialogs.DialogBase.WithExternalTitle(Mc.Scripting.Text.Component? externalTitle)
+public Mc.Scripting.Dialogs.DialogBase Mc.Scripting.Dialogs.DialogBase.WithPause(bool pause)
+public Mc.Scripting.Dialogs.DialogBodyType Mc.Scripting.Dialogs.DialogBody.Type { get; }
+public Mc.Scripting.Dialogs.DialogBodyType.DialogBodyType()
+public Mc.Scripting.Dialogs.DialogCallback.DialogCallback(object @object, nint method)
+public Mc.Scripting.Dialogs.DialogInputType Mc.Scripting.Dialogs.DialogInput.Type { get; }
+public Mc.Scripting.Dialogs.DialogInputType.DialogInputType()
+public Mc.Scripting.Dialogs.DialogItemOptions Mc.Scripting.Dialogs.DialogItemOptions.<Clone>$()
+public Mc.Scripting.Dialogs.DialogItemOptions.DialogItemOptions()
+public Mc.Scripting.Dialogs.DialogMultiline Mc.Scripting.Dialogs.DialogMultiline.<Clone>$()
+public Mc.Scripting.Dialogs.DialogMultiline.DialogMultiline([int? MaxLines = null], [int? Height = null])
+public Mc.Scripting.Dialogs.DialogOption Mc.Scripting.Dialogs.DialogOption.<Clone>$()
+public Mc.Scripting.Dialogs.DialogOption.DialogOption(string Id, [Mc.Scripting.Text.Component? Display = null], [bool Initial = false])
+public Mc.Scripting.Dialogs.DialogResponse.DialogResponse()
+public Mc.Scripting.Dialogs.DialogType Mc.Scripting.Dialogs.Dialog.Type { get; }
+public Mc.Scripting.Dialogs.DialogType.DialogType()
 public Mc.Scripting.DisplaySlot.DisplaySlot()
 public Mc.Scripting.DragType.DragType()
 public Mc.Scripting.DragonPhase Mc.Scripting.Events.EnderDragonChangePhaseEvent.NewPhase { get; set; }
@@ -1531,7 +1590,7 @@ public Mc.Scripting.Events.PlayerConsumeEvent.PlayerConsumeEvent(Mc.Scripting.Pl
 public Mc.Scripting.Events.PlayerCreativeSlotEvent.PlayerCreativeSlotEvent()
 public Mc.Scripting.Events.PlayerCreativeSlotEvent.PlayerCreativeSlotEvent(Mc.Scripting.Player player, int slot, Mc.Scripting.Inventories.ItemView item)
 public Mc.Scripting.Events.PlayerCustomClickEvent.PlayerCustomClickEvent()
-public Mc.Scripting.Events.PlayerCustomClickEvent.PlayerCustomClickEvent(Mc.Scripting.Player player, Mc.Scripting.Utf8String id, Mc.Scripting.Utf8String payload)
+public Mc.Scripting.Events.PlayerCustomClickEvent.PlayerCustomClickEvent(Mc.Scripting.Player player, Mc.Scripting.Utf8String id, Mc.Scripting.Utf8String payload, Mc.Scripting.Utf8String payloadJson)
 public Mc.Scripting.Events.PlayerDeathEvent.PlayerDeathEvent()
 public Mc.Scripting.Events.PlayerDeathEvent.PlayerDeathEvent(Mc.Scripting.Player player, Mc.Scripting.Entity killer, Mc.Scripting.DamageCause cause, Mc.Scripting.Utf8String deathMessage, bool dropInventory, bool keepLevel, int dropExperience)
 public Mc.Scripting.Events.PlayerDeepSleepEvent.PlayerDeepSleepEvent()
@@ -2247,6 +2306,9 @@ public Mc.Scripting.Text.ClickAction.ClickAction()
 public Mc.Scripting.Text.ClickEvent.ClickEvent()
 public Mc.Scripting.Text.ClickEvent.ClickEvent(Mc.Scripting.Text.ClickAction Action, string Value)
 public Mc.Scripting.Text.Component Mc.Scripting.BossBar.Title { get; set; }
+public Mc.Scripting.Text.Component Mc.Scripting.Dialogs.Dialog.Title { get; }
+public Mc.Scripting.Text.Component Mc.Scripting.Dialogs.DialogBase.Title { get; }
+public Mc.Scripting.Text.Component Mc.Scripting.Dialogs.DialogButton.Label { get; }
 public Mc.Scripting.Text.Component Mc.Scripting.Hologram.Text { get; set; }
 public Mc.Scripting.Text.Component Mc.Scripting.Inventories.Menu.Title { get; set; }
 public Mc.Scripting.Text.Component Mc.Scripting.Sidebar.Title { get; set; }
@@ -2264,6 +2326,9 @@ public Mc.Scripting.Text.Component Mc.Scripting.Text.Component.Strikethrough([bo
 public Mc.Scripting.Text.Component Mc.Scripting.Text.Component.Tooltip(Mc.Scripting.Text.Component text)
 public Mc.Scripting.Text.Component Mc.Scripting.Text.Component.Underlined([bool value = true])
 public Mc.Scripting.Text.Component? Mc.Scripting.Content.CustomItem.DisplayName { get; }
+public Mc.Scripting.Text.Component? Mc.Scripting.Dialogs.DialogBase.ExternalTitle { get; }
+public Mc.Scripting.Text.Component? Mc.Scripting.Dialogs.DialogItemOptions.Description { get; init; }
+public Mc.Scripting.Text.Component? Mc.Scripting.Dialogs.DialogOption.Display { get; init; }
 public Mc.Scripting.Text.Component? Mc.Scripting.LivingEntity.CustomName { get; set; }
 public Mc.Scripting.Text.Component? Mc.Scripting.NametagStyle.Prefix { get; init; }
 public Mc.Scripting.Text.Component? Mc.Scripting.NametagStyle.Suffix { get; init; }
@@ -2383,6 +2448,8 @@ public System.Collections.Generic.IReadOnlyDictionary<string, bool> Mc.Scripting
 public System.Collections.Generic.IReadOnlyDictionary<string, bool> Mc.Scripting.Permissions.FilePermissionProvider.PlayerEntries(Mc.Scripting.Uuid player)
 public System.Collections.Generic.IReadOnlyList<Mc.Scripting.Content.CustomBlock> Mc.Scripting.Content.BlockRegistry.All { get; }
 public System.Collections.Generic.IReadOnlyList<Mc.Scripting.Content.CustomItem> Mc.Scripting.Content.ItemRegistry.All { get; }
+public System.Collections.Generic.IReadOnlyList<Mc.Scripting.Dialogs.DialogBody> Mc.Scripting.Dialogs.DialogBase.Body { get; }
+public System.Collections.Generic.IReadOnlyList<Mc.Scripting.Dialogs.DialogInput> Mc.Scripting.Dialogs.DialogBase.Inputs { get; }
 public System.Collections.Generic.IReadOnlyList<Mc.Scripting.Entity> Mc.Scripting.Commands.CommandContext.GetEntities(string name)
 public System.Collections.Generic.IReadOnlyList<Mc.Scripting.Entity> Mc.Scripting.LivingEntity.Passengers { get; }
 public System.Collections.Generic.IReadOnlyList<Mc.Scripting.Entity> Mc.Scripting.Worlds.World.Entities { get; }
@@ -2397,6 +2464,7 @@ public System.Collections.Generic.IReadOnlyList<Mc.Scripting.Text.Component> Mc.
 public System.Collections.Generic.IReadOnlyList<Mc.Scripting.Text.Component> Mc.Scripting.Text.Component.Children { get; }
 public System.Collections.Generic.IReadOnlyList<Mc.Scripting.Worlds.ChunkTicket> Mc.Scripting.Worlds.ChunkTickets.AddArea(Mc.Scripting.Worlds.World world, int centerX, int centerZ, int radius)
 public System.Collections.Generic.IReadOnlyList<string> Mc.Scripting.Commands.RegisteredCommand.Names { get; }
+public System.Collections.Generic.IReadOnlyList<string> Mc.Scripting.Dialogs.DialogResponse.Keys { get; }
 public System.Collections.Generic.IReadOnlyList<string> Mc.Scripting.Permissions.FilePermissionProvider.GroupNames { get; }
 public System.Collections.Generic.IReadOnlyList<string> Mc.Scripting.Player.ActiveEffects { get; }
 public System.Collections.Generic.IReadOnlyList<string> Mc.Scripting.Player.Channels { get; }
@@ -2419,6 +2487,7 @@ public System.ReadOnlySpan<Mc.Scripting.Entity> Mc.Scripting.QueryChunk.Entities
 public System.ReadOnlySpan<byte> Mc.Scripting.NativeBytes.Span { get; }
 public System.ReadOnlySpan<byte> Mc.Scripting.Utf8String.Bytes { get; }
 public System.Span<T> Mc.Scripting.QueryChunk.Field<T>(int index) where T : unmanaged
+public System.Text.Json.JsonElement Mc.Scripting.Dialogs.DialogResponse.Raw { get; }
 public System.Threading.Tasks.Task Mc.Scripting.Scheduler.Delay(long ticks)
 public System.Threading.Tasks.Task Mc.Scripting.Scheduler.RunAsync(System.Action action)
 public System.Threading.Tasks.Task Mc.Scripting.Scheduler.RunSync(System.Action action)
@@ -2426,6 +2495,7 @@ public System.Threading.Tasks.Task Mc.Scripting.Worlds.World.SaveAsync()
 public System.Threading.Tasks.Task<T> Mc.Scripting.Scheduler.RunAsync<T>(System.Func<T> func)
 public System.Threading.Tasks.Task<T> Mc.Scripting.Scheduler.RunSync<T>(System.Func<T> func)
 public System.Threading.Tasks.Task<byte[]> Mc.Scripting.Worlds.World.ExportAsync()
+public System.TimeSpan Mc.Scripting.Dialogs.ClickCallbackOptions.Lifetime { get; init; }
 public T Mc.Scripting.Configuration.Config<T>.Value { get; }
 public T Mc.Scripting.PacketEvent<T>.Packet { get; }
 public T Mc.Scripting.Services.ServiceManager.Get<T>() where T : class
@@ -2458,6 +2528,23 @@ public bool Mc.Scripting.Content.CustomBlock.Place(Mc.Scripting.Worlds.World wor
 public bool Mc.Scripting.Content.CustomItem.Matches(Mc.Scripting.Inventories.ItemStack stack)
 public bool Mc.Scripting.Content.ItemUseContext.Cancelled { get; set; }
 public bool Mc.Scripting.Content.ItemUseContext.HasBlock { get; }
+public bool Mc.Scripting.Dialogs.ClickCallbackOptions.Equals(Mc.Scripting.Dialogs.ClickCallbackOptions? other)
+public bool Mc.Scripting.Dialogs.DialogBase.CanCloseWithEscape { get; }
+public bool Mc.Scripting.Dialogs.DialogBase.Pause { get; }
+public bool Mc.Scripting.Dialogs.DialogItemOptions.Equals(Mc.Scripting.Dialogs.DialogItemOptions? other)
+public bool Mc.Scripting.Dialogs.DialogItemOptions.ShowDecorations { get; init; }
+public bool Mc.Scripting.Dialogs.DialogItemOptions.ShowTooltip { get; init; }
+public bool Mc.Scripting.Dialogs.DialogMultiline.Equals(Mc.Scripting.Dialogs.DialogMultiline? other)
+public bool Mc.Scripting.Dialogs.DialogOption.Equals(Mc.Scripting.Dialogs.DialogOption? other)
+public bool Mc.Scripting.Dialogs.DialogOption.Initial { get; init; }
+public bool Mc.Scripting.Dialogs.DialogResponse.Contains(string key)
+public bool Mc.Scripting.Dialogs.DialogResponse.GetBool(string key, bool fallback)
+public bool Mc.Scripting.Dialogs.DialogResponse.IsEmpty { get; }
+public bool Mc.Scripting.Dialogs.DialogResponse.TryGetBool(string key, out bool value)
+public bool Mc.Scripting.Dialogs.DialogResponse.TryGetFloat(string key, out float value)
+public bool Mc.Scripting.Dialogs.DialogResponse.TryGetInt(string key, out int value)
+public bool Mc.Scripting.Dialogs.DialogResponse.TryGetRaw(string key, out System.Text.Json.JsonElement value)
+public bool Mc.Scripting.Dialogs.DialogResponse.TryGetText(string key, out string? value)
 public bool Mc.Scripting.EditClipboardInfo.Equals(Mc.Scripting.EditClipboardInfo other)
 public bool Mc.Scripting.EditHistory.Equals(Mc.Scripting.EditHistory other)
 public bool Mc.Scripting.EditJobInfo.Equals(Mc.Scripting.EditJobInfo other)
@@ -2884,6 +2971,7 @@ public bool Mc.Scripting.Permissions.PluginPermissions.Has(Mc.Scripting.Uuid pla
 public bool Mc.Scripting.Player.AddEffect(Mc.Scripting.PotionEffect effect)
 public bool Mc.Scripting.Player.AllowFlight { get; set; }
 public bool Mc.Scripting.Player.CanSee(Mc.Scripting.Entity entity)
+public bool Mc.Scripting.Player.ClearDialog()
 public bool Mc.Scripting.Player.ClearEffects()
 public bool Mc.Scripting.Player.ClearFakeBlock(Mc.Scripting.BlockPos position)
 public bool Mc.Scripting.Player.Equals(Mc.Scripting.Player other)
@@ -2903,6 +2991,8 @@ public bool Mc.Scripting.Player.RemoveEffect(string effect)
 public bool Mc.Scripting.Player.SendPluginMessage(string channel, System.ReadOnlySpan<byte> data)
 public bool Mc.Scripting.Player.SetGlowingFor(Mc.Scripting.Player viewer, bool glowing)
 public bool Mc.Scripting.Player.ShowBlock(Mc.Scripting.BlockPos position, Mc.Scripting.Worlds.BlockState state)
+public bool Mc.Scripting.Player.ShowDialog(Mc.Scripting.Dialogs.Dialog dialog)
+public bool Mc.Scripting.Player.ShowDialog(string key)
 public bool Mc.Scripting.Player.SpawnParticle(string particle, Mc.Scripting.Vec3d position, [int count = 1], [Mc.Scripting.Vec3d offset = default(Mc.Scripting.Vec3d)], [float speed = 0], [bool force = false])
 public bool Mc.Scripting.Player.Teleport(Mc.Scripting.Location location)
 public bool Mc.Scripting.Player.Teleport(Mc.Scripting.Vec3d position)
@@ -2978,6 +3068,7 @@ public bool Mc.Scripting.Worlds.WorldBorder.IsMoving { get; }
 public bool Mc.Scripting.Worlds.WorldOptions.Structures { get; init; }
 public bool Mc.Scripting.Worlds.WorldOptions.Temporary { get; init; }
 public bool? Mc.Scripting.Content.CustomItem.HasGlint { get; }
+public bool? Mc.Scripting.Dialogs.DialogResponse.GetBool(string key)
 public bool? Mc.Scripting.TabEntry.Listed { get; init; }
 public byte Mc.Scripting.EventHeader.Flags
 public byte Mc.Scripting.Events.PlayerEggThrowEvent.NumHatches { get; set; }
@@ -2990,6 +3081,8 @@ public byte[]? Mc.Scripting.Permissions.NativeRule.Context { get; init; }
 public const byte Mc.Scripting.Permissions.NativePermissionTable.Any = 255
 public const double Mc.Scripting.Worlds.WorldBorder.MaxCenter = 29999984
 public const double Mc.Scripting.Worlds.WorldBorder.MaxSize = 59999968
+public const int Mc.Scripting.Dialogs.ClickCallbackOptions.UnlimitedUses = -1
+public const int Mc.Scripting.Dialogs.DialogButton.DefaultWidth = 150
 public const int Mc.Scripting.Inventories.PlayerInventory.BootsSlot = 36
 public const int Mc.Scripting.Inventories.PlayerInventory.ChestplateSlot = 38
 public const int Mc.Scripting.Inventories.PlayerInventory.FirstMainSlot = 9
@@ -3095,6 +3188,7 @@ public event System.Action<T>? Mc.Scripting.Configuration.Config<T>.Changed
 public float Mc.Scripting.BossBar.Progress { get; set; }
 public float Mc.Scripting.Commands.CommandContext.GetFloat(string name)
 public float Mc.Scripting.Content.CustomBlock.HardnessValue { get; }
+public float Mc.Scripting.Dialogs.DialogResponse.GetFloat(string key, float fallback)
 public float Mc.Scripting.Events.BlockExplodeEvent.Yield { get; set; }
 public float Mc.Scripting.Events.EntityDamageEvent.Amount { get; set; }
 public float Mc.Scripting.Events.EntityExplodeEvent.Yield { get; set; }
@@ -3135,6 +3229,7 @@ public float Mc.Scripting.Packets.Serverbound.UseItemOn.ClickZ
 public float Mc.Scripting.Player.FlySpeed { get; set; }
 public float Mc.Scripting.Player.WalkSpeed { get; set; }
 public float Mc.Scripting.Worlds.World.DayTimeRate { get; set; }
+public float? Mc.Scripting.Dialogs.DialogResponse.GetFloat(string key)
 public float? Mc.Scripting.Loot.LootContext.ExplosionRadius { get; set; }
 public int Mc.Scripting.ApiVersion.CompareTo(Mc.Scripting.ApiVersion other)
 public int Mc.Scripting.ApiVersion.Major { get; init; }
@@ -3151,6 +3246,12 @@ public int Mc.Scripting.Commands.SuggestionContext.PermissionLevel { get; }
 public int Mc.Scripting.Content.CustomItem.CooldownTicks { get; }
 public int Mc.Scripting.Content.CustomItem.MaxStackSize { get; }
 public int Mc.Scripting.Content.ResourcePackFile.Size { get; }
+public int Mc.Scripting.Dialogs.ClickCallbackOptions.Uses { get; init; }
+public int Mc.Scripting.Dialogs.DialogItemOptions.Count { get; init; }
+public int Mc.Scripting.Dialogs.DialogItemOptions.DescriptionWidth { get; init; }
+public int Mc.Scripting.Dialogs.DialogItemOptions.Height { get; init; }
+public int Mc.Scripting.Dialogs.DialogItemOptions.Width { get; init; }
+public int Mc.Scripting.Dialogs.DialogResponse.GetInt(string key, int fallback)
 public int Mc.Scripting.EditClipboardInfo.OriginX { get; init; }
 public int Mc.Scripting.EditClipboardInfo.OriginY { get; init; }
 public int Mc.Scripting.EditClipboardInfo.OriginZ { get; init; }
@@ -3294,6 +3395,9 @@ public int Mc.Scripting.Worlds.World.SeaLevel { get; }
 public int Mc.Scripting.Worlds.World.SpawnParticle(string particle, Mc.Scripting.Vec3d position, [int count = 1], [Mc.Scripting.Vec3d offset = default(Mc.Scripting.Vec3d)], [float speed = 0], [bool force = false])
 public int Mc.Scripting.Worlds.WorldBorder.WarningDistance { get; set; }
 public int Mc.Scripting.Worlds.WorldBorder.WarningTime { get; set; }
+public int? Mc.Scripting.Dialogs.DialogMultiline.Height { get; init; }
+public int? Mc.Scripting.Dialogs.DialogMultiline.MaxLines { get; init; }
+public int? Mc.Scripting.Dialogs.DialogResponse.GetInt(string key)
 public int? Mc.Scripting.HologramOptions.TextOpacity { get; set; }
 public int? Mc.Scripting.NametagStyle.Colour { get; init; }
 public int? Mc.Scripting.Objective.GetScore(string holder)
@@ -3344,6 +3448,10 @@ public override bool Mc.Scripting.ApiVersion.Equals(object obj)
 public override bool Mc.Scripting.AttributeValue.Equals(object obj)
 public override bool Mc.Scripting.ChatMuteEntry.Equals(object? obj)
 public override bool Mc.Scripting.CommandResult.Equals(object obj)
+public override bool Mc.Scripting.Dialogs.ClickCallbackOptions.Equals(object? obj)
+public override bool Mc.Scripting.Dialogs.DialogItemOptions.Equals(object? obj)
+public override bool Mc.Scripting.Dialogs.DialogMultiline.Equals(object? obj)
+public override bool Mc.Scripting.Dialogs.DialogOption.Equals(object? obj)
 public override bool Mc.Scripting.EditClipboardInfo.Equals(object obj)
 public override bool Mc.Scripting.EditHistory.Equals(object obj)
 public override bool Mc.Scripting.EditJobInfo.Equals(object obj)
@@ -3379,6 +3487,10 @@ public override int Mc.Scripting.ApiVersion.GetHashCode()
 public override int Mc.Scripting.AttributeValue.GetHashCode()
 public override int Mc.Scripting.ChatMuteEntry.GetHashCode()
 public override int Mc.Scripting.CommandResult.GetHashCode()
+public override int Mc.Scripting.Dialogs.ClickCallbackOptions.GetHashCode()
+public override int Mc.Scripting.Dialogs.DialogItemOptions.GetHashCode()
+public override int Mc.Scripting.Dialogs.DialogMultiline.GetHashCode()
+public override int Mc.Scripting.Dialogs.DialogOption.GetHashCode()
 public override int Mc.Scripting.EditClipboardInfo.GetHashCode()
 public override int Mc.Scripting.EditHistory.GetHashCode()
 public override int Mc.Scripting.EditJobInfo.GetHashCode()
@@ -3459,6 +3571,16 @@ public override string Mc.Scripting.AttributeValue.ToString()
 public override string Mc.Scripting.ChatMuteEntry.ToString()
 public override string Mc.Scripting.CommandResult.ToString()
 public override string Mc.Scripting.Commands.ArgType.ToString()
+public override string Mc.Scripting.Dialogs.ClickCallbackOptions.ToString()
+public override string Mc.Scripting.Dialogs.Dialog.ToString()
+public override string Mc.Scripting.Dialogs.DialogAction.ToString()
+public override string Mc.Scripting.Dialogs.DialogBody.ToString()
+public override string Mc.Scripting.Dialogs.DialogButton.ToString()
+public override string Mc.Scripting.Dialogs.DialogInput.ToString()
+public override string Mc.Scripting.Dialogs.DialogItemOptions.ToString()
+public override string Mc.Scripting.Dialogs.DialogMultiline.ToString()
+public override string Mc.Scripting.Dialogs.DialogOption.ToString()
+public override string Mc.Scripting.Dialogs.DialogResponse.ToString()
 public override string Mc.Scripting.EditClipboardInfo.ToString()
 public override string Mc.Scripting.EditHistory.ToString()
 public override string Mc.Scripting.EditJobInfo.ToString()
@@ -3653,6 +3775,7 @@ public readonly Mc.Scripting.DamageCause Mc.Scripting.Events.EntityDeathEvent.Ca
 public readonly Mc.Scripting.DamageCause Mc.Scripting.Events.PlayerDeathEvent.Cause { get; }
 public readonly Mc.Scripting.DamageCause Mc.Scripting.Events.VehicleDamageEvent.Cause { get; }
 public readonly Mc.Scripting.DamageCause Mc.Scripting.Events.VehicleDestroyEvent.Cause { get; }
+public readonly Mc.Scripting.Dialogs.DialogResponse Mc.Scripting.Events.PlayerCustomClickEvent.GetDialogResponseView()
 public readonly Mc.Scripting.DragType Mc.Scripting.Events.InventoryDragEvent.DragType { get; }
 public readonly Mc.Scripting.DragonPhase Mc.Scripting.Events.EnderDragonChangePhaseEvent.OldPhase { get; }
 public readonly Mc.Scripting.EffectAction Mc.Scripting.Events.EntityPotionEffectEvent.Action { get; }
@@ -4341,6 +4464,7 @@ public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerConnectionClos
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerConnectionInitialConfigureEvent.Username { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerCustomClickEvent.Id { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerCustomClickEvent.Payload { get; }
+public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerCustomClickEvent.PayloadJson { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerDeathEvent.DeathMessageJson { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerEditBookEvent.Pages { get; }
 public readonly Mc.Scripting.Utf8String Mc.Scripting.Events.PlayerEditBookEvent.Title { get; }
@@ -4963,6 +5087,35 @@ public static Mc.Scripting.Commands.CommandNode Mc.Scripting.Commands.Command.Li
 public static Mc.Scripting.Content.BlockRegistry Mc.Scripting.Content.Content.Blocks { get; }
 public static Mc.Scripting.Content.ItemRegistry Mc.Scripting.Content.Content.Items { get; }
 public static Mc.Scripting.Content.ResourcePackBuilder Mc.Scripting.Content.ResourcePackBuilder.Create(string name)
+public static Mc.Scripting.Dialogs.ClickCallbackOptions Mc.Scripting.Dialogs.ClickCallbackOptions.Default { get; }
+public static Mc.Scripting.Dialogs.Dialog Mc.Scripting.Dialogs.Dialog.Confirmation(Mc.Scripting.Dialogs.DialogBase common, Mc.Scripting.Dialogs.DialogButton yes, Mc.Scripting.Dialogs.DialogButton no)
+public static Mc.Scripting.Dialogs.Dialog Mc.Scripting.Dialogs.Dialog.DialogList(Mc.Scripting.Dialogs.DialogBase common, System.Collections.Generic.IEnumerable<Mc.Scripting.Dialogs.Dialog> dialogs, [Mc.Scripting.Dialogs.DialogButton? exitAction = null], [int columns = 2], [int buttonWidth = 150])
+public static Mc.Scripting.Dialogs.Dialog Mc.Scripting.Dialogs.Dialog.DialogList(Mc.Scripting.Dialogs.DialogBase common, System.Collections.Generic.IEnumerable<string> dialogs, [Mc.Scripting.Dialogs.DialogButton? exitAction = null], [int columns = 2], [int buttonWidth = 150])
+public static Mc.Scripting.Dialogs.Dialog Mc.Scripting.Dialogs.Dialog.MultiAction(Mc.Scripting.Dialogs.DialogBase common, System.Collections.Generic.IEnumerable<Mc.Scripting.Dialogs.DialogButton> actions, [Mc.Scripting.Dialogs.DialogButton? exitAction = null], [int columns = 2])
+public static Mc.Scripting.Dialogs.Dialog Mc.Scripting.Dialogs.Dialog.Notice(Mc.Scripting.Dialogs.DialogBase common, [Mc.Scripting.Dialogs.DialogButton? action = null])
+public static Mc.Scripting.Dialogs.Dialog Mc.Scripting.Dialogs.Dialog.ServerLinks(Mc.Scripting.Dialogs.DialogBase common, [Mc.Scripting.Dialogs.DialogButton? exitAction = null], [int columns = 2], [int buttonWidth = 150])
+public static Mc.Scripting.Dialogs.DialogAction Mc.Scripting.Dialogs.DialogAction.Callback(Mc.Scripting.Dialogs.DialogCallback handler, [Mc.Scripting.Dialogs.ClickCallbackOptions? options = null])
+public static Mc.Scripting.Dialogs.DialogAction Mc.Scripting.Dialogs.DialogAction.Callback(Mc.Scripting.PluginContext plugin, Mc.Scripting.Dialogs.DialogCallback handler, [Mc.Scripting.Dialogs.ClickCallbackOptions? options = null])
+public static Mc.Scripting.Dialogs.DialogAction Mc.Scripting.Dialogs.DialogAction.CommandTemplate(string template)
+public static Mc.Scripting.Dialogs.DialogAction Mc.Scripting.Dialogs.DialogAction.CopyToClipboard(string text)
+public static Mc.Scripting.Dialogs.DialogAction Mc.Scripting.Dialogs.DialogAction.Custom(string id, [Mc.Scripting.Nbt.NbtCompound? additions = null])
+public static Mc.Scripting.Dialogs.DialogAction Mc.Scripting.Dialogs.DialogAction.OpenUrl(string url)
+public static Mc.Scripting.Dialogs.DialogAction Mc.Scripting.Dialogs.DialogAction.RunCommand(string command)
+public static Mc.Scripting.Dialogs.DialogAction Mc.Scripting.Dialogs.DialogAction.ShowDialog(Mc.Scripting.Dialogs.Dialog dialog)
+public static Mc.Scripting.Dialogs.DialogAction Mc.Scripting.Dialogs.DialogAction.ShowDialog(string key)
+public static Mc.Scripting.Dialogs.DialogAction Mc.Scripting.Dialogs.DialogAction.Static(Mc.Scripting.Text.ClickEvent click)
+public static Mc.Scripting.Dialogs.DialogAction Mc.Scripting.Dialogs.DialogAction.SuggestCommand(string command)
+public static Mc.Scripting.Dialogs.DialogBase Mc.Scripting.Dialogs.DialogBase.Create(Mc.Scripting.Text.Component title)
+public static Mc.Scripting.Dialogs.DialogBody Mc.Scripting.Dialogs.DialogBody.Item(string itemId, [Mc.Scripting.Dialogs.DialogItemOptions? options = null])
+public static Mc.Scripting.Dialogs.DialogBody Mc.Scripting.Dialogs.DialogBody.Message(Mc.Scripting.Text.Component contents, [int width = 200])
+public static Mc.Scripting.Dialogs.DialogButton Mc.Scripting.Dialogs.DialogButton.Create(Mc.Scripting.Text.Component label, [Mc.Scripting.Dialogs.DialogAction? action = null], [Mc.Scripting.Text.Component? tooltip = null], [int width = 150])
+public static Mc.Scripting.Dialogs.DialogInput Mc.Scripting.Dialogs.DialogInput.Bool(string key, Mc.Scripting.Text.Component label, [bool initial = false], [string onTrue = "true"], [string onFalse = "false"])
+public static Mc.Scripting.Dialogs.DialogInput Mc.Scripting.Dialogs.DialogInput.NumberRange(string key, Mc.Scripting.Text.Component label, float start, float end, [float? initial = null], [float? step = null], [int width = 200], [string labelFormat = "options.generic_value"])
+public static Mc.Scripting.Dialogs.DialogInput Mc.Scripting.Dialogs.DialogInput.SingleOption(string key, Mc.Scripting.Text.Component label, System.Collections.Generic.IEnumerable<Mc.Scripting.Dialogs.DialogOption> options, [int width = 200], [bool labelVisible = true])
+public static Mc.Scripting.Dialogs.DialogInput Mc.Scripting.Dialogs.DialogInput.Text(string key, Mc.Scripting.Text.Component label, [int width = 200], [bool labelVisible = true], [string initial = ""], [int maxLength = 32], [Mc.Scripting.Dialogs.DialogMultiline? multiline = null])
+public static Mc.Scripting.Dialogs.DialogResponse Mc.Scripting.Dialogs.DialogResponse.Empty { get; }
+public static Mc.Scripting.Dialogs.DialogResponse Mc.Scripting.Dialogs.DialogResponse.FromJson(Mc.Scripting.Utf8String payloadJson)
+public static Mc.Scripting.Dialogs.DialogResponse Mc.Scripting.Dialogs.DialogResponse.FromJson(string? payloadJson)
 public static Mc.Scripting.EditClipboardInfo? Mc.Scripting.Edit.ClipboardInfo(Mc.Scripting.Player player, ulong handle)
 public static Mc.Scripting.EditHistory Mc.Scripting.Edit.History(Mc.Scripting.Player player)
 public static Mc.Scripting.EditJobInfo? Mc.Scripting.Edit.GetJob(Mc.Scripting.Player player, long job)
@@ -5026,8 +5179,12 @@ public static Mc.Scripting.Tablist Mc.Scripting.PresenceExtensions.get_Tablist(M
 public static Mc.Scripting.Tablist Mc.Scripting.PresenceExtensions.get_Tablist(Mc.Scripting.PluginContext context)
 public static Mc.Scripting.Text.ClickEvent Mc.Scripting.Text.ClickEvent.ChangePage(int page)
 public static Mc.Scripting.Text.ClickEvent Mc.Scripting.Text.ClickEvent.CopyToClipboard(string text)
+public static Mc.Scripting.Text.ClickEvent Mc.Scripting.Text.ClickEvent.Custom(string id, [Mc.Scripting.Nbt.NbtTag? payload = null])
+public static Mc.Scripting.Text.ClickEvent Mc.Scripting.Text.ClickEvent.CustomJson(string id, string? payloadJson)
 public static Mc.Scripting.Text.ClickEvent Mc.Scripting.Text.ClickEvent.OpenUrl(string url)
 public static Mc.Scripting.Text.ClickEvent Mc.Scripting.Text.ClickEvent.RunCommand(string command)
+public static Mc.Scripting.Text.ClickEvent Mc.Scripting.Text.ClickEvent.ShowDialog(Mc.Scripting.Dialogs.Dialog dialog)
+public static Mc.Scripting.Text.ClickEvent Mc.Scripting.Text.ClickEvent.ShowDialog(string key)
 public static Mc.Scripting.Text.ClickEvent Mc.Scripting.Text.ClickEvent.SuggestCommand(string command)
 public static Mc.Scripting.Text.Component Mc.Scripting.Events.LoginDeferral.UnloadDenyMessage { get; set; }
 public static Mc.Scripting.Text.Component Mc.Scripting.Text.Component.Empty { get; }
@@ -5117,6 +5274,14 @@ public static bool Mc.Scripting.Combat.Untag(Mc.Scripting.Player player)
 public static bool Mc.Scripting.CommandResult.operator !=(Mc.Scripting.CommandResult left, Mc.Scripting.CommandResult right)
 public static bool Mc.Scripting.CommandResult.operator ==(Mc.Scripting.CommandResult left, Mc.Scripting.CommandResult right)
 public static bool Mc.Scripting.Content.ResourcePackHost.IsRunning { get; }
+public static bool Mc.Scripting.Dialogs.ClickCallbackOptions.operator !=(Mc.Scripting.Dialogs.ClickCallbackOptions? left, Mc.Scripting.Dialogs.ClickCallbackOptions? right)
+public static bool Mc.Scripting.Dialogs.ClickCallbackOptions.operator ==(Mc.Scripting.Dialogs.ClickCallbackOptions? left, Mc.Scripting.Dialogs.ClickCallbackOptions? right)
+public static bool Mc.Scripting.Dialogs.DialogItemOptions.operator !=(Mc.Scripting.Dialogs.DialogItemOptions? left, Mc.Scripting.Dialogs.DialogItemOptions? right)
+public static bool Mc.Scripting.Dialogs.DialogItemOptions.operator ==(Mc.Scripting.Dialogs.DialogItemOptions? left, Mc.Scripting.Dialogs.DialogItemOptions? right)
+public static bool Mc.Scripting.Dialogs.DialogMultiline.operator !=(Mc.Scripting.Dialogs.DialogMultiline? left, Mc.Scripting.Dialogs.DialogMultiline? right)
+public static bool Mc.Scripting.Dialogs.DialogMultiline.operator ==(Mc.Scripting.Dialogs.DialogMultiline? left, Mc.Scripting.Dialogs.DialogMultiline? right)
+public static bool Mc.Scripting.Dialogs.DialogOption.operator !=(Mc.Scripting.Dialogs.DialogOption? left, Mc.Scripting.Dialogs.DialogOption? right)
+public static bool Mc.Scripting.Dialogs.DialogOption.operator ==(Mc.Scripting.Dialogs.DialogOption? left, Mc.Scripting.Dialogs.DialogOption? right)
 public static bool Mc.Scripting.Edit.Cancel(Mc.Scripting.Player player, long job)
 public static bool Mc.Scripting.Edit.ReleaseClipboard(Mc.Scripting.Player player, ulong handle)
 public static bool Mc.Scripting.EditClipboardInfo.operator !=(Mc.Scripting.EditClipboardInfo left, Mc.Scripting.EditClipboardInfo right)
@@ -5611,6 +5776,7 @@ public static long Mc.Scripting.Server.CommittedBytes { get; }
 public static long Mc.Scripting.Server.MemoryBytes { get; }
 public static long Mc.Scripting.Server.PluginMemoryBytes { get; }
 public static long Mc.Scripting.Server.WorkingSetBytes { get; }
+public static readonly System.TimeSpan Mc.Scripting.Dialogs.ClickCallbackOptions.MaxLifetime readonly
 public static readonly ushort Mc.Scripting.EventType<T>.Id readonly
 public static string Mc.Scripting.Content.ResourcePackHost.Publish(Mc.Scripting.Content.ResourcePackFile pack)
 public static string Mc.Scripting.Content.ResourcePackHost.Start([string bind = "127.0.0.1"], [int port = 0], [string? publicUrl = null])
@@ -6418,6 +6584,11 @@ public string Mc.Scripting.Content.CustomItem.Id { get; }
 public string Mc.Scripting.Content.ResourcePackBuilder.Name { get; }
 public string Mc.Scripting.Content.ResourcePackFile.Name { get; }
 public string Mc.Scripting.Content.ResourcePackFile.Sha1 { get; }
+public string Mc.Scripting.Dialogs.Dialog.ToJson()
+public string Mc.Scripting.Dialogs.DialogInput.Key { get; }
+public string Mc.Scripting.Dialogs.DialogOption.Id { get; init; }
+public string Mc.Scripting.Dialogs.DialogResponse.GetText(string key, string fallback)
+public string Mc.Scripting.Dialogs.DialogResponse.RawJson { get; }
 public string Mc.Scripting.EditJobInfo.Message { get; init; }
 public string Mc.Scripting.Entity.TypeKey { get; }
 public string Mc.Scripting.Inventories.ItemStack.Type { get; }
@@ -6493,6 +6664,9 @@ public string? Mc.Scripting.Configuration.PluginConfig.ReadText(string fileName)
 public string? Mc.Scripting.Content.CustomBlock.ModelId { get; }
 public string? Mc.Scripting.Content.CustomItem.ModelId { get; }
 public string? Mc.Scripting.Content.CustomItem.PlacesBlock { get; }
+public string? Mc.Scripting.Dialogs.DialogAction.Id { get; }
+public string? Mc.Scripting.Dialogs.DialogItemOptions.ComponentsJson { get; init; }
+public string? Mc.Scripting.Dialogs.DialogResponse.GetText(string key)
 public string? Mc.Scripting.Inventories.ItemStack.CustomId { get; }
 public string? Mc.Scripting.Inventories.ItemView.CustomId { get; }
 public string? Mc.Scripting.Loot.LootContext.DamageType { get; set; }
@@ -6515,6 +6689,7 @@ public string? Mc.Scripting.ResourcePack.Sha1 { get; init; }
 public string? Mc.Scripting.Services.BanEntry.Address { get; init; }
 public string? Mc.Scripting.Services.BanEntry.Name { get; init; }
 public string? Mc.Scripting.Services.BanEntry.Reason { get; init; }
+public string? Mc.Scripting.Text.ClickEvent.PayloadJson { get; init; }
 public string? Mc.Scripting.Worlds.World.GetGameRule(string name)
 public string? Mc.Scripting.Worlds.WorldOptions.DimensionType { get; init; }
 public string? Mc.Scripting.Worlds.WorldOptions.FlatSettings { get; init; }
@@ -6551,6 +6726,7 @@ public virtual System.IAsyncResult Mc.Scripting.Commands.AsyncSuggestionProvider
 public virtual System.IAsyncResult Mc.Scripting.Commands.CommandExecutor.BeginInvoke(Mc.Scripting.Commands.CommandContext context, System.AsyncCallback callback, object @object)
 public virtual System.IAsyncResult Mc.Scripting.Commands.CommandHandler.BeginInvoke(Mc.Scripting.Commands.CommandContext context, System.AsyncCallback callback, object @object)
 public virtual System.IAsyncResult Mc.Scripting.Commands.SuggestionProvider.BeginInvoke(Mc.Scripting.Commands.CommandContext context, Mc.Scripting.Commands.SuggestionsBuilder builder, System.AsyncCallback callback, object @object)
+public virtual System.IAsyncResult Mc.Scripting.Dialogs.DialogCallback.BeginInvoke(Mc.Scripting.Player player, Mc.Scripting.Dialogs.DialogResponse response, System.AsyncCallback callback, object @object)
 public virtual System.IAsyncResult Mc.Scripting.EventListener<T>.BeginInvoke(ref T ev, System.AsyncCallback callback, object @object)
 public virtual System.IAsyncResult Mc.Scripting.PluginMessageHandler.BeginInvoke(Mc.Scripting.Player player, System.ReadOnlySpan<byte> data, System.AsyncCallback callback, object @object)
 public virtual System.IAsyncResult Mc.Scripting.QueryAction<T1, T2, T3>.BeginInvoke(Mc.Scripting.Entity entity, ref T1 c1, ref T2 c2, ref T3 c3, System.AsyncCallback callback, object @object)
@@ -6566,6 +6742,7 @@ public virtual int Mc.Scripting.Inventories.EngineInventory.Size { get; }
 public virtual string Mc.Scripting.Services.PlaceholderValue.EndInvoke(System.IAsyncResult result)
 public virtual void Mc.Scripting.Commands.CommandHandler.EndInvoke(System.IAsyncResult result)
 public virtual void Mc.Scripting.Commands.SuggestionProvider.EndInvoke(System.IAsyncResult result)
+public virtual void Mc.Scripting.Dialogs.DialogCallback.EndInvoke(System.IAsyncResult result)
 public virtual void Mc.Scripting.EventListener<T>.EndInvoke(ref T ev, System.IAsyncResult result)
 public virtual void Mc.Scripting.Inventories.EngineInventory.Clear()
 public virtual void Mc.Scripting.Inventories.EngineInventory.Set(int slot, Mc.Scripting.Inventories.ItemStack stack)
@@ -6601,6 +6778,8 @@ public void Mc.Scripting.Content.ItemRegistry.Register(Mc.Scripting.Content.Cust
 public void Mc.Scripting.Content.ItemUseContext.Consume([int count = 1])
 public void Mc.Scripting.Content.ResourcePackFile.SendTo(Mc.Scripting.Player player, [bool required = false], [Mc.Scripting.Text.Component? prompt = null])
 public void Mc.Scripting.Content.ResourcePackFile.WriteTo(string path)
+public void Mc.Scripting.Dialogs.DialogMultiline.Deconstruct(out int? MaxLines, out int? Height)
+public void Mc.Scripting.Dialogs.DialogOption.Deconstruct(out string Id, out Mc.Scripting.Text.Component? Display, out bool Initial)
 public void Mc.Scripting.EditClipboardInfo.Deconstruct(out int SizeX, out int SizeY, out int SizeZ, out int OriginX, out int OriginY, out int OriginZ, out ulong Bytes)
 public void Mc.Scripting.EditHistory.Deconstruct(out uint UndoSteps, out uint RedoSteps, out ulong UndoBytes, out ulong RedoBytes)
 public void Mc.Scripting.EditJobInfo.Deconstruct(out Mc.Scripting.EditJobState State, out ulong Changed, out uint ElapsedTicks, out ulong Clipboard, out string Message)
@@ -6790,6 +6969,7 @@ public void Mc.Scripting.Worlds.WorldBorder.SetSize(double size, [long lerpTimeM
 readonly readonly struct Mc.Scripting.ApiVersion [interface System.IComparable<Mc.Scripting.ApiVersion>, interface System.IEquatable<Mc.Scripting.ApiVersion>]
 readonly readonly struct Mc.Scripting.AttributeValue [interface System.IEquatable<Mc.Scripting.AttributeValue>]
 readonly readonly struct Mc.Scripting.CommandResult [interface System.IEquatable<Mc.Scripting.CommandResult>]
+readonly readonly struct Mc.Scripting.Dialogs.DialogResponse
 readonly readonly struct Mc.Scripting.EditClipboardInfo [interface System.IEquatable<Mc.Scripting.EditClipboardInfo>]
 readonly readonly struct Mc.Scripting.EditHistory [interface System.IEquatable<Mc.Scripting.EditHistory>]
 readonly readonly struct Mc.Scripting.EditJobInfo [interface System.IEquatable<Mc.Scripting.EditJobInfo>]
@@ -7225,6 +7405,12 @@ sealed class Mc.Scripting.Content.ItemRegistry
 sealed class Mc.Scripting.Content.ItemUseContext
 sealed class Mc.Scripting.Content.ResourcePackBuilder
 sealed class Mc.Scripting.Content.ResourcePackFile
+sealed class Mc.Scripting.Dialogs.Dialog
+sealed class Mc.Scripting.Dialogs.DialogAction
+sealed class Mc.Scripting.Dialogs.DialogBase
+sealed class Mc.Scripting.Dialogs.DialogBody
+sealed class Mc.Scripting.Dialogs.DialogButton
+sealed class Mc.Scripting.Dialogs.DialogInput
 sealed class Mc.Scripting.Ecs
 sealed class Mc.Scripting.EventRegistry
 sealed class Mc.Scripting.Events.LoginDeferral [interface Mc.Scripting.IPluginResource, interface System.IDisposable]
@@ -7324,6 +7510,10 @@ sealed class Mc.Scripting.Worlds.WorldBorder
 sealed class Mc.Scripting.Worlds.WorldOptions
 sealed class Mc.Scripting.WrongThreadException : class System.InvalidOperationException
 sealed record Mc.Scripting.ChatMuteEntry [interface System.IEquatable<Mc.Scripting.ChatMuteEntry>]
+sealed record Mc.Scripting.Dialogs.ClickCallbackOptions [interface System.IEquatable<Mc.Scripting.Dialogs.ClickCallbackOptions>]
+sealed record Mc.Scripting.Dialogs.DialogItemOptions [interface System.IEquatable<Mc.Scripting.Dialogs.DialogItemOptions>]
+sealed record Mc.Scripting.Dialogs.DialogMultiline [interface System.IEquatable<Mc.Scripting.Dialogs.DialogMultiline>]
+sealed record Mc.Scripting.Dialogs.DialogOption [interface System.IEquatable<Mc.Scripting.Dialogs.DialogOption>]
 sealed record Mc.Scripting.OfflineProfile [interface System.IEquatable<Mc.Scripting.OfflineProfile>]
 sealed record Mc.Scripting.Permissions.Permission [interface System.IEquatable<Mc.Scripting.Permissions.Permission>]
 sealed record Mc.Scripting.ResourcePack [interface System.IEquatable<Mc.Scripting.ResourcePack>]

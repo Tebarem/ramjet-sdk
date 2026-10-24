@@ -14,7 +14,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <PackageId>Ramjet.Api</PackageId>
-    <Version>1.0.0-preview.8</Version>
+    <Version>1.0.0-preview.9</Version>
     <Authors>Ramjet</Authors>
     <Title>Ramjet plugin API</Title>
     <Description>Compile-time API for C# plugins of the Ramjet Minecraft server (net10.0). Reference assembly only: the server supplies the API at run time.</Description>

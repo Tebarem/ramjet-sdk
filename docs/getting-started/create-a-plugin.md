@@ -32,7 +32,7 @@ cd Homes
 | `-n`, `--name` | `MyPlugin` | assembly, namespace and plugin name; also the lower-cased `id` in `plugin.json` |
 | `--Author` | `Your Name` | `[PluginInfo(Author = ...)]` and `plugin.json` |
 | `--PluginDescription` | `A plugin for ramjet.` | `[PluginInfo(Description = ...)]` and `plugin.json` |
-| `--RamjetApiVersion` | `1.0.0-preview.8` | the version of the `Ramjet.Api` package to reference |
+| `--RamjetApiVersion` | `1.0.0-preview.9` | the version of the `Ramjet.Api` package to reference |
 
 ## Point the build at your test server
 

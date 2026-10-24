@@ -1086,6 +1086,275 @@ Why an entity took damage (derived from the vanilla damage type).
 - `MaceSmash` = 26: Mace smash attack.
 - `Custom` = 27: Damage dealt by a plugin.
 
+## ClickCallbackOptions (class, other)
+
+```csharp
+public sealed class ClickCallbackOptions : IEquatable<ClickCallbackOptions>
+```
+
+How long and how often a callback button works (Paper `ClickCallback.Options`). Immutable; the defaults are Paper's: one use, 12 hours.
+
+- `public ClickCallbackOptions()`
+- `public static readonly TimeSpan MaxLifetime;`: The longest lifetime allowed (30 days); a callback that lived forever would be a leak.
+- `public const int UnlimitedUses = -1;`: Pass as `ClickCallbackOptions.Uses` for no limit on the number of clicks.
+- `public TimeSpan Lifetime { get; init; }`: How long after the button was created clicks still run the handler, up to `ClickCallbackOptions.MaxLifetime`.
+- `public int Uses { get; init; }`: How many clicks run the handler before it is dropped, or `ClickCallbackOptions.UnlimitedUses`. Clicks of any player count: a dialog shown to several players shares its callback.
+- `public static ClickCallbackOptions Default { get; }`: The options Paper uses: one click, 12 hours.
+
+## Dialog (class, other)
+
+```csharp
+public sealed class Dialog
+```
+
+A dialog: a screen the client draws from data, with a title, text, inputs and buttons (vanilla 1.21.6 dialogs; Paper `io.papermc.paper.dialog.Dialog`). Build one with the factories, show it with `Player.ShowDialog`, and read what the player entered from `DialogResponse`. Immutable. The factories check their arguments and throw `ArgumentException`, so a mistake shows up when the dialog is built, not as a refused send. `Dialog.ToJson` is the same JSON a data pack's `data/<namespace>/dialog/<name>.json` holds.
+
+- `public DialogBase Base { get; }`: The title, behaviour, body and inputs.
+- `public Component Title { get; }`: The title at the top of the dialog.
+- `public DialogType Type { get; }`: Which of the five kinds this is.
+- `public string ToJson()`: The dialog as vanilla dialog JSON (what a data pack file holds and what `Player.ShowDialog` sends to the engine).
+- `public override string ToString()`: The dialog's JSON.
+- `public static Dialog Confirmation(DialogBase common, DialogButton yes, DialogButton no)`: A dialog with a yes and a no button. Escape counts as the no button's action.
+- `public static Dialog DialogList(DialogBase common, IEnumerable<string> dialogs, DialogButton? exitAction = null, int columns = 2, int buttonWidth = 150)`: A dialog with one button per other dialog; a button opens its dialog, and its label is that dialog's `DialogBase.ExternalTitle`.
+- `public static Dialog DialogList(DialogBase common, IEnumerable<Dialog> dialogs, DialogButton? exitAction = null, int columns = 2, int buttonWidth = 150)`: Like {{cref:M:Mc.Scripting.Dialogs.Dialog.DialogList(Mc.Scripting.Dialogs.DialogBase,System.Collections.Generic.IEnumerable{System.String},Mc.Scripting.Dialogs.DialogButton,System.Int32,System.Int32)}}, with the dialogs given inline.
+- `public static Dialog MultiAction(DialogBase common, IEnumerable<DialogButton> actions, DialogButton? exitAction = null, int columns = 2)`: A dialog with a list of buttons laid out in columns, and an optional exit button below.
+- `public static Dialog Notice(DialogBase common, DialogButton? action = null)`: A dialog with one button (default "OK", which just closes it).
+- `public static Dialog ServerLinks(DialogBase common, DialogButton? exitAction = null, int columns = 2, int buttonWidth = 150)`: A dialog with one button per link of the server's link list (the client builds the buttons from the server links packet).
+
+## DialogAction (class, other)
+
+```csharp
+public sealed class DialogAction
+```
+
+What a dialog button does when it is clicked. Immutable.
+
+- `public string? Id { get; }`: For `DialogActionType.Custom` and `DialogActionType.Callback`: the id the click arrives under in `PlayerCustomClickEvent.Id`.
+- `public DialogActionType Type { get; }`: What kind of action this is.
+- `public override string ToString()`: The action's JSON.
+- `public static DialogAction Callback(DialogCallback handler, ClickCallbackOptions? options = null)`: A C# handler: when the player clicks the button the handler runs on the tick thread with the player and the inputs' values. The id is random (128 bits) and reserved to this plugin; the handler is dropped after `ClickCallbackOptions.Uses` clicks (default 1) or its lifetime (default 12 hours, counted from now), and when the plugin unloads. A plugin keeps at most 4096 handlers: the oldest are dropped first. Needs a running plugin (inside an event handler, command, task or `OnEnable`); use the overload that takes the plugin elsewhere.
+- `public static DialogAction Callback(PluginContext plugin, DialogCallback handler, ClickCallbackOptions? options = null)`: Like `DialogAction.Callback`, for a given plugin.
+- `public static DialogAction CommandTemplate(string template)`: A command the client builds from the inputs and runs as the player (vanilla `dynamic/run_command`). Every `$(key)` in the template is replaced with the value of the input of that name (a missing input gives an empty string).
+- `public static DialogAction CopyToClipboard(string text)`: Copies text to the player's clipboard.
+- `public static DialogAction Custom(string id, NbtCompound? additions = null)`: A custom click: the client sends the inputs' values, plus the optional fixed `additions`, to the server under `id` (vanilla `dynamic/custom`). Listen to `PlayerCustomClickEvent` and read `GetDialogResponseView()`. Use `DialogAction.Callback` to avoid the event.
+- `public static DialogAction OpenUrl(string url)`: Opens a URL after the client asked the player to confirm.
+- `public static DialogAction RunCommand(string command)`: Runs a command as the player.
+- `public static DialogAction ShowDialog(Dialog dialog)`: Opens another dialog (inline).
+- `public static DialogAction ShowDialog(string key)`: Opens a dialog of the `minecraft:dialog` registry.
+- `public static DialogAction Static(ClickEvent click)`: A fixed click event. Supported: open URL (http/https), run command, suggest command, copy to clipboard, change page, show dialog and custom.
+- `public static DialogAction SuggestCommand(string command)`: Puts a command into the player's chat box.
+
+## DialogActionType (enum, other)
+
+```csharp
+public enum DialogActionType : int
+```
+
+The kinds of dialog button action.
+
+- `Static` = 0: A fixed click event the client carries out (open a URL, run a command, show another dialog, ...).
+- `CommandTemplate` = 1: A command with `$(key)` placeholders that the client fills with the inputs' values and runs.
+- `Custom` = 2: A custom click that reports the inputs' values to the server under an id (`PlayerCustomClickEvent`).
+- `Callback` = 3: A custom click whose id belongs to a C# handler (`DialogAction.Callback`).
+
+## DialogAfterAction (enum, other)
+
+```csharp
+public enum DialogAfterAction : int
+```
+
+What happens to the dialog screen after the player clicked a button (vanilla `after_action`).
+
+- `Close` = 0: The screen closes (the default).
+- `None` = 1: The screen stays open. Not allowed together with `DialogBase.Pause`.
+- `WaitForResponse` = 2: The screen stays open with a "waiting for response" message until the server sends another screen or clears it.
+
+## DialogBase (class, other)
+
+```csharp
+public sealed class DialogBase
+```
+
+The part every dialog has: title, behaviour, body blocks and inputs (Paper `DialogBase`). Immutable: every `With`/`Add` method returns a new one.
+
+- `public DialogAfterAction AfterAction { get; }`: What happens after a button is clicked (default `DialogAfterAction.Close`).
+- `public IReadOnlyList<DialogBody> Body { get; }`: The blocks between the title and the inputs.
+- `public bool CanCloseWithEscape { get; }`: Whether Escape closes the dialog (default true). A dialog nobody can close needs a button that does.
+- `public Component? ExternalTitle { get; }`: The text of the button that opens this dialog from another one (a dialog list, the pause menu); null uses `DialogBase.Title`.
+- `public IReadOnlyList<DialogInput> Inputs { get; }`: The input controls, in order.
+- `public bool Pause { get; }`: Whether a single-player game pauses while the dialog is open (default true; has no effect on a server).
+- `public Component Title { get; }`: The title at the top of the dialog.
+- `public DialogBase AddBody(params DialogBody[] body)`: Appends body blocks.
+- `public DialogBase AddInputs(params DialogInput[] inputs)`: Appends input controls.
+- `public DialogBase WithAfterAction(DialogAfterAction afterAction)`: Sets what happens after a button is clicked.
+- `public DialogBase WithCanCloseWithEscape(bool canClose)`: Sets whether Escape closes the dialog.
+- `public DialogBase WithExternalTitle(Component? externalTitle)`: Sets the title of the button that opens this dialog from another one; null goes back to the title.
+- `public DialogBase WithPause(bool pause)`: Sets whether a single-player game pauses. A pausing dialog needs an after-action that closes or waits (checked when the dialog is built).
+- `public static DialogBase Create(Component title)`: Starts a dialog base with the vanilla defaults.
+
+## DialogBody (class, other)
+
+```csharp
+public sealed class DialogBody
+```
+
+A block of a dialog's body: text or an item. Immutable.
+
+- `public DialogBodyType Type { get; }`: What kind of body this is.
+- `public override string ToString()`: The body's JSON.
+- `public static DialogBody Item(string itemId, DialogItemOptions? options = null)`: An item drawn in the dialog, optionally with text beside it.
+- `public static DialogBody Message(Component contents, int width = 200)`: A block of text.
+
+## DialogBodyType (enum, other)
+
+```csharp
+public enum DialogBodyType : int
+```
+
+The kinds of dialog body (the blocks between the title and the inputs).
+
+- `PlainMessage` = 0: A block of text (`minecraft:plain_message`).
+- `Item` = 1: An item with an optional description beside it (`minecraft:item`).
+
+## DialogButton (class, other)
+
+```csharp
+public sealed class DialogButton
+```
+
+A button of a dialog: a label, an optional tooltip and the action it triggers. Immutable.
+
+- `public const int DefaultWidth = 150;`: Vanilla's default button width in pixels.
+- `public DialogAction? Action { get; }`: What the button does, or null for a button that only closes the dialog (or does what `DialogBase.AfterAction` says).
+- `public Component Label { get; }`: The button's text.
+- `public override string ToString()`: The button's JSON.
+- `public static DialogButton Create(Component label, DialogAction? action = null, Component? tooltip = null, int width = 150)`: Creates a button.
+
+## DialogCallback (delegate, other)
+
+```csharp
+public delegate void DialogCallback(Player player, DialogResponse response)
+```
+
+A C# handler a dialog button runs when the player clicks it (`DialogAction.Callback`). Runs on the tick thread, inside the plugin that created the button.
+
+## DialogInput (class, other)
+
+```csharp
+public sealed class DialogInput
+```
+
+An input control of a dialog; its value comes back under `DialogInput.Key` (`DialogResponse`, or `$(key)` in a command template). Immutable.
+
+- `public string Key { get; }`: The name the value is reported under.
+- `public DialogInputType Type { get; }`: What kind of control this is.
+- `public override string ToString()`: The input's JSON.
+- `public static DialogInput Bool(string key, Component label, bool initial = false, string onTrue = "true", string onFalse = "false")`: A check box. The value is reported as a boolean (and as `onTrue` / `onFalse` when substituted into a command template).
+- `public static DialogInput NumberRange(string key, Component label, float start, float end, float? initial = null, float? step = null, int width = 200, string labelFormat = "options.generic_value")`: A slider. The value is reported as a number.
+- `public static DialogInput SingleOption(string key, Component label, IEnumerable<DialogOption> options, int width = 200, bool labelVisible = true)`: A button that cycles through options. The value is reported as the selected option's id.
+- `public static DialogInput Text(string key, Component label, int width = 200, bool labelVisible = true, string initial = "", int maxLength = 32, DialogMultiline? multiline = null)`: A text box. The value is reported as text.
+
+## DialogInputType (enum, other)
+
+```csharp
+public enum DialogInputType : int
+```
+
+The kinds of dialog input control.
+
+- `Text` = 0: A text box (`minecraft:text`).
+- `Bool` = 1: A check box (`minecraft:boolean`).
+- `SingleOption` = 2: A button that cycles through options (`minecraft:single_option`).
+- `NumberRange` = 3: A slider (`minecraft:number_range`).
+
+## DialogItemOptions (class, other)
+
+```csharp
+public sealed class DialogItemOptions : IEquatable<DialogItemOptions>
+```
+
+The options of an item body (`DialogBody.Item`); the defaults are vanilla's.
+
+- `public DialogItemOptions()`
+- `public string? ComponentsJson { get; init; }`: The item's data components as a JSON object (vanilla's component patch, for example `{"minecraft:custom_name":"Prize"}`), or null for none.
+- `public int Count { get; init; }`: How many items the stack shows, 1 to 99.
+- `public Component? Description { get; init; }`: Text beside the item, or null for none.
+- `public int DescriptionWidth { get; init; }`: Width of the description in pixels, 1 to 1024.
+- `public int Height { get; init; }`: Height the item is drawn at in pixels, 1 to 256.
+- `public bool ShowDecorations { get; init; }`: Whether the count and the durability bar are drawn on the item.
+- `public bool ShowTooltip { get; init; }`: Whether hovering the item shows its tooltip.
+- `public int Width { get; init; }`: Width the item is drawn at in pixels, 1 to 256.
+
+## DialogMultiline (class, other)
+
+```csharp
+public sealed class DialogMultiline : IEquatable<DialogMultiline>
+```
+
+Makes a text input a multi-line box.
+
+- `public DialogMultiline(int? MaxLines = null, int? Height = null)`: Makes a text input a multi-line box.
+- `public int? Height { get; init; }`: Height of the box in pixels, 1 to 512; null for the client's default.
+- `public int? MaxLines { get; init; }`: The most lines the box accepts, at least 1; null for no limit.
+
+## DialogOption (class, other)
+
+```csharp
+public sealed class DialogOption : IEquatable<DialogOption>
+```
+
+One choice of a single-option input.
+
+- `public DialogOption(string Id, Component? Display = null, bool Initial = false)`: One choice of a single-option input.
+- `public Component? Display { get; init; }`: The text shown for the choice; null shows the id.
+- `public string Id { get; init; }`: The value reported to the server when this choice is selected.
+- `public bool Initial { get; init; }`: Whether the choice is selected at first (at most one per input).
+
+## DialogResponse (struct, other)
+
+```csharp
+public readonly struct DialogResponse
+```
+
+What a player sent back from a dialog: the values of its inputs by key, plus the fixed additions of a custom action (Paper `DialogResponseView`). A read-only view over the click payload as JSON. The client is untrusted, so every getter copes with a missing key or a value of an unexpected shape by returning null / false instead of throwing: check the result, and clamp numbers to the range the input allowed. Get one from `PlayerCustomClickEvent.GetDialogResponseView` or as the argument of a callback.
+
+- `public bool IsEmpty { get; }`: Whether there is no payload.
+- `public IReadOnlyList<string> Keys { get; }`: The keys of the payload, in the order the client sent them.
+- `public JsonElement Raw { get; }`: The payload as a JSON element (valid while you hold this response; `default` when there is no payload).
+- `public string RawJson { get; }`: The payload as JSON text; empty when there is none.
+- `public static DialogResponse Empty { get; }`: A response with no values.
+- `public bool Contains(string key)`: Whether the payload has a value under the key.
+- `public bool? GetBool(string key)`: The value of a check box, or null when the key is missing or the value is not a boolean.
+- `public bool GetBool(string key, bool fallback)`: The value of a check box, or `fallback`.
+- `public float? GetFloat(string key)`: The value of a slider, or null when the key is missing or the value is not a number.
+- `public float GetFloat(string key, float fallback)`: The value of a slider, or `fallback`.
+- `public int? GetInt(string key)`: The value of a slider as a whole number, or null.
+- `public int GetInt(string key, int fallback)`: The value of a slider as a whole number, or `fallback`.
+- `public string? GetText(string key)`: The text of a text or single-option input, or null when the key is missing or the value is not text-like.
+- `public string GetText(string key, string fallback)`: The text of a text or single-option input, or `fallback`.
+- `public override string ToString()`: The payload's JSON.
+- `public bool TryGetBool(string key, out bool value)`: The value of a check box: true/false, a number (non-zero is true, as vanilla sends a boolean as a byte), or the text `true`/`false`.
+- `public bool TryGetFloat(string key, out float value)`: The value of a slider: a number, or text that is a number. Not NaN or infinite.
+- `public bool TryGetInt(string key, out int value)`: The value of a slider as a whole number (rounded to the nearest, halves away from zero).
+- `public bool TryGetRaw(string key, out JsonElement value)`: The raw JSON of a value.
+- `public bool TryGetText(string key, out string? value)`: The text of a text input or the id of a single-option input; numbers and booleans give their text form.
+- `public static DialogResponse FromJson(string? payloadJson)`: Parses a click payload given as JSON text.
+- `public static DialogResponse FromJson(Utf8String payloadJson)`: Parses a click payload from engine memory.
+
+## DialogType (enum, other)
+
+```csharp
+public enum DialogType : int
+```
+
+The five dialog types of the vanilla client.
+
+- `Notice` = 0: One button (`minecraft:notice`).
+- `Confirmation` = 1: A yes and a no button (`minecraft:confirmation`).
+- `MultiAction` = 2: A list of buttons in columns (`minecraft:multi_action`).
+- `ServerLinks` = 3: The server's links as buttons (`minecraft:server_links`).
+- `DialogList` = 4: Buttons that open other dialogs (`minecraft:dialog_list`).
+
 ## DisplaySlot (enum, display)
 
 ```csharp
@@ -3344,6 +3613,7 @@ A handle stays valid only while the player is online: after he leaves it goes st
 - `public bool AddEffect(PotionEffect effect)`: Adds a status effect (a stronger or longer effect of the same kind replaces the current one like in vanilla).
 - `public LivingEntity AsLiving()`: The player as a living entity: health, absorption, potion effects, attributes, damage and healing. Every player is living; a stale player gives a handle whose members read defaults.
 - `public bool CanSee(Entity entity)`: Whether this player can see an entity as far as plugins are concerned (Paper `Player.canSee`): false when a plugin hides it from him (`Player.HideEntity`). It does not tell whether the entity is in range or loaded for the client. True for the player himself; false for a stale handle.
+- `public bool ClearDialog()`: Closes the dialog the player has open (Paper `Audience.closeDialog`). Does nothing when none is open.
 - `public bool ClearEffects()`: Removes every status effect.
 - `public bool ClearFakeBlock(BlockPos position)`: Shows the world's real block at a position again.
 - `public void ClearFakeBlocks()`: Ends every fake block of this player.
@@ -3377,6 +3647,8 @@ A handle stays valid only while the player is online: after he leaves it goes st
 - `public void SetPvpPolicy(PvpFlags flags, int tagTicks)`: Writes the PvP policy of this player: the native gate decides every hit on the player from it. Refresh it when the state changes (toggle, newbie or respawn protection, world). `tagTicks` is the combat tag an allowed hit gives both sides (0: none). A player without a policy keeps the vanilla rules. Stale handles, flags this server does not know and a tag time outside 0 .. 1728000 ticks (one day) do nothing.
 - `public void SetTabList(Component? header, Component? footer)`: Sets the text above and below the player list (Tab). Null clears a part.
 - `public bool ShowBlock(BlockPos position, BlockState state)`: Shows a block state at a position to this player only. The world keeps its real block; the server still collides with the real one, and the client predicts collisions against what it sees. The fake block is re-sent with its chunk and after real changes of its position, and dropped when the player changes world or leaves.
+- `public bool ShowDialog(Dialog dialog)`: Shows a dialog to this player (Paper `Audience.showDialog`). The dialog replaces the one the player has open, if any. A button's action runs on the client; a `DialogAction.Callback` or a custom action reports back to the server (`PlayerCustomClickEvent`).
+- `public bool ShowDialog(string key)`: Shows a dialog that is registered on the server (the `minecraft:dialog` registry: a data pack's `data/<namespace>/dialog/<name>.json`).
 - `public void ShowEntity(Entity entity)`: Takes back the running plugin's hide of an entity (Paper `Player.showEntity`). The entity is visible again only when no other plugin still hides it; then it is sent to the player when he is in range (the next tick; `PlayerTrackEntityEvent` is asked then), a player's tab entry is added back first, and `PlayerShowEntityEvent` fires. Does nothing when this plugin had not hidden the entity.
 - `public void ShowEntity(Plugin plugin, Entity entity)`: Takes back a plugin's hide of an entity (see `Player.ShowEntity`).
 - `public void ShowSubtitle(Component subtitle)`: Shows only a subtitle (it appears together with the next title; vanilla shows nothing for a subtitle without a title).
@@ -4541,6 +4813,8 @@ What happens when a player clicks a text component.
 - `SuggestCommand` = 2: Puts text into the chat box.
 - `CopyToClipboard` = 3: Copies the value to the clipboard.
 - `ChangePage` = 4: Changes the page of a book.
+- `ShowDialog` = 5: Shows a dialog to the player (a registry key or an inline dialog: `ClickEvent.ShowDialog`).
+- `Custom` = 6: Sends a custom click to the server: the client answers with a custom click action that raises `PlayerCustomClickEvent`.
 
 ## ClickEvent (struct, chat)
 
@@ -4552,11 +4826,16 @@ A click event of a text component.
 
 - `public ClickEvent(ClickAction Action, string Value)`: A click event of a text component.
 - `public ClickAction Action { get; init; }`: What happens.
-- `public string Value { get; init; }`: Url / command / clipboard text / page number.
+- `public string? PayloadJson { get; init; }`: For `ClickAction.Custom`: the payload as JSON text (the vanilla client turns it into the NBT tag of the click), null when the click has none.
+- `public string Value { get; init; }`: Url / command / clipboard text / page number / dialog key (or the inline dialog's JSON, which starts with `{`) / custom click id.
 - `public static ClickEvent ChangePage(int page)`: Change the book page.
 - `public static ClickEvent CopyToClipboard(string text)`: Copy text to the clipboard.
+- `public static ClickEvent Custom(string id, NbtTag? payload = null)`: A click that the client reports to the server as a custom click action (Paper `ClickEvent.custom`): the server gets `PlayerCustomClickEvent` with this id and payload. Ramjet does nothing with it by itself.
+- `public static ClickEvent CustomJson(string id, string? payloadJson)`: Like `ClickEvent.Custom`, with the payload given as JSON text (any JSON value: `{"a":1}`, `"text"`, `5`).
 - `public static ClickEvent OpenUrl(string url)`: Open a URL.
 - `public static ClickEvent RunCommand(string command)`: Run a command as the player ("/spawn").
+- `public static ClickEvent ShowDialog(Dialog dialog)`: Shows an inline dialog to the player who clicks (Paper `ClickEvent.showDialog`). The dialog travels inside the component.
+- `public static ClickEvent ShowDialog(string key)`: Shows a dialog of the `minecraft:dialog` registry (a data pack's dialog) to the player who clicks.
 - `public static ClickEvent SuggestCommand(string command)`: Suggest a command in the chat box.
 
 ## Component (class, ecs)

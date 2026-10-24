@@ -4,6 +4,30 @@ Versions of the `Ramjet.Api` and `Ramjet.Templates` packages. While the API is i
 breaking changes are listed under **Breaking**. `src/Ramjet.Api/Mc.Scripting.Api.surface.txt` lists the full public API, so
 `git diff v<old>..v<new> -- src/Ramjet.Api/Mc.Scripting.Api.surface.txt` shows every API change between two versions.
 
+## 1.0.0-preview.9
+
+Dialogs (Paper's dialog API, `Mc.Scripting.Dialogs`). Needs a server updated to the same release.
+
+### Added
+- `Dialog.Notice`, `Confirmation`, `MultiAction`, `ServerLinks`, `DialogList`, built from `DialogBase` (title, external title, close with
+  escape, pause, after action), `DialogBody` (message, item), `DialogInput` (text, bool, single option, number range) and `DialogButton`.
+  Invalid values throw `ArgumentException` when the dialog is built.
+- Button actions (`DialogAction`): any click event, a command template, a custom id with a payload, or a C# callback
+  (`DialogAction.Callback`, with `ClickCallbackOptions`: 1 use and 12 hours by default; released when the plugin unloads).
+- `Player.ShowDialog(Dialog)`, `Player.ShowDialog(string key)` (a datapack dialog), `Player.ClearDialog()`.
+- `ClickEvent.ShowDialog(Dialog | key)`, `ClickEvent.Custom(id, payload)` and `ClickEvent.CustomJson(id, json)` for chat, signs and items.
+- `PlayerCustomClickEvent.GetDialogResponseView()` and `PayloadJson`: the values the player entered (`DialogResponse.GetText`, `GetBool`,
+  `GetFloat`, `TryGet...`).
+
+### Changed
+- The server checks every dialog before it is sent (plugin dialogs, `/dialog`, datapack dialogs, dialogs in click events): a dialog the
+  client could not read is refused instead of disconnecting the player. A click that opens a refused dialog is removed from plugin text, and
+  the text is kept.
+
+### Breaking
+- `PlayerCustomClickEvent` has a new field, `PayloadJson`, so its constructor takes a fourth argument (`payloadJson`). Only code that
+  constructs the event itself is affected.
+
 ## 1.0.0-preview.8
 
 7 new events (379 in all) and a hide/show API for entities, covering the events preview.7 still listed as not available. Needs a server

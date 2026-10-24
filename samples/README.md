@@ -1,7 +1,7 @@
 # Sample plugins
 
 Each folder is a complete plugin. Build one with `dotnet build samples/<Name> -c Release`, or all of them with
-`dotnet build samples/Samples.slnx -c Release`. They reference `Ramjet.Api` 1.0.0-preview.8 (set in `Directory.Build.props`).
+`dotnet build samples/Samples.slnx -c Release`. They reference `Ramjet.Api` 1.0.0-preview.9 (set in `Directory.Build.props`).
 
 | Sample | What it shows |
 |---|---|

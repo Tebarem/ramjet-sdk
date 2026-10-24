@@ -1631,424 +1631,594 @@
             <summary>Whether <paramref name="id" /> is a valid plugin id.</summary>
             <param name="id">The text.</param>
         </member>
-        <member name="T:Mc.Scripting.Ecs">
-            <summary>ECS access scoped to a plugin (<c>plugin.Ecs</c>): custom components, queries and raw entities. Entities are not
-            owned (they survive plugin reloads); queries are, and are destroyed on unload. Game worlds (dimensions) are
-            <see cref="T:Mc.Scripting.Worlds.World" />.</summary>
+        <member name="T:Mc.Scripting.Dialogs.DialogType">
+            <summary>The five dialog types of the vanilla client.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogType.Notice">
+            <summary>One button (<c>minecraft:notice</c>).</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogType.Confirmation">
+            <summary>A yes and a no button (<c>minecraft:confirmation</c>).</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogType.MultiAction">
+            <summary>A list of buttons in columns (<c>minecraft:multi_action</c>).</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogType.ServerLinks">
+            <summary>The server's links as buttons (<c>minecraft:server_links</c>).</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogType.DialogList">
+            <summary>Buttons that open other dialogs (<c>minecraft:dialog_list</c>).</summary>
+        </member>
+        <member name="T:Mc.Scripting.Dialogs.Dialog">
+            <summary>
+            A dialog: a screen the client draws from data, with a title, text, inputs and buttons (vanilla 1.21.6 dialogs; Paper <c>io.papermc.paper.dialog.Dialog</c>).
+            Build one with the factories, show it with <see cref="M:Mc.Scripting.Player.ShowDialog(Mc.Scripting.Dialogs.Dialog)" />, and read what the player entered from <see cref="T:Mc.Scripting.Dialogs.DialogResponse" />.
+            Immutable. The factories check their arguments and throw <see cref="T:System.ArgumentException" />, so a mistake shows up when the dialog is built, not as a
+            refused send. <see cref="M:Mc.Scripting.Dialogs.Dialog.ToJson" /> is the same JSON a data pack's <c>data/&lt;namespace&gt;/dialog/&lt;name&gt;.json</c> holds.
+            </summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.Dialog.Type">
+            <summary>Which of the five kinds this is.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.Dialog.Base">
+            <summary>The title, behaviour, body and inputs.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.Dialog.Title">
+            <summary>The title at the top of the dialog.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.Dialog.Notice(Mc.Scripting.Dialogs.DialogBase,Mc.Scripting.Dialogs.DialogButton)">
+            <summary>A dialog with one button (default "OK", which just closes it).</summary>
+            <param name="common">Title, body and inputs.</param>
+            <param name="action">The button; null for vanilla's OK button.</param>
+            <exception cref="T:System.ArgumentException">The base is invalid (a pausing dialog that stays open).</exception>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.Dialog.Confirmation(Mc.Scripting.Dialogs.DialogBase,Mc.Scripting.Dialogs.DialogButton,Mc.Scripting.Dialogs.DialogButton)">
+            <summary>A dialog with a yes and a no button. Escape counts as the no button's action.</summary>
+            <param name="common">Title, body and inputs.</param>
+            <param name="yes">The yes button.</param>
+            <param name="no">The no button.</param>
+            <exception cref="T:System.ArgumentException">The base is invalid.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.Dialog.MultiAction(Mc.Scripting.Dialogs.DialogBase,System.Collections.Generic.IEnumerable{Mc.Scripting.Dialogs.DialogButton},Mc.Scripting.Dialogs.DialogButton,System.Int32)">
+            <summary>A dialog with a list of buttons laid out in columns, and an optional exit button below.</summary>
+            <param name="common">Title, body and inputs.</param>
+            <param name="actions">The buttons; at least one.</param>
+            <param name="exitAction">The button at the bottom (also what Escape does); null for none.</param>
+            <param name="columns">How many columns of buttons, at least 1 (vanilla default 2).</param>
+            <exception cref="T:System.ArgumentException">No buttons, columns below 1, or an invalid base.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.Dialog.ServerLinks(Mc.Scripting.Dialogs.DialogBase,Mc.Scripting.Dialogs.DialogButton,System.Int32,System.Int32)">
+            <summary>A dialog with one button per link of the server's link list (the client builds the buttons from the server links packet).</summary>
+            <param name="common">Title, body and inputs.</param>
+            <param name="exitAction">The button at the bottom; null for none.</param>
+            <param name="columns">How many columns, at least 1 (vanilla default 2).</param>
+            <param name="buttonWidth">Width of the link buttons, 1 to 1024 (vanilla default 150).</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.Dialog.DialogList(Mc.Scripting.Dialogs.DialogBase,System.Collections.Generic.IEnumerable{System.String},Mc.Scripting.Dialogs.DialogButton,System.Int32,System.Int32)">
+            <summary>A dialog with one button per other dialog; a button opens its dialog, and its label is that dialog's <see cref="P:Mc.Scripting.Dialogs.DialogBase.ExternalTitle" />.</summary>
+            <param name="common">Title, body and inputs.</param>
+            <param name="dialogs">Keys of dialogs in the <c>minecraft:dialog</c> registry (data pack dialogs), or one tag as <c>#namespace:name</c>; at least one.</param>
+            <param name="exitAction">The button at the bottom; null for none.</param>
+            <param name="columns">How many columns, at least 1 (vanilla default 2).</param>
+            <param name="buttonWidth">Width of the buttons, 1 to 1024 (vanilla default 150).</param>
+            <exception cref="T:System.ArgumentException">No dialogs, an invalid key, a tag next to other entries, or an invalid base.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.Dialog.DialogList(Mc.Scripting.Dialogs.DialogBase,System.Collections.Generic.IEnumerable{Mc.Scripting.Dialogs.Dialog},Mc.Scripting.Dialogs.DialogButton,System.Int32,System.Int32)">
+            <summary>Like <see cref="M:Mc.Scripting.Dialogs.Dialog.DialogList(Mc.Scripting.Dialogs.DialogBase,System.Collections.Generic.IEnumerable{System.String},Mc.Scripting.Dialogs.DialogButton,System.Int32,System.Int32)" />, with the dialogs given inline.</summary>
+            <param name="common">Title, body and inputs.</param>
+            <param name="dialogs">The dialogs to open; at least one. Each is labelled by its <see cref="P:Mc.Scripting.Dialogs.DialogBase.ExternalTitle" />.</param>
+            <param name="exitAction">The button at the bottom; null for none.</param>
+            <param name="columns">How many columns, at least 1 (vanilla default 2).</param>
+            <param name="buttonWidth">Width of the buttons, 1 to 1024 (vanilla default 150).</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.Dialog.ToJson">
+            <summary>The dialog as vanilla dialog JSON (what a data pack file holds and what <see cref="M:Mc.Scripting.Player.ShowDialog(Mc.Scripting.Dialogs.Dialog)" /> sends to the engine).</summary>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.Dialog.ToString">
+            <summary>The dialog's JSON.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Dialogs.DialogActionType">
+            <summary>The kinds of dialog button action.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogActionType.Static">
+            <summary>A fixed click event the client carries out (open a URL, run a command, show another dialog, ...).</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogActionType.CommandTemplate">
+            <summary>A command with <c>$(key)</c> placeholders that the client fills with the inputs' values and runs.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogActionType.Custom">
+            <summary>A custom click that reports the inputs' values to the server under an id (<see cref="T:Mc.Scripting.Events.PlayerCustomClickEvent" />).</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogActionType.Callback">
+            <summary>A custom click whose id belongs to a C# handler (<see cref="M:Mc.Scripting.Dialogs.DialogAction.Callback(Mc.Scripting.Dialogs.DialogCallback,Mc.Scripting.Dialogs.ClickCallbackOptions)" />).</summary>
+        </member>
+        <member name="T:Mc.Scripting.Dialogs.DialogAction">
+            <summary>What a dialog button does when it is clicked. Immutable.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogAction.Type">
+            <summary>What kind of action this is.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogAction.Id">
+            <summary>For <see cref="F:Mc.Scripting.Dialogs.DialogActionType.Custom" /> and <see cref="F:Mc.Scripting.Dialogs.DialogActionType.Callback" />: the id the click arrives under in <see cref="P:Mc.Scripting.Events.PlayerCustomClickEvent.Id" />.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogAction.Static(Mc.Scripting.Text.ClickEvent)">
+            <summary>A fixed click event. Supported: open URL (http/https), run command, suggest command, copy to clipboard, change page, show dialog and custom.</summary>
+            <param name="click">The click event (<see cref="T:Mc.Scripting.Text.ClickEvent" /> has a factory for each).</param>
+            <exception cref="T:System.ArgumentException">The action is not one a dialog allows, or the URL is not an absolute http(s) URL.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogAction.OpenUrl(System.String)">
+            <summary>Opens a URL after the client asked the player to confirm.</summary>
+            <param name="url">An absolute http or https URL.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogAction.RunCommand(System.String)">
+            <summary>Runs a command as the player.</summary>
+            <param name="command">The command.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogAction.SuggestCommand(System.String)">
+            <summary>Puts a command into the player's chat box.</summary>
+            <param name="command">The command.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogAction.CopyToClipboard(System.String)">
+            <summary>Copies text to the player's clipboard.</summary>
+            <param name="text">The text.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogAction.ShowDialog(Mc.Scripting.Dialogs.Dialog)">
+            <summary>Opens another dialog (inline).</summary>
+            <param name="dialog">The dialog.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogAction.ShowDialog(System.String)">
+            <summary>Opens a dialog of the <c>minecraft:dialog</c> registry.</summary>
+            <param name="key">The registry key.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogAction.CommandTemplate(System.String)">
+            <summary>
+            A command the client builds from the inputs and runs as the player (vanilla <c>dynamic/run_command</c>). Every <c>$(key)</c> in the template is
+            replaced with the value of the input of that name (a missing input gives an empty string).
+            </summary>
+            <param name="template">The command with at least one <c>$(key)</c> placeholder, for example <c>msg $(player) $(text)</c>.</param>
+            <exception cref="T:System.ArgumentException">The template has no placeholder, or a placeholder is unterminated or has an invalid name.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogAction.Custom(System.String,Mc.Scripting.Nbt.NbtCompound)">
+            <summary>
+            A custom click: the client sends the inputs' values, plus the optional fixed <paramref name="additions" />, to the server under <paramref name="id" />
+            (vanilla <c>dynamic/custom</c>). Listen to <see cref="T:Mc.Scripting.Events.PlayerCustomClickEvent" /> and read
+            <c>GetDialogResponseView()</c>. Use <see cref="M:Mc.Scripting.Dialogs.DialogAction.Callback(Mc.Scripting.Dialogs.DialogCallback,Mc.Scripting.Dialogs.ClickCallbackOptions)" /> to avoid the event.
+            </summary>
+            <param name="id">The action id, <c>namespace:path</c>. <c>ramjet:callback/</c> is reserved.</param>
+            <param name="additions">Fixed values sent with the inputs (an input with the same key wins), or null.</param>
+            <exception cref="T:System.ArgumentException">The id is invalid or reserved.</exception>
         </member>
-        <member name="M:Mc.Scripting.Ecs.Spawn">
-            <summary>Creates an empty ECS entity (not a game entity: it has no position and is never sent to clients).</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogAction.Callback(Mc.Scripting.Dialogs.DialogCallback,Mc.Scripting.Dialogs.ClickCallbackOptions)">
+            <summary>
+            A C# handler: when the player clicks the button the handler runs on the tick thread with the player and the inputs' values. The id is random
+            (128 bits) and reserved to this plugin; the handler is dropped after <see cref="P:Mc.Scripting.Dialogs.ClickCallbackOptions.Uses" /> clicks (default 1) or its
+            lifetime (default 12 hours, counted from now), and when the plugin unloads. A plugin keeps at most 4096 handlers: the oldest are dropped
+            first. Needs a running plugin (inside an event handler, command, task or <c>OnEnable</c>); use the overload that takes the plugin elsewhere.
+            </summary>
+            <param name="handler">The handler.</param>
+            <param name="options">Uses and lifetime; null for one use and 12 hours.</param>
+            <exception cref="T:System.InvalidOperationException">No plugin is running.</exception>
         </member>
-        <member name="M:Mc.Scripting.Ecs.GetEntity(System.UInt64)">
-            <summary>Wraps an entity id.</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogAction.Callback(Mc.Scripting.PluginContext,Mc.Scripting.Dialogs.DialogCallback,Mc.Scripting.Dialogs.ClickCallbackOptions)">
+            <summary>Like <see cref="M:Mc.Scripting.Dialogs.DialogAction.Callback(Mc.Scripting.Dialogs.DialogCallback,Mc.Scripting.Dialogs.ClickCallbackOptions)" />, for a given plugin.</summary>
+            <param name="plugin">The plugin the handler belongs to (<c>Plugin.Context</c>); its handlers end when it unloads.</param>
+            <param name="handler">The handler.</param>
+            <param name="options">Uses and lifetime; null for one use and 12 hours.</param>
+            <exception cref="T:System.InvalidOperationException">The plugin is unloaded.</exception>
         </member>
-        <member name="M:Mc.Scripting.Ecs.RegisterComponent``1(System.String)">
-            <summary>Registers (or re-binds) a plain-data component backed by a flecs component.
-            Keys are global ("myplugin:health"); registering the same key with the same layout (field
-            types and offsets) after a hot reload keeps existing component values. A changed layout
-            drops the values, but is refused while another plugin is also bound to the key. Engine
-            components can be bound by their registered name as long as the layout matches.</summary>
-            <remarks><typeparamref name="T" /> must be a type owned by this plugin: <see cref="T:Mc.Scripting.Component`1" />
-            caches one id per CLR type, so binding it to a second key throws. The binding is cleared when
-            the plugin unloads.</remarks>
+        <member name="M:Mc.Scripting.Dialogs.DialogAction.ToString">
+            <summary>The action's JSON.</summary>
         </member>
-        <member name="M:Mc.Scripting.Ecs.Query``1">
-            <summary>Creates a cached query over one component type.</summary>
+        <member name="T:Mc.Scripting.Dialogs.DialogAfterAction">
+            <summary>What happens to the dialog screen after the player clicked a button (vanilla <c>after_action</c>).</summary>
         </member>
-        <member name="M:Mc.Scripting.Ecs.Query``2">
-            <summary>Creates a cached query over two component types.</summary>
+        <member name="F:Mc.Scripting.Dialogs.DialogAfterAction.Close">
+            <summary>The screen closes (the default).</summary>
         </member>
-        <member name="M:Mc.Scripting.Ecs.Query``3">
-            <summary>Creates a cached query over three component types.</summary>
+        <member name="F:Mc.Scripting.Dialogs.DialogAfterAction.None">
+            <summary>The screen stays open. Not allowed together with <see cref="P:Mc.Scripting.Dialogs.DialogBase.Pause" />.</summary>
         </member>
-        <member name="T:Mc.Scripting.Query">
-            <summary>A cached ECS query. Iterate with <c>foreach (var chunk in query)</c> for the fastest
-            path (SoA spans per archetype), or use <c>Each</c> for convenience.</summary>
+        <member name="F:Mc.Scripting.Dialogs.DialogAfterAction.WaitForResponse">
+            <summary>The screen stays open with a "waiting for response" message until the server sends another screen or clears it.</summary>
         </member>
-        <member name="M:Mc.Scripting.Query.GetEnumerator">
-            <summary>Starts an iteration over the matching archetype chunks.</summary>
+        <member name="T:Mc.Scripting.Dialogs.DialogBase">
+            <summary>The part every dialog has: title, behaviour, body blocks and inputs (Paper <c>DialogBase</c>). Immutable: every <c>With</c>/<c>Add</c> method returns a new one.</summary>
         </member>
-        <member name="M:Mc.Scripting.Query.Count">
-            <summary>Number of matching entities (iterates).</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogBase.Title">
+            <summary>The title at the top of the dialog.</summary>
         </member>
-        <member name="M:Mc.Scripting.Query.Dispose">
-            <summary>Destroys the query.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogBase.ExternalTitle">
+            <summary>The text of the button that opens this dialog from another one (a dialog list, the pause menu); null uses <see cref="P:Mc.Scripting.Dialogs.DialogBase.Title" />.</summary>
         </member>
-        <member name="T:Mc.Scripting.QueryAction`1">
-            <summary>Callback for <c>Each</c> over one component.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogBase.CanCloseWithEscape">
+            <summary>Whether Escape closes the dialog (default true). A dialog nobody can close needs a button that does.</summary>
         </member>
-        <member name="T:Mc.Scripting.QueryAction`2">
-            <summary>Callback for <c>Each</c> over two components.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogBase.Pause">
+            <summary>Whether a single-player game pauses while the dialog is open (default true; has no effect on a server).</summary>
         </member>
-        <member name="T:Mc.Scripting.QueryAction`3">
-            <summary>Callback for <c>Each</c> over three components.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogBase.AfterAction">
+            <summary>What happens after a button is clicked (default <see cref="F:Mc.Scripting.Dialogs.DialogAfterAction.Close" />).</summary>
         </member>
-        <member name="T:Mc.Scripting.Query`1">
-            <summary>A query over one component type.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogBase.Body">
+            <summary>The blocks between the title and the inputs.</summary>
         </member>
-        <member name="M:Mc.Scripting.Query`1.Each(Mc.Scripting.QueryAction{`0})">
-            <summary>Calls <paramref name="action" /> for every matching entity.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogBase.Inputs">
+            <summary>The input controls, in order.</summary>
         </member>
-        <member name="T:Mc.Scripting.Query`2">
-            <summary>A query over two component types.</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogBase.Create(Mc.Scripting.Text.Component)">
+            <summary>Starts a dialog base with the vanilla defaults.</summary>
+            <param name="title">The title.</param>
         </member>
-        <member name="M:Mc.Scripting.Query`2.Each(Mc.Scripting.QueryAction{`0,`1})">
-            <summary>Calls <paramref name="action" /> for every matching entity.</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogBase.WithExternalTitle(Mc.Scripting.Text.Component)">
+            <summary>Sets the title of the button that opens this dialog from another one; null goes back to the title.</summary>
+            <param name="externalTitle">The text.</param>
         </member>
-        <member name="T:Mc.Scripting.Query`3">
-            <summary>A query over three component types.</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogBase.WithCanCloseWithEscape(System.Boolean)">
+            <summary>Sets whether Escape closes the dialog.</summary>
+            <param name="canClose">True to allow it.</param>
         </member>
-        <member name="M:Mc.Scripting.Query`3.Each(Mc.Scripting.QueryAction{`0,`1,`2})">
-            <summary>Calls <paramref name="action" /> for every matching entity.</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogBase.WithPause(System.Boolean)">
+            <summary>Sets whether a single-player game pauses. A pausing dialog needs an after-action that closes or waits (checked when the dialog is built).</summary>
+            <param name="pause">True to pause.</param>
         </member>
-        <member name="T:Mc.Scripting.QueryEnumerator">
-            <summary>Iterates archetype chunks. Disposing early releases the native iterator.</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogBase.WithAfterAction(Mc.Scripting.Dialogs.DialogAfterAction)">
+            <summary>Sets what happens after a button is clicked.</summary>
+            <param name="afterAction">The after-action.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Not a defined value.</exception>
         </member>
-        <member name="P:Mc.Scripting.QueryEnumerator.Current">
-            <summary>The current chunk.</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogBase.AddBody(Mc.Scripting.Dialogs.DialogBody[])">
+            <summary>Appends body blocks.</summary>
+            <param name="body">The blocks, shown in order after those already added.</param>
         </member>
-        <member name="M:Mc.Scripting.QueryEnumerator.MoveNext">
-            <summary>Advances to the next chunk.</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogBase.AddInputs(Mc.Scripting.Dialogs.DialogInput[])">
+            <summary>Appends input controls.</summary>
+            <param name="inputs">The inputs, shown in order after those already added.</param>
+            <exception cref="T:System.ArgumentException">Two inputs have the same key.</exception>
         </member>
-        <member name="M:Mc.Scripting.QueryEnumerator.Dispose">
-            <summary>Releases the native iterator when abandoning the loop early.</summary>
+        <member name="T:Mc.Scripting.Dialogs.DialogBodyType">
+            <summary>The kinds of dialog body (the blocks between the title and the inputs).</summary>
         </member>
-        <member name="T:Mc.Scripting.QueryChunk">
-            <summary>One archetype's worth of query results: entity ids and one column per query term.</summary>
+        <member name="F:Mc.Scripting.Dialogs.DialogBodyType.PlainMessage">
+            <summary>A block of text (<c>minecraft:plain_message</c>).</summary>
         </member>
-        <member name="P:Mc.Scripting.QueryChunk.Count">
-            <summary>Number of entities in the chunk.</summary>
+        <member name="F:Mc.Scripting.Dialogs.DialogBodyType.Item">
+            <summary>An item with an optional description beside it (<c>minecraft:item</c>).</summary>
         </member>
-        <member name="P:Mc.Scripting.QueryChunk.Entities">
-            <summary>The entity ids of the chunk.</summary>
+        <member name="T:Mc.Scripting.Dialogs.DialogItemOptions">
+            <summary>The options of an item body (<see cref="M:Mc.Scripting.Dialogs.DialogBody.Item(System.String,Mc.Scripting.Dialogs.DialogItemOptions)" />); the defaults are vanilla's.</summary>
         </member>
-        <member name="M:Mc.Scripting.QueryChunk.Field``1(System.Int32)">
-            <summary>Column for query term <paramref name="index" /> (the order of the query's type arguments).</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogItemOptions.Count">
+            <summary>How many items the stack shows, 1 to 99.</summary>
         </member>
-        <member name="T:Mc.Scripting.EditJobState">
-            <summary>What a bulk edit job is at the engine's job system's state.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogItemOptions.Description">
+            <summary>Text beside the item, or null for none.</summary>
         </member>
-        <member name="F:Mc.Scripting.EditJobState.Queued">
-            <summary>Waiting for the owner's running job, or for a slot.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogItemOptions.DescriptionWidth">
+            <summary>Width of the description in pixels, 1 to 1024.</summary>
         </member>
-        <member name="F:Mc.Scripting.EditJobState.Running">
-            <summary>Being applied in slices on the tick thread.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogItemOptions.ShowDecorations">
+            <summary>Whether the count and the durability bar are drawn on the item.</summary>
         </member>
-        <member name="F:Mc.Scripting.EditJobState.Done">
-            <summary>Finished; every cell in the region was handled (some columns may have been skipped, see the message).</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogItemOptions.ShowTooltip">
+            <summary>Whether hovering the item shows its tooltip.</summary>
         </member>
-        <member name="F:Mc.Scripting.EditJobState.Failed">
-            <summary>Stopped by a limit or an error; the changes made so far are recorded and can be undone.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogItemOptions.Width">
+            <summary>Width the item is drawn at in pixels, 1 to 256.</summary>
         </member>
-        <member name="F:Mc.Scripting.EditJobState.Cancelled">
-            <summary>Cancelled by its owner (or the owner left); the changes made so far are recorded and can be undone.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogItemOptions.Height">
+            <summary>Height the item is drawn at in pixels, 1 to 256.</summary>
         </member>
-        <member name="T:Mc.Scripting.EditJobInfo">
-            <summary>The state of one edit job, as the engine reports it.</summary>
-            <param name="State">The job's state.</param>
-            <param name="Changed">Cells whose state changed.</param>
-            <param name="ElapsedTicks">Ticks the job has been alive.</param>
-            <param name="Clipboard">The clipboard handle of a finished copy or cut (0 otherwise).</param>
-            <param name="Message">A short note: empty on success.</param>
+        <member name="P:Mc.Scripting.Dialogs.DialogItemOptions.ComponentsJson">
+            <summary>The item's data components as a JSON object (vanilla's component patch, for example <c>{"minecraft:custom_name":"Prize"}</c>), or null for none.</summary>
         </member>
-        <member name="M:Mc.Scripting.EditJobInfo.#ctor(Mc.Scripting.EditJobState,System.UInt64,System.UInt32,System.UInt64,System.String)">
-            <summary>The state of one edit job, as the engine reports it.</summary>
-            <param name="State">The job's state.</param>
-            <param name="Changed">Cells whose state changed.</param>
-            <param name="ElapsedTicks">Ticks the job has been alive.</param>
-            <param name="Clipboard">The clipboard handle of a finished copy or cut (0 otherwise).</param>
-            <param name="Message">A short note: empty on success.</param>
+        <member name="T:Mc.Scripting.Dialogs.DialogBody">
+            <summary>A block of a dialog's body: text or an item. Immutable.</summary>
         </member>
-        <member name="P:Mc.Scripting.EditJobInfo.State">
-            <summary>The job's state.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogBody.Type">
+            <summary>What kind of body this is.</summary>
         </member>
-        <member name="P:Mc.Scripting.EditJobInfo.Changed">
-            <summary>Cells whose state changed.</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogBody.Message(Mc.Scripting.Text.Component,System.Int32)">
+            <summary>A block of text.</summary>
+            <param name="contents">The text.</param>
+            <param name="width">Width in pixels, 1 to 1024 (vanilla default 200); long text wraps at it.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">The width is out of range.</exception>
         </member>
-        <member name="P:Mc.Scripting.EditJobInfo.ElapsedTicks">
-            <summary>Ticks the job has been alive.</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogBody.Item(System.String,Mc.Scripting.Dialogs.DialogItemOptions)">
+            <summary>An item drawn in the dialog, optionally with text beside it.</summary>
+            <param name="itemId">The item, for example <c>minecraft:diamond</c>.</param>
+            <param name="options">Count, description, size and decoration; null for vanilla's defaults.</param>
+            <exception cref="T:System.ArgumentException">The item id is not a valid key, the components are not a JSON object, or an option is out of range.</exception>
         </member>
-        <member name="P:Mc.Scripting.EditJobInfo.Clipboard">
-            <summary>The clipboard handle of a finished copy or cut (0 otherwise).</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogBody.ToString">
+            <summary>The body's JSON.</summary>
         </member>
-        <member name="P:Mc.Scripting.EditJobInfo.Message">
-            <summary>A short note: empty on success.</summary>
+        <member name="T:Mc.Scripting.Dialogs.DialogButton">
+            <summary>A button of a dialog: a label, an optional tooltip and the action it triggers. Immutable.</summary>
         </member>
-        <member name="T:Mc.Scripting.EditHistory">
-            <summary>The undo and redo stacks of a player.</summary>
+        <member name="F:Mc.Scripting.Dialogs.DialogButton.DefaultWidth">
+            <summary>Vanilla's default button width in pixels.</summary>
         </member>
-        <member name="M:Mc.Scripting.EditHistory.#ctor(System.UInt32,System.UInt32,System.UInt64,System.UInt64)">
-            <summary>The undo and redo stacks of a player.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogButton.Label">
+            <summary>The button's text.</summary>
         </member>
-        <member name="T:Mc.Scripting.EditClipboardInfo">
-            <summary>A clipboard the player holds: its size, the copy origin relative to its minimum corner, and its engine memory.</summary>
+        <member name="P:Mc.Scripting.Dialogs.DialogButton.Action">
+            <summary>What the button does, or null for a button that only closes the dialog (or does what <see cref="P:Mc.Scripting.Dialogs.DialogBase.AfterAction" /> says).</summary>
         </member>
-        <member name="M:Mc.Scripting.EditClipboardInfo.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.UInt64)">
-            <summary>A clipboard the player holds: its size, the copy origin relative to its minimum corner, and its engine memory.</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogButton.Create(Mc.Scripting.Text.Component,Mc.Scripting.Dialogs.DialogAction,Mc.Scripting.Text.Component,System.Int32)">
+            <summary>Creates a button.</summary>
+            <param name="label">The text on the button.</param>
+            <param name="action">What it does; null for none.</param>
+            <param name="tooltip">Text shown on hover; null for none.</param>
+            <param name="width">Width in pixels, 1 to 1024 (default 150).</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">The width is out of range.</exception>
         </member>
-        <member name="T:Mc.Scripting.EditMemory">
-            <summary>Engine memory held by bulk edits, for every player together.</summary>
+        <member name="M:Mc.Scripting.Dialogs.DialogButton.ToString">
+            <summary>The button's JSON.</summary>
         </member>
-        <member name="M:Mc.Scripting.EditMemory.#ctor(System.UInt64,System.UInt64)">
-            <summary>Engine memory held by bulk edits, for every player together.</summary>
+        <member name="T:Mc.Scripting.Dialogs.DialogCallback">
+            <summary>A C# handler a dialog button runs when the player clicks it (<see cref="M:Mc.Scripting.Dialogs.DialogAction.Callback(Mc.Scripting.Dialogs.DialogCallback,Mc.Scripting.Dialogs.ClickCallbackOptions)" />). Runs on the tick thread, inside the plugin that created the button.</summary>
+            <param name="player">The player who clicked.</param>
+            <param name="response">The values of the dialog's inputs at the moment of the click.</param>
         </member>
-        <member name="T:Mc.Scripting.Edit">
-            <summary>Bulk region edits run by the engine in slices of the tick budget (for WorldEdit-style plugins). A plugin builds the request
-            (the WEJB binary format of the engine's edit module) and submits it; the engine validates every field, applies the job, and records what it
-            changed so the owner can undo it. Nothing here touches blocks one at a time: a request is one call, whatever its size.
-            Tick thread only. The owner is always a player: the engine keeps history and clipboards per player.</summary>
+        <member name="T:Mc.Scripting.Dialogs.ClickCallbackOptions">
+            <summary>How long and how often a callback button works (Paper <c>ClickCallback.Options</c>). Immutable; the defaults are Paper's: one use, 12 hours.</summary>
         </member>
-        <member name="M:Mc.Scripting.Edit.Start(Mc.Scripting.Player,System.Byte[])">
-            <summary>Queues a request for a player. The request is validated in full before anything changes.</summary>
-            <param name="player">The owner of the job (its history and clipboards).</param>
-            <param name="request">The encoded request (WEJB).</param>
-            <returns>The job id (positive), or a negative refusal: -1 quota, -2 malformed, -3 limit, -4 unknown world or player.</returns>
+        <member name="F:Mc.Scripting.Dialogs.ClickCallbackOptions.UnlimitedUses">
+            <summary>Pass as <see cref="P:Mc.Scripting.Dialogs.ClickCallbackOptions.Uses" /> for no limit on the number of clicks.</summary>
         </member>
-        <member name="M:Mc.Scripting.Edit.GetJob(Mc.Scripting.Player,System.Int64)">
-            <summary>The state of a job the player owns.</summary>
-            <returns>The job, or nothing when the id is unknown or belongs to someone else.</returns>
+        <member name="F:Mc.Scripting.Dialogs.ClickCallbackOptions.MaxLifetime">
+            <summary>The longest lifetime allowed (30 days); a callback that lived forever would be a leak.</summary>
         </member>
-        <member name="M:Mc.Scripting.Edit.Cancel(Mc.Scripting.Player,System.Int64)">
-            <summary>Cancels a queued or running job the player owns. Changes already made stay recorded, so undo restores them.</summary>
-            <returns>True when the job was cancelled; false when it is unknown, not the player's, or already finished.</returns>
+        <member name="P:Mc.Scripting.Dialogs.ClickCallbackOptions.Default">
+            <summary>The options Paper uses: one click, 12 hours.</summary>
         </member>
-        <member name="M:Mc.Scripting.Edit.Undo(Mc.Scripting.Player,System.Int32)">
-            <summary>Queues an undo of up to <paramref name="steps" /> of the player's most recent edits.</summary>
-            <returns>The job id (positive), or a negative refusal: -1 quota, -2 nothing to undo, -4 unknown player.</returns>
-        </member>
-        <member name="M:Mc.Scripting.Edit.Redo(Mc.Scripting.Player,System.Int32)">
-            <summary>Queues a redo of up to <paramref name="steps" /> of the player's undone edits.</summary>
-            <returns>The job id (positive), or a negative refusal: -1 quota, -2 nothing to redo, -4 unknown player.</returns>
-        </member>
-        <member name="M:Mc.Scripting.Edit.History(Mc.Scripting.Player)">
-            <summary>The player's undo and redo stacks.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Edit.ClearHistory(Mc.Scripting.Player)">
-            <summary>Drops the player's undo and redo records.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Edit.ClipboardInfo(Mc.Scripting.Player,System.UInt64)">
-            <summary>A clipboard the player holds.</summary>
-            <returns>Its size and origin, or nothing when the handle is unknown or belongs to someone else.</returns>
-        </member>
-        <member name="M:Mc.Scripting.Edit.ReleaseClipboard(Mc.Scripting.Player,System.UInt64)">
-            <summary>Releases a clipboard the player holds. True when it was released.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Edit.Memory">
-            <summary>Engine memory held by bulk edits, for all players (for memory reports).</summary>
-        </member>
-        <member name="T:Mc.Scripting.Entity">
-            <summary>Handle to an ECS entity (flecs id). Blittable: usable directly in events and components.</summary>
-            <remarks>Refs returned by <see cref="M:Mc.Scripting.Entity.Get``1" /> point into ECS storage and are invalidated by
-            structural changes (adding/removing components, destroying entities). Don't keep them.</remarks>
-        </member>
-        <member name="F:Mc.Scripting.Entity.Id">
-            <summary>The flecs entity id (index and generation); 0 is the null entity.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.#ctor(System.UInt64)">
-            <summary>Wraps an entity id.</summary>
-        </member>
-        <member name="P:Mc.Scripting.Entity.Null">
-            <summary>The null entity.</summary>
-        </member>
-        <member name="P:Mc.Scripting.Entity.IsNull">
-            <summary>Whether this is the null entity.</summary>
-        </member>
-        <member name="P:Mc.Scripting.Entity.IsAlive">
-            <summary>Whether the entity exists. A destroyed entity's id goes stale (the generation no longer matches).</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.Spawn">
-            <summary>Creates an empty ECS entity (not a game entity).</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.Destroy">
-            <summary>Destroys an entity created with <see cref="M:Mc.Scripting.Entity.Spawn" />. Does nothing for the null entity or a stale handle. Entities of the game (players, mobs, items, anything an event
-            or a handle hands out) are not the plugin's to destroy: the call is ignored with a warning (use the game APIs, e.g. <see cref="M:Mc.Scripting.Player.Kick(Mc.Scripting.Text.Component)" />).</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.Get``1">
-            <summary>Reference to component <typeparamref name="T" />; throws if the entity lacks it. For a component the game registered itself (bound by its engine name) the reference points
-            at a COPY: engine components are read only for plugins, writing through it changes nothing.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.TryGetRef``1">
-            <summary>Pointer-style access: a null ref (check with Unsafe.IsNullRef) when absent.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.TryGet``1(``0@)">
-            <summary>Copies the component if present.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.GetOrAdd``1">
-            <summary>Reference to the component, adding it (zero-initialised) when missing.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.Has``1">
-            <summary>Whether the entity has component <typeparamref name="T" />.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.Set``1(``0@)">
-            <summary>Sets (adds or overwrites) a component value.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.Remove``1">
-            <summary>Removes a component.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.Equals(Mc.Scripting.Entity)">
-            <summary>Same entity id.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.Equals(System.Object)">
-            <summary>Same entity id.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.GetHashCode">
-            <summary>Hash of the id.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.op_Equality(Mc.Scripting.Entity,Mc.Scripting.Entity)">
-            <summary>Same entity id.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.op_Inequality(Mc.Scripting.Entity,Mc.Scripting.Entity)">
-            <summary>Different entity id.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.ToString">
-            <summary>Debug text.</summary>
-        </member>
-        <member name="P:Mc.Scripting.Entity.TypeKey">
-            <summary>The entity type key of a game entity (<c>"minecraft:zombie"</c>, <c>"minecraft:item"</c>, <c>"minecraft:player"</c>), empty for a stale handle or an entity
-            that is not a game entity (one created with <see cref="M:Mc.Scripting.Entity.Spawn" />).</summary>
-        </member>
-        <member name="P:Mc.Scripting.Entity.IsGameEntity">
-            <summary>Whether this is an entity of the game world (a player, mob, item, orb, projectile ...) as opposed to a bare ECS entity.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Entity.TryGetLocation(Mc.Scripting.Location@)">
-            <summary>Where a game entity is.</summary>
-            <param name="location">The world, position and rotation.</param>
-            <returns>False for a stale handle or a bare ECS entity.</returns>
-        </member>
-        <member name="P:Mc.Scripting.Entity.Location">
-            <summary>The location of a game entity.</summary>
-            <exception cref="T:System.InvalidOperationException">The handle is stale or the entity is not a game entity.</exception>
-        </member>
-        <member name="M:Mc.Scripting.Entity.Teleport(Mc.Scripting.Location)">
-            <summary>Moves a game entity. Players go through <see cref="M:Mc.Scripting.Player.Teleport(Mc.Scripting.Location)" /> (with its event); mobs, items and the like move silently, within their dimension.</summary>
-            <param name="location">The destination.</param>
-            <returns>True when the entity moved.</returns>
-        </member>
-        <member name="M:Mc.Scripting.Entity.Despawn">
-            <summary>Removes a game entity from the world without any death logic (no drops, no death event): items, orbs, mobs, projectiles. Players cannot be removed (use
-            <see cref="M:Mc.Scripting.Player.Kick(Mc.Scripting.Text.Component)" />).</summary>
-            <returns>True when the entity was removed (it disappears for the clients at the next tick).</returns>
-        </member>
-        <member name="M:Mc.Scripting.Entity.Kill">
-            <summary>Kills a living entity the way the <c>/kill</c> command does (generic kill damage: death events, drops and the death animation); other entities are removed.</summary>
-            <returns>True when something happened.</returns>
-        </member>
-        <member name="M:Mc.Scripting.Entity.GetNbt">
-            <summary>The data of a game entity as <c>/data get entity</c> shows it (position, motion, health, name, item, ...).</summary>
-            <returns>A copy, or null for a stale handle or an entity without a save form.</returns>
-        </member>
-        <member name="M:Mc.Scripting.Entity.SetNbt(Mc.Scripting.Nbt.NbtCompound,System.Boolean)">
-            <summary>Changes the data of a game entity like <c>/data merge entity</c>. Players cannot be edited this way (use the player API).</summary>
-            <param name="data">The data.</param>
-            <param name="merge">True merges into the current data (the usual choice); false replaces the editable data with the compound.</param>
-            <returns>True when the entity took the data.</returns>
-        </member>
-        <member name="M:Mc.Scripting.Entity.AsLiving">
-            <summary>The entity as a living entity (a player, a mob, ...), or null when it is not living: a stale handle, a bare ECS entity, an item or a
-            painting.</summary>
-            <returns>A handle to the living entity, or null.</returns>
-        </member>
-        <member name="M:Mc.Scripting.Entity.SetGlowingFor(Mc.Scripting.Player,System.Boolean)">
-            <summary>Makes this entity (a player or a mob) glow for one viewer: the viewer sees the glowing outline on it, the other players do not. The colour is
-            the vanilla white (no team colour). The glow ends with <c>glowing = false</c>, with the entity, or with the plugin.</summary>
-            <param name="viewer">The player who sees the outline.</param>
-            <param name="glowing">Whether it glows for the viewer.</param>
-            <returns>False when the engine refused it (the entity is not tracked, or the glow table is full).</returns>
-        </member>
-        <member name="T:Mc.Scripting.Component`1">
-            <summary>Per-type component id cache. Set by <see cref="M:Mc.Scripting.Ecs.RegisterComponent``1(System.String)" />.</summary>
-            <remarks>The cache is one slot per CLR type for the whole process, so a component type must be
-            owned by a single plugin (declare your own struct; do not register a shared type such as
-            <see cref="T:Mc.Scripting.Vec3d" /> under different keys from different plugins). Registering a type that is
-            already bound to another key throws. The binding is cleared when the registering plugin
-            unloads.</remarks>
-        </member>
-        <member name="P:Mc.Scripting.Component`1.Id">
-            <summary>ECS component id, 0 if not registered.</summary>
-        </member>
-        <member name="P:Mc.Scripting.Component`1.Key">
-            <summary>The key the component type is registered under, null if unregistered.</summary>
-        </member>
-        <member name="T:Mc.Scripting.IEvent">
-            <summary>An event type. Catalogue events are <c>ref struct</c>s: a handler gets the event by reference and can neither store it nor capture it in a closure or an async method,
-            so the borrowed native data it carries (strings, byte buffers) cannot outlive the dispatch. Plugin-defined events are ordinary blittable structs that start with an
-            <see cref="T:Mc.Scripting.EventHeader" /> field (or ref structs of the same layout).</summary>
-            <remarks>Catalogue events are the engine's built-in events (fixed ids). Plugins can declare
-            their own events: implement <see cref="P:Mc.Scripting.IEvent.Key" /> (e.g. "myplugin:thing") and leave
-            <see cref="P:Mc.Scripting.IEvent.CatalogueId" /> at 0; an id is assigned at runtime.</remarks>
-        </member>
-        <member name="P:Mc.Scripting.IEvent.Key">
-            <summary>Registry key ("plugin:name" for plugin events).</summary>
-        </member>
-        <member name="P:Mc.Scripting.IEvent.CatalogueId">
-            <summary>Catalogue id for built-in events, 0 for plugin-defined events.</summary>
-        </member>
-        <member name="P:Mc.Scripting.IEvent.IsCancellable">
+        <member name="P:Mc.Scripting.Dialogs.ClickCallbackOptions.Uses">
+            <summary>How many clicks run the handler before it is dropped, or <see cref="F:Mc.Scripting.Dialogs.ClickCallbackOptions.UnlimitedUses" />. Clicks of any player count: a dialog shown to several players shares its callback.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.ClickCallbackOptions.Lifetime">
+            <summary>How long after the button was created clicks still run the handler, up to <see cref="F:Mc.Scripting.Dialogs.ClickCallbackOptions.MaxLifetime" />.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Dialogs.DialogInputType">
+            <summary>The kinds of dialog input control.</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogInputType.Text">
+            <summary>A text box (<c>minecraft:text</c>).</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogInputType.Bool">
+            <summary>A check box (<c>minecraft:boolean</c>).</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogInputType.SingleOption">
+            <summary>A button that cycles through options (<c>minecraft:single_option</c>).</summary>
+        </member>
+        <member name="F:Mc.Scripting.Dialogs.DialogInputType.NumberRange">
+            <summary>A slider (<c>minecraft:number_range</c>).</summary>
+        </member>
+        <member name="T:Mc.Scripting.Dialogs.DialogMultiline">
+            <summary>Makes a text input a multi-line box.</summary>
+            <param name="MaxLines">The most lines the box accepts, at least 1; null for no limit.</param>
+            <param name="Height">Height of the box in pixels, 1 to 512; null for the client's default.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogMultiline.#ctor(System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>Makes a text input a multi-line box.</summary>
+            <param name="MaxLines">The most lines the box accepts, at least 1; null for no limit.</param>
+            <param name="Height">Height of the box in pixels, 1 to 512; null for the client's default.</param>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogMultiline.MaxLines">
+            <summary>The most lines the box accepts, at least 1; null for no limit.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogMultiline.Height">
+            <summary>Height of the box in pixels, 1 to 512; null for the client's default.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Dialogs.DialogOption">
+            <summary>One choice of a single-option input.</summary>
+            <param name="Id">The value reported to the server when this choice is selected.</param>
+            <param name="Display">The text shown for the choice; null shows the id.</param>
+            <param name="Initial">Whether the choice is selected at first (at most one per input).</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogOption.#ctor(System.String,Mc.Scripting.Text.Component,System.Boolean)">
+            <summary>One choice of a single-option input.</summary>
+            <param name="Id">The value reported to the server when this choice is selected.</param>
+            <param name="Display">The text shown for the choice; null shows the id.</param>
+            <param name="Initial">Whether the choice is selected at first (at most one per input).</param>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogOption.Id">
+            <summary>The value reported to the server when this choice is selected.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogOption.Display">
+            <summary>The text shown for the choice; null shows the id.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogOption.Initial">
+            <summary>Whether the choice is selected at first (at most one per input).</summary>
+        </member>
+        <member name="T:Mc.Scripting.Dialogs.DialogInput">
+            <summary>An input control of a dialog; its value comes back under <see cref="P:Mc.Scripting.Dialogs.DialogInput.Key" /> (<see cref="T:Mc.Scripting.Dialogs.DialogResponse" />, or <c>$(key)</c> in a command template). Immutable.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogInput.Key">
+            <summary>The name the value is reported under.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogInput.Type">
+            <summary>What kind of control this is.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogInput.Text(System.String,Mc.Scripting.Text.Component,System.Int32,System.Boolean,System.String,System.Int32,Mc.Scripting.Dialogs.DialogMultiline)">
+            <summary>A text box. The value is reported as text.</summary>
+            <param name="key">The input's key (letters, digits, <c>_</c>).</param>
+            <param name="label">The label.</param>
+            <param name="width">Width in pixels, 1 to 1024 (vanilla default 200).</param>
+            <param name="labelVisible">Whether the label is drawn (vanilla default true).</param>
+            <param name="initial">The text it starts with; at most <paramref name="maxLength" /> characters.</param>
+            <param name="maxLength">The most characters it accepts, at least 1 (vanilla default 32).</param>
+            <param name="multiline">Makes it a multi-line box; null for a single line.</param>
+            <exception cref="T:System.ArgumentException">An argument is out of range or the key is invalid.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogInput.Bool(System.String,Mc.Scripting.Text.Component,System.Boolean,System.String,System.String)">
+            <summary>A check box. The value is reported as a boolean (and as <paramref name="onTrue" /> / <paramref name="onFalse" /> when substituted into a command template).</summary>
+            <param name="key">The input's key.</param>
+            <param name="label">The label.</param>
+            <param name="initial">Whether it starts checked.</param>
+            <param name="onTrue">The text a command template gets when it is checked (vanilla default <c>true</c>).</param>
+            <param name="onFalse">The text a command template gets when it is not checked (vanilla default <c>false</c>).</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogInput.SingleOption(System.String,Mc.Scripting.Text.Component,System.Collections.Generic.IEnumerable{Mc.Scripting.Dialogs.DialogOption},System.Int32,System.Boolean)">
+            <summary>A button that cycles through options. The value is reported as the selected option's id.</summary>
+            <param name="key">The input's key.</param>
+            <param name="label">The label.</param>
+            <param name="options">The choices; at least one, at most one of them <see cref="P:Mc.Scripting.Dialogs.DialogOption.Initial" />.</param>
+            <param name="width">Width in pixels, 1 to 1024 (vanilla default 200).</param>
+            <param name="labelVisible">Whether the label is drawn (vanilla default true).</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogInput.NumberRange(System.String,Mc.Scripting.Text.Component,System.Single,System.Single,System.Nullable{System.Single},System.Nullable{System.Single},System.Int32,System.String)">
+            <summary>A slider. The value is reported as a number.</summary>
+            <param name="key">The input's key.</param>
+            <param name="label">The label.</param>
+            <param name="start">The value at the left end.</param>
+            <param name="end">The value at the right end (may be below <paramref name="start" />).</param>
+            <param name="initial">The starting value, inside the range; null for the middle.</param>
+            <param name="step">The distance between selectable values, above 0; null for a continuous slider.</param>
+            <param name="width">Width in pixels, 1 to 1024 (vanilla default 200).</param>
+            <param name="labelFormat">The translation key that draws the label with the current value (vanilla default <c>options.generic_value</c>: "label: value").</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogInput.ToString">
+            <summary>The input's JSON.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Dialogs.DialogResponse">
+            <summary>
+            What a player sent back from a dialog: the values of its inputs by key, plus the fixed additions of a custom action (Paper <c>DialogResponseView</c>).
+            A read-only view over the click payload as JSON. The client is untrusted, so every getter copes with a missing key or a value of an unexpected shape
+            by returning null / false instead of throwing: check the result, and clamp numbers to the range the input allowed. Get one from
+            <see cref="M:Mc.Scripting.Events.PlayerCustomClickEvent.GetDialogResponseView" /> or as the argument of a callback.
+            </summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogResponse.Empty">
+            <summary>A response with no values.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.FromJson(System.String)">
+            <summary>Parses a click payload given as JSON text.</summary>
+            <param name="payloadJson">The payload; empty or null means no payload. A payload that is not a JSON object is kept as <see cref="P:Mc.Scripting.Dialogs.DialogResponse.RawJson" /> and has no keys.</param>
+            <exception cref="T:System.FormatException">The text is not valid JSON.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.FromJson(Mc.Scripting.Utf8String)">
+            <summary>Parses a click payload from engine memory.</summary>
+            <param name="payloadJson">The payload; empty means no payload.</param>
+            <exception cref="T:System.FormatException">The text is not valid JSON.</exception>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogResponse.IsEmpty">
+            <summary>Whether there is no payload.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogResponse.RawJson">
+            <summary>The payload as JSON text; empty when there is none.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogResponse.Raw">
+            <summary>The payload as a JSON element (valid while you hold this response; <c>default</c> when there is no payload).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Dialogs.DialogResponse.Keys">
+            <summary>The keys of the payload, in the order the client sent them.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.Contains(System.String)">
+            <summary>Whether the payload has a value under the key.</summary>
+            <param name="key">The input key.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.TryGetRaw(System.String,System.Text.Json.JsonElement@)">
+            <summary>The raw JSON of a value.</summary>
+            <param name="key">The input key.</param>
+            <param name="value">The value, valid while you hold this response.</param>
+            <returns>False when the key is missing.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.TryGetText(System.String,System.String@)">
+            <summary>The text of a text input or the id of a single-option input; numbers and booleans give their text form.</summary>
+            <param name="key">The input key.</param>
+            <param name="value">The text.</param>
+            <returns>False when the key is missing or the value is a structure.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.TryGetBool(System.String,System.Boolean@)">
+            <summary>The value of a check box: true/false, a number (non-zero is true, as vanilla sends a boolean as a byte), or the text <c>true</c>/<c>false</c>.</summary>
+            <param name="key">The input key.</param>
+            <param name="value">The value.</param>
+            <returns>False when the key is missing or the value is not a boolean.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.TryGetFloat(System.String,System.Single@)">
+            <summary>The value of a slider: a number, or text that is a number. Not NaN or infinite.</summary>
+            <param name="key">The input key.</param>
+            <param name="value">The value.</param>
+            <returns>False when the key is missing or the value is not a finite number.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.TryGetInt(System.String,System.Int32@)">
+            <summary>The value of a slider as a whole number (rounded to the nearest, halves away from zero).</summary>
+            <param name="key">The input key.</param>
+            <param name="value">The value.</param>
+            <returns>False when the key is missing, the value is not a number, or it does not fit an int.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.GetText(System.String)">
+            <summary>The text of a text or single-option input, or null when the key is missing or the value is not text-like.</summary>
+            <param name="key">The input key.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.GetText(System.String,System.String)">
+            <summary>The text of a text or single-option input, or <paramref name="fallback" />.</summary>
+            <param name="key">The input key.</param>
+            <param name="fallback">What to return when there is no usable value.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.GetBool(System.String)">
+            <summary>The value of a check box, or null when the key is missing or the value is not a boolean.</summary>
+            <param name="key">The input key.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.GetBool(System.String,System.Boolean)">
+            <summary>The value of a check box, or <paramref name="fallback" />.</summary>
+            <param name="key">The input key.</param>
+            <param name="fallback">What to return when there is no usable value.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.GetFloat(System.String)">
+            <summary>The value of a slider, or null when the key is missing or the value is not a number.</summary>
+            <param name="key">The input key.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.GetFloat(System.String,System.Single)">
+            <summary>The value of a slider, or <paramref name="fallback" />.</summary>
+            <param name="key">The input key.</param>
+            <param name="fallback">What to return when there is no usable value.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.GetInt(System.String)">
+            <summary>The value of a slider as a whole number, or null.</summary>
+            <param name="key">The input key.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.GetInt(System.String,System.Int32)">
+            <summary>The value of a slider as a whole number, or <paramref name="fallback" />.</summary>
+            <param name="key">The input key.</param>
+            <param name="fallback">What to return when there is no usable value.</param>
+        </member>
+        <member name="M:Mc.Scripting.Dialogs.DialogResponse.ToString">
+            <summary>The payload's JSON.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Events.PlayerCustomClickEvent">
+            <summary>The client clicked a custom action: a button of a dialog or a custom click event of a text component (ServerboundCustomClickAction). Observe only: Ramjet itself does nothing with the click. The payload is the click tag as SNBT text, empty when the click carried none; payload_json is the same tag as JSON.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Events.PlayerCustomClickEvent.GetDialogResponseView">
+            <summary>
+            The click payload as a <see cref="T:Mc.Scripting.Dialogs.DialogResponse" />: the values the player entered into the dialog's inputs (Paper
+            <c>PlayerCustomClickEvent.getDialogResponseView</c>). Empty when the click carried no payload. Works for any custom click, not only dialogs.
+            </summary>
+            <exception cref="T:System.FormatException">The payload is not valid JSON (the engine always sends valid JSON).</exception>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.CatalogueId">
+            <summary>Catalogue id (stable ABI).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.Key">
+            <summary>Registry key of the event.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.IsCancellable">
             <summary>Whether handlers can cancel the event.</summary>
         </member>
-        <member name="T:Mc.Scripting.EventListener`1">
-            <summary>Event handler; gets the event by reference (mutable fields and Cancelled are writable).</summary>
+        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.Player">
+            <summary>The player.</summary>
         </member>
-        <member name="T:Mc.Scripting.EventPriority">
-            <summary>Lower runs first. Any int is allowed; these are conventional values.</summary>
+        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.Id">
+            <summary>The identifier of the action, namespaced (for example mydialog:confirm).</summary>
         </member>
-        <member name="F:Mc.Scripting.EventPriority.Lowest">
-            <summary>Runs first.</summary>
+        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.Payload">
+            <summary>The click tag as SNBT text; empty when the click carried no tag.</summary>
         </member>
-        <member name="F:Mc.Scripting.EventPriority.Low">
-            <summary>Runs early.</summary>
+        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.PayloadJson">
+            <summary>The click tag as JSON text (compound -&gt; object, list and arrays -&gt; array, integers and fractions -&gt; number, byte 0 or 1 stays a number, string -&gt; string); empty when there is no tag, or it cannot be written as JSON (a non-finite float, deeper than 64 levels, larger than 256 KiB).</summary>
         </member>
-        <member name="F:Mc.Scripting.EventPriority.Normal">
-            <summary>Default.</summary>
-        </member>
-        <member name="F:Mc.Scripting.EventPriority.High">
-            <summary>Runs late.</summary>
-        </member>
-        <member name="F:Mc.Scripting.EventPriority.Highest">
-            <summary>Runs last before monitors.</summary>
-        </member>
-        <member name="F:Mc.Scripting.EventPriority.Monitor">
-            <summary>Observe the final outcome; must not modify the event.</summary>
-        </member>
-        <member name="T:Mc.Scripting.EventType`1">
-            <summary>Resolved runtime id per event type.</summary>
-        </member>
-        <member name="F:Mc.Scripting.EventType`1.Id">
-            <summary>The runtime event id.</summary>
-        </member>
-        <member name="T:Mc.Scripting.Subscription">
-            <summary>An active event subscription. Dispose to unsubscribe.</summary>
-        </member>
-        <member name="P:Mc.Scripting.Subscription.IsActive">
-            <summary>Whether the subscription is still active.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Subscription.Dispose">
-            <summary>Unsubscribes the listener.</summary>
-        </member>
-        <member name="T:Mc.Scripting.EventRegistry">
-            <summary>Event subscription and firing, scoped to a plugin (everything is released on unload).</summary>
-        </member>
-        <member name="M:Mc.Scripting.EventRegistry.On``1(Mc.Scripting.EventListener{``0},Mc.Scripting.EventPriority,System.Boolean)">
-            <summary>Subscribes <paramref name="listener" /> to events of type <typeparamref name="T" />.</summary>
-            <param name="listener">Handler, invoked on the tick thread with the event by reference.</param>
-            <param name="priority">Lower runs first; native and managed handlers share one ordering.</param>
-            <param name="receiveCancelled">Also invoke the listener after a higher-priority handler cancelled the event.</param>
-        </member>
-        <member name="M:Mc.Scripting.EventRegistry.Fire``1(``0@)">
-            <summary>Fires an event through the native bus (native and managed handlers, by priority).
-            Returns false if it was cancelled.</summary>
-        </member>
-        <member name="M:Mc.Scripting.EventRegistry.HasSubscribers``1">
-            <summary>Whether anybody (native or managed) listens to <typeparamref name="T" />.</summary>
-        </member>
-        <member name="T:Mc.Scripting.EventBus">
-            <summary>Owner-less event firing helpers.</summary>
-        </member>
-        <member name="M:Mc.Scripting.EventBus.HasSubscribers``1">
-            <summary>Whether anybody (native or managed) listens to <typeparamref name="T" />.</summary>
-        </member>
-        <member name="M:Mc.Scripting.EventBus.Fire``1(``0@)">
-            <summary>Fires an event through the native bus; returns false if it was cancelled.</summary>
+        <member name="M:Mc.Scripting.Events.PlayerCustomClickEvent.#ctor(Mc.Scripting.Player,Mc.Scripting.Utf8String,Mc.Scripting.Utf8String,Mc.Scripting.Utf8String)">
+            <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
         </member>
         <member name="T:Mc.Scripting.Events.PlayerPreLoginEvent">
             <summary>A client finished authentication and is about to enter the configuration phase. Handlers run on the TICK thread: a blocking call (a database or web lookup) freezes the whole server, so do not look anything up here. Cancel to refuse the login (set the kick message first), or call Defer() and answer later from Scheduler.RunAsync: the login waits up to 30 seconds, continues when every deferral allowed it and is refused as soon as one denies. A plugin that unloads releases its pending deferrals (counted as allowed).</summary>
@@ -9999,30 +10169,6 @@
         <member name="M:Mc.Scripting.Events.PlayerChangedMainHandEvent.#ctor(Mc.Scripting.Player,Mc.Scripting.MainArm,Mc.Scripting.MainArm)">
             <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
         </member>
-        <member name="T:Mc.Scripting.Events.PlayerCustomClickEvent">
-            <summary>The client clicked a custom action: a button of a dialog or a custom click event of a text component (ServerboundCustomClickAction). Observe only: Ramjet itself does nothing with the click. The payload is the click tag as SNBT text, empty when the click carried none.</summary>
-        </member>
-        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.CatalogueId">
-            <summary>Catalogue id (stable ABI).</summary>
-        </member>
-        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.Key">
-            <summary>Registry key of the event.</summary>
-        </member>
-        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.IsCancellable">
-            <summary>Whether handlers can cancel the event.</summary>
-        </member>
-        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.Player">
-            <summary>The player.</summary>
-        </member>
-        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.Id">
-            <summary>The identifier of the action, namespaced (for example mydialog:confirm).</summary>
-        </member>
-        <member name="P:Mc.Scripting.Events.PlayerCustomClickEvent.Payload">
-            <summary>The click tag as SNBT text; empty when the click carried no tag.</summary>
-        </member>
-        <member name="M:Mc.Scripting.Events.PlayerCustomClickEvent.#ctor(Mc.Scripting.Player,Mc.Scripting.Utf8String,Mc.Scripting.Utf8String)">
-            <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
-        </member>
         <member name="T:Mc.Scripting.Events.PlayerBundleItemSelectEvent">
             <summary>A player selected an item in a bundle (ServerboundSelectBundleItem: the scroll wheel or a click in the bundle tooltip). Cancel to keep the selection the bundle had. Fired on the tick thread before the selection is applied.</summary>
         </member>
@@ -13257,6 +13403,425 @@
         <member name="M:Mc.Scripting.Events.PlayerShowEntityEvent.#ctor(Mc.Scripting.Player,Mc.Scripting.Entity)">
             <summary>Creates the event (for firing it from a plugin; native code builds its own). Signature of API 1.0.</summary>
         </member>
+        <member name="T:Mc.Scripting.Ecs">
+            <summary>ECS access scoped to a plugin (<c>plugin.Ecs</c>): custom components, queries and raw entities. Entities are not
+            owned (they survive plugin reloads); queries are, and are destroyed on unload. Game worlds (dimensions) are
+            <see cref="T:Mc.Scripting.Worlds.World" />.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Ecs.Spawn">
+            <summary>Creates an empty ECS entity (not a game entity: it has no position and is never sent to clients).</summary>
+        </member>
+        <member name="M:Mc.Scripting.Ecs.GetEntity(System.UInt64)">
+            <summary>Wraps an entity id.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Ecs.RegisterComponent``1(System.String)">
+            <summary>Registers (or re-binds) a plain-data component backed by a flecs component.
+            Keys are global ("myplugin:health"); registering the same key with the same layout (field
+            types and offsets) after a hot reload keeps existing component values. A changed layout
+            drops the values, but is refused while another plugin is also bound to the key. Engine
+            components can be bound by their registered name as long as the layout matches.</summary>
+            <remarks><typeparamref name="T" /> must be a type owned by this plugin: <see cref="T:Mc.Scripting.Component`1" />
+            caches one id per CLR type, so binding it to a second key throws. The binding is cleared when
+            the plugin unloads.</remarks>
+        </member>
+        <member name="M:Mc.Scripting.Ecs.Query``1">
+            <summary>Creates a cached query over one component type.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Ecs.Query``2">
+            <summary>Creates a cached query over two component types.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Ecs.Query``3">
+            <summary>Creates a cached query over three component types.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Query">
+            <summary>A cached ECS query. Iterate with <c>foreach (var chunk in query)</c> for the fastest
+            path (SoA spans per archetype), or use <c>Each</c> for convenience.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Query.GetEnumerator">
+            <summary>Starts an iteration over the matching archetype chunks.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Query.Count">
+            <summary>Number of matching entities (iterates).</summary>
+        </member>
+        <member name="M:Mc.Scripting.Query.Dispose">
+            <summary>Destroys the query.</summary>
+        </member>
+        <member name="T:Mc.Scripting.QueryAction`1">
+            <summary>Callback for <c>Each</c> over one component.</summary>
+        </member>
+        <member name="T:Mc.Scripting.QueryAction`2">
+            <summary>Callback for <c>Each</c> over two components.</summary>
+        </member>
+        <member name="T:Mc.Scripting.QueryAction`3">
+            <summary>Callback for <c>Each</c> over three components.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Query`1">
+            <summary>A query over one component type.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Query`1.Each(Mc.Scripting.QueryAction{`0})">
+            <summary>Calls <paramref name="action" /> for every matching entity.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Query`2">
+            <summary>A query over two component types.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Query`2.Each(Mc.Scripting.QueryAction{`0,`1})">
+            <summary>Calls <paramref name="action" /> for every matching entity.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Query`3">
+            <summary>A query over three component types.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Query`3.Each(Mc.Scripting.QueryAction{`0,`1,`2})">
+            <summary>Calls <paramref name="action" /> for every matching entity.</summary>
+        </member>
+        <member name="T:Mc.Scripting.QueryEnumerator">
+            <summary>Iterates archetype chunks. Disposing early releases the native iterator.</summary>
+        </member>
+        <member name="P:Mc.Scripting.QueryEnumerator.Current">
+            <summary>The current chunk.</summary>
+        </member>
+        <member name="M:Mc.Scripting.QueryEnumerator.MoveNext">
+            <summary>Advances to the next chunk.</summary>
+        </member>
+        <member name="M:Mc.Scripting.QueryEnumerator.Dispose">
+            <summary>Releases the native iterator when abandoning the loop early.</summary>
+        </member>
+        <member name="T:Mc.Scripting.QueryChunk">
+            <summary>One archetype's worth of query results: entity ids and one column per query term.</summary>
+        </member>
+        <member name="P:Mc.Scripting.QueryChunk.Count">
+            <summary>Number of entities in the chunk.</summary>
+        </member>
+        <member name="P:Mc.Scripting.QueryChunk.Entities">
+            <summary>The entity ids of the chunk.</summary>
+        </member>
+        <member name="M:Mc.Scripting.QueryChunk.Field``1(System.Int32)">
+            <summary>Column for query term <paramref name="index" /> (the order of the query's type arguments).</summary>
+        </member>
+        <member name="T:Mc.Scripting.EditJobState">
+            <summary>What a bulk edit job is at the engine's job system's state.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EditJobState.Queued">
+            <summary>Waiting for the owner's running job, or for a slot.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EditJobState.Running">
+            <summary>Being applied in slices on the tick thread.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EditJobState.Done">
+            <summary>Finished; every cell in the region was handled (some columns may have been skipped, see the message).</summary>
+        </member>
+        <member name="F:Mc.Scripting.EditJobState.Failed">
+            <summary>Stopped by a limit or an error; the changes made so far are recorded and can be undone.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EditJobState.Cancelled">
+            <summary>Cancelled by its owner (or the owner left); the changes made so far are recorded and can be undone.</summary>
+        </member>
+        <member name="T:Mc.Scripting.EditJobInfo">
+            <summary>The state of one edit job, as the engine reports it.</summary>
+            <param name="State">The job's state.</param>
+            <param name="Changed">Cells whose state changed.</param>
+            <param name="ElapsedTicks">Ticks the job has been alive.</param>
+            <param name="Clipboard">The clipboard handle of a finished copy or cut (0 otherwise).</param>
+            <param name="Message">A short note: empty on success.</param>
+        </member>
+        <member name="M:Mc.Scripting.EditJobInfo.#ctor(Mc.Scripting.EditJobState,System.UInt64,System.UInt32,System.UInt64,System.String)">
+            <summary>The state of one edit job, as the engine reports it.</summary>
+            <param name="State">The job's state.</param>
+            <param name="Changed">Cells whose state changed.</param>
+            <param name="ElapsedTicks">Ticks the job has been alive.</param>
+            <param name="Clipboard">The clipboard handle of a finished copy or cut (0 otherwise).</param>
+            <param name="Message">A short note: empty on success.</param>
+        </member>
+        <member name="P:Mc.Scripting.EditJobInfo.State">
+            <summary>The job's state.</summary>
+        </member>
+        <member name="P:Mc.Scripting.EditJobInfo.Changed">
+            <summary>Cells whose state changed.</summary>
+        </member>
+        <member name="P:Mc.Scripting.EditJobInfo.ElapsedTicks">
+            <summary>Ticks the job has been alive.</summary>
+        </member>
+        <member name="P:Mc.Scripting.EditJobInfo.Clipboard">
+            <summary>The clipboard handle of a finished copy or cut (0 otherwise).</summary>
+        </member>
+        <member name="P:Mc.Scripting.EditJobInfo.Message">
+            <summary>A short note: empty on success.</summary>
+        </member>
+        <member name="T:Mc.Scripting.EditHistory">
+            <summary>The undo and redo stacks of a player.</summary>
+        </member>
+        <member name="M:Mc.Scripting.EditHistory.#ctor(System.UInt32,System.UInt32,System.UInt64,System.UInt64)">
+            <summary>The undo and redo stacks of a player.</summary>
+        </member>
+        <member name="T:Mc.Scripting.EditClipboardInfo">
+            <summary>A clipboard the player holds: its size, the copy origin relative to its minimum corner, and its engine memory.</summary>
+        </member>
+        <member name="M:Mc.Scripting.EditClipboardInfo.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.UInt64)">
+            <summary>A clipboard the player holds: its size, the copy origin relative to its minimum corner, and its engine memory.</summary>
+        </member>
+        <member name="T:Mc.Scripting.EditMemory">
+            <summary>Engine memory held by bulk edits, for every player together.</summary>
+        </member>
+        <member name="M:Mc.Scripting.EditMemory.#ctor(System.UInt64,System.UInt64)">
+            <summary>Engine memory held by bulk edits, for every player together.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Edit">
+            <summary>Bulk region edits run by the engine in slices of the tick budget (for WorldEdit-style plugins). A plugin builds the request
+            (the WEJB binary format of the engine's edit module) and submits it; the engine validates every field, applies the job, and records what it
+            changed so the owner can undo it. Nothing here touches blocks one at a time: a request is one call, whatever its size.
+            Tick thread only. The owner is always a player: the engine keeps history and clipboards per player.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Edit.Start(Mc.Scripting.Player,System.Byte[])">
+            <summary>Queues a request for a player. The request is validated in full before anything changes.</summary>
+            <param name="player">The owner of the job (its history and clipboards).</param>
+            <param name="request">The encoded request (WEJB).</param>
+            <returns>The job id (positive), or a negative refusal: -1 quota, -2 malformed, -3 limit, -4 unknown world or player.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Edit.GetJob(Mc.Scripting.Player,System.Int64)">
+            <summary>The state of a job the player owns.</summary>
+            <returns>The job, or nothing when the id is unknown or belongs to someone else.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Edit.Cancel(Mc.Scripting.Player,System.Int64)">
+            <summary>Cancels a queued or running job the player owns. Changes already made stay recorded, so undo restores them.</summary>
+            <returns>True when the job was cancelled; false when it is unknown, not the player's, or already finished.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Edit.Undo(Mc.Scripting.Player,System.Int32)">
+            <summary>Queues an undo of up to <paramref name="steps" /> of the player's most recent edits.</summary>
+            <returns>The job id (positive), or a negative refusal: -1 quota, -2 nothing to undo, -4 unknown player.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Edit.Redo(Mc.Scripting.Player,System.Int32)">
+            <summary>Queues a redo of up to <paramref name="steps" /> of the player's undone edits.</summary>
+            <returns>The job id (positive), or a negative refusal: -1 quota, -2 nothing to redo, -4 unknown player.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Edit.History(Mc.Scripting.Player)">
+            <summary>The player's undo and redo stacks.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Edit.ClearHistory(Mc.Scripting.Player)">
+            <summary>Drops the player's undo and redo records.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Edit.ClipboardInfo(Mc.Scripting.Player,System.UInt64)">
+            <summary>A clipboard the player holds.</summary>
+            <returns>Its size and origin, or nothing when the handle is unknown or belongs to someone else.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Edit.ReleaseClipboard(Mc.Scripting.Player,System.UInt64)">
+            <summary>Releases a clipboard the player holds. True when it was released.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Edit.Memory">
+            <summary>Engine memory held by bulk edits, for all players (for memory reports).</summary>
+        </member>
+        <member name="T:Mc.Scripting.Entity">
+            <summary>Handle to an ECS entity (flecs id). Blittable: usable directly in events and components.</summary>
+            <remarks>Refs returned by <see cref="M:Mc.Scripting.Entity.Get``1" /> point into ECS storage and are invalidated by
+            structural changes (adding/removing components, destroying entities). Don't keep them.</remarks>
+        </member>
+        <member name="F:Mc.Scripting.Entity.Id">
+            <summary>The flecs entity id (index and generation); 0 is the null entity.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.#ctor(System.UInt64)">
+            <summary>Wraps an entity id.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Entity.Null">
+            <summary>The null entity.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Entity.IsNull">
+            <summary>Whether this is the null entity.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Entity.IsAlive">
+            <summary>Whether the entity exists. A destroyed entity's id goes stale (the generation no longer matches).</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.Spawn">
+            <summary>Creates an empty ECS entity (not a game entity).</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.Destroy">
+            <summary>Destroys an entity created with <see cref="M:Mc.Scripting.Entity.Spawn" />. Does nothing for the null entity or a stale handle. Entities of the game (players, mobs, items, anything an event
+            or a handle hands out) are not the plugin's to destroy: the call is ignored with a warning (use the game APIs, e.g. <see cref="M:Mc.Scripting.Player.Kick(Mc.Scripting.Text.Component)" />).</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.Get``1">
+            <summary>Reference to component <typeparamref name="T" />; throws if the entity lacks it. For a component the game registered itself (bound by its engine name) the reference points
+            at a COPY: engine components are read only for plugins, writing through it changes nothing.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.TryGetRef``1">
+            <summary>Pointer-style access: a null ref (check with Unsafe.IsNullRef) when absent.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.TryGet``1(``0@)">
+            <summary>Copies the component if present.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.GetOrAdd``1">
+            <summary>Reference to the component, adding it (zero-initialised) when missing.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.Has``1">
+            <summary>Whether the entity has component <typeparamref name="T" />.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.Set``1(``0@)">
+            <summary>Sets (adds or overwrites) a component value.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.Remove``1">
+            <summary>Removes a component.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.Equals(Mc.Scripting.Entity)">
+            <summary>Same entity id.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.Equals(System.Object)">
+            <summary>Same entity id.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.GetHashCode">
+            <summary>Hash of the id.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.op_Equality(Mc.Scripting.Entity,Mc.Scripting.Entity)">
+            <summary>Same entity id.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.op_Inequality(Mc.Scripting.Entity,Mc.Scripting.Entity)">
+            <summary>Different entity id.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.ToString">
+            <summary>Debug text.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Entity.TypeKey">
+            <summary>The entity type key of a game entity (<c>"minecraft:zombie"</c>, <c>"minecraft:item"</c>, <c>"minecraft:player"</c>), empty for a stale handle or an entity
+            that is not a game entity (one created with <see cref="M:Mc.Scripting.Entity.Spawn" />).</summary>
+        </member>
+        <member name="P:Mc.Scripting.Entity.IsGameEntity">
+            <summary>Whether this is an entity of the game world (a player, mob, item, orb, projectile ...) as opposed to a bare ECS entity.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Entity.TryGetLocation(Mc.Scripting.Location@)">
+            <summary>Where a game entity is.</summary>
+            <param name="location">The world, position and rotation.</param>
+            <returns>False for a stale handle or a bare ECS entity.</returns>
+        </member>
+        <member name="P:Mc.Scripting.Entity.Location">
+            <summary>The location of a game entity.</summary>
+            <exception cref="T:System.InvalidOperationException">The handle is stale or the entity is not a game entity.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Entity.Teleport(Mc.Scripting.Location)">
+            <summary>Moves a game entity. Players go through <see cref="M:Mc.Scripting.Player.Teleport(Mc.Scripting.Location)" /> (with its event); mobs, items and the like move silently, within their dimension.</summary>
+            <param name="location">The destination.</param>
+            <returns>True when the entity moved.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Entity.Despawn">
+            <summary>Removes a game entity from the world without any death logic (no drops, no death event): items, orbs, mobs, projectiles. Players cannot be removed (use
+            <see cref="M:Mc.Scripting.Player.Kick(Mc.Scripting.Text.Component)" />).</summary>
+            <returns>True when the entity was removed (it disappears for the clients at the next tick).</returns>
+        </member>
+        <member name="M:Mc.Scripting.Entity.Kill">
+            <summary>Kills a living entity the way the <c>/kill</c> command does (generic kill damage: death events, drops and the death animation); other entities are removed.</summary>
+            <returns>True when something happened.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Entity.GetNbt">
+            <summary>The data of a game entity as <c>/data get entity</c> shows it (position, motion, health, name, item, ...).</summary>
+            <returns>A copy, or null for a stale handle or an entity without a save form.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Entity.SetNbt(Mc.Scripting.Nbt.NbtCompound,System.Boolean)">
+            <summary>Changes the data of a game entity like <c>/data merge entity</c>. Players cannot be edited this way (use the player API).</summary>
+            <param name="data">The data.</param>
+            <param name="merge">True merges into the current data (the usual choice); false replaces the editable data with the compound.</param>
+            <returns>True when the entity took the data.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Entity.AsLiving">
+            <summary>The entity as a living entity (a player, a mob, ...), or null when it is not living: a stale handle, a bare ECS entity, an item or a
+            painting.</summary>
+            <returns>A handle to the living entity, or null.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Entity.SetGlowingFor(Mc.Scripting.Player,System.Boolean)">
+            <summary>Makes this entity (a player or a mob) glow for one viewer: the viewer sees the glowing outline on it, the other players do not. The colour is
+            the vanilla white (no team colour). The glow ends with <c>glowing = false</c>, with the entity, or with the plugin.</summary>
+            <param name="viewer">The player who sees the outline.</param>
+            <param name="glowing">Whether it glows for the viewer.</param>
+            <returns>False when the engine refused it (the entity is not tracked, or the glow table is full).</returns>
+        </member>
+        <member name="T:Mc.Scripting.Component`1">
+            <summary>Per-type component id cache. Set by <see cref="M:Mc.Scripting.Ecs.RegisterComponent``1(System.String)" />.</summary>
+            <remarks>The cache is one slot per CLR type for the whole process, so a component type must be
+            owned by a single plugin (declare your own struct; do not register a shared type such as
+            <see cref="T:Mc.Scripting.Vec3d" /> under different keys from different plugins). Registering a type that is
+            already bound to another key throws. The binding is cleared when the registering plugin
+            unloads.</remarks>
+        </member>
+        <member name="P:Mc.Scripting.Component`1.Id">
+            <summary>ECS component id, 0 if not registered.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Component`1.Key">
+            <summary>The key the component type is registered under, null if unregistered.</summary>
+        </member>
+        <member name="T:Mc.Scripting.IEvent">
+            <summary>An event type. Catalogue events are <c>ref struct</c>s: a handler gets the event by reference and can neither store it nor capture it in a closure or an async method,
+            so the borrowed native data it carries (strings, byte buffers) cannot outlive the dispatch. Plugin-defined events are ordinary blittable structs that start with an
+            <see cref="T:Mc.Scripting.EventHeader" /> field (or ref structs of the same layout).</summary>
+            <remarks>Catalogue events are the engine's built-in events (fixed ids). Plugins can declare
+            their own events: implement <see cref="P:Mc.Scripting.IEvent.Key" /> (e.g. "myplugin:thing") and leave
+            <see cref="P:Mc.Scripting.IEvent.CatalogueId" /> at 0; an id is assigned at runtime.</remarks>
+        </member>
+        <member name="P:Mc.Scripting.IEvent.Key">
+            <summary>Registry key ("plugin:name" for plugin events).</summary>
+        </member>
+        <member name="P:Mc.Scripting.IEvent.CatalogueId">
+            <summary>Catalogue id for built-in events, 0 for plugin-defined events.</summary>
+        </member>
+        <member name="P:Mc.Scripting.IEvent.IsCancellable">
+            <summary>Whether handlers can cancel the event.</summary>
+        </member>
+        <member name="T:Mc.Scripting.EventListener`1">
+            <summary>Event handler; gets the event by reference (mutable fields and Cancelled are writable).</summary>
+        </member>
+        <member name="T:Mc.Scripting.EventPriority">
+            <summary>Lower runs first. Any int is allowed; these are conventional values.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EventPriority.Lowest">
+            <summary>Runs first.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EventPriority.Low">
+            <summary>Runs early.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EventPriority.Normal">
+            <summary>Default.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EventPriority.High">
+            <summary>Runs late.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EventPriority.Highest">
+            <summary>Runs last before monitors.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EventPriority.Monitor">
+            <summary>Observe the final outcome; must not modify the event.</summary>
+        </member>
+        <member name="T:Mc.Scripting.EventType`1">
+            <summary>Resolved runtime id per event type.</summary>
+        </member>
+        <member name="F:Mc.Scripting.EventType`1.Id">
+            <summary>The runtime event id.</summary>
+        </member>
+        <member name="T:Mc.Scripting.Subscription">
+            <summary>An active event subscription. Dispose to unsubscribe.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Subscription.IsActive">
+            <summary>Whether the subscription is still active.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Subscription.Dispose">
+            <summary>Unsubscribes the listener.</summary>
+        </member>
+        <member name="T:Mc.Scripting.EventRegistry">
+            <summary>Event subscription and firing, scoped to a plugin (everything is released on unload).</summary>
+        </member>
+        <member name="M:Mc.Scripting.EventRegistry.On``1(Mc.Scripting.EventListener{``0},Mc.Scripting.EventPriority,System.Boolean)">
+            <summary>Subscribes <paramref name="listener" /> to events of type <typeparamref name="T" />.</summary>
+            <param name="listener">Handler, invoked on the tick thread with the event by reference.</param>
+            <param name="priority">Lower runs first; native and managed handlers share one ordering.</param>
+            <param name="receiveCancelled">Also invoke the listener after a higher-priority handler cancelled the event.</param>
+        </member>
+        <member name="M:Mc.Scripting.EventRegistry.Fire``1(``0@)">
+            <summary>Fires an event through the native bus (native and managed handlers, by priority).
+            Returns false if it was cancelled.</summary>
+        </member>
+        <member name="M:Mc.Scripting.EventRegistry.HasSubscribers``1">
+            <summary>Whether anybody (native or managed) listens to <typeparamref name="T" />.</summary>
+        </member>
+        <member name="T:Mc.Scripting.EventBus">
+            <summary>Owner-less event firing helpers.</summary>
+        </member>
+        <member name="M:Mc.Scripting.EventBus.HasSubscribers``1">
+            <summary>Whether anybody (native or managed) listens to <typeparamref name="T" />.</summary>
+        </member>
+        <member name="M:Mc.Scripting.EventBus.Fire``1(``0@)">
+            <summary>Fires an event through the native bus; returns false if it was cancelled.</summary>
+        </member>
         <member name="T:Mc.Scripting.GameMode">
             <summary>Vanilla game mode (the numbers are the protocol ids).</summary>
         </member>
@@ -15791,6 +16356,26 @@
         </member>
         <member name="M:Mc.Scripting.Player.ToString">
             <inheritdoc />
+        </member>
+        <member name="M:Mc.Scripting.Player.ShowDialog(Mc.Scripting.Dialogs.Dialog)">
+            <summary>
+            Shows a dialog to this player (Paper <c>Audience.showDialog</c>). The dialog replaces the one the player has open, if any. A button's
+            action runs on the client; a <see cref="M:Mc.Scripting.Dialogs.DialogAction.Callback(Mc.Scripting.Dialogs.DialogCallback,Mc.Scripting.Dialogs.ClickCallbackOptions)" /> or a custom action
+            reports back to the server (<see cref="T:Mc.Scripting.Events.PlayerCustomClickEvent" />).
+            </summary>
+            <param name="dialog">The dialog.</param>
+            <returns>True when the dialog was sent. False when the engine refused it: the player is not online or not in the play phase (a player who is still
+            logging in cannot get one), or the dialog is too large for the packet.</returns>
+        </member>
+        <member name="M:Mc.Scripting.Player.ShowDialog(System.String)">
+            <summary>Shows a dialog that is registered on the server (the <c>minecraft:dialog</c> registry: a data pack's <c>data/&lt;namespace&gt;/dialog/&lt;name&gt;.json</c>).</summary>
+            <param name="key">The registry key, <c>namespace:path</c> (the namespace may be omitted for <c>minecraft</c>).</param>
+            <returns>True when the dialog was sent; false when no such dialog is registered or the player is not in the play phase.</returns>
+            <exception cref="T:System.ArgumentException">The key is not a valid resource key.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Player.ClearDialog">
+            <summary>Closes the dialog the player has open (Paper <c>Audience.closeDialog</c>). Does nothing when none is open.</summary>
+            <returns>True when the packet was sent; false when the player is not online or not in the play phase.</returns>
         </member>
         <member name="M:Mc.Scripting.Player.ShowTitle(Mc.Scripting.Text.Component,Mc.Scripting.Text.Component,System.Nullable{Mc.Scripting.TitleTimes})">
             <summary>Shows a title (and optionally a subtitle) in the middle of the screen. No-op for a stale handle.</summary>
@@ -20232,21 +20817,30 @@
         <member name="F:Mc.Scripting.Text.ClickAction.ChangePage">
             <summary>Changes the page of a book.</summary>
         </member>
+        <member name="F:Mc.Scripting.Text.ClickAction.ShowDialog">
+            <summary>Shows a dialog to the player (a registry key or an inline dialog: <see cref="M:Mc.Scripting.Text.ClickEvent.ShowDialog(Mc.Scripting.Dialogs.Dialog)" />).</summary>
+        </member>
+        <member name="F:Mc.Scripting.Text.ClickAction.Custom">
+            <summary>Sends a custom click to the server: the client answers with a custom click action that raises <see cref="T:Mc.Scripting.Events.PlayerCustomClickEvent" />.</summary>
+        </member>
         <member name="T:Mc.Scripting.Text.ClickEvent">
             <summary>A click event of a text component.</summary>
             <param name="Action">What happens.</param>
-            <param name="Value">Url / command / clipboard text / page number.</param>
+            <param name="Value">Url / command / clipboard text / page number / dialog key (or the inline dialog's JSON, which starts with <c>{</c>) / custom click id.</param>
         </member>
         <member name="M:Mc.Scripting.Text.ClickEvent.#ctor(Mc.Scripting.Text.ClickAction,System.String)">
             <summary>A click event of a text component.</summary>
             <param name="Action">What happens.</param>
-            <param name="Value">Url / command / clipboard text / page number.</param>
+            <param name="Value">Url / command / clipboard text / page number / dialog key (or the inline dialog's JSON, which starts with <c>{</c>) / custom click id.</param>
         </member>
         <member name="P:Mc.Scripting.Text.ClickEvent.Action">
             <summary>What happens.</summary>
         </member>
         <member name="P:Mc.Scripting.Text.ClickEvent.Value">
-            <summary>Url / command / clipboard text / page number.</summary>
+            <summary>Url / command / clipboard text / page number / dialog key (or the inline dialog's JSON, which starts with <c>{</c>) / custom click id.</summary>
+        </member>
+        <member name="P:Mc.Scripting.Text.ClickEvent.PayloadJson">
+            <summary>For <see cref="F:Mc.Scripting.Text.ClickAction.Custom" />: the payload as JSON text (the vanilla client turns it into the NBT tag of the click), null when the click has none.</summary>
         </member>
         <member name="M:Mc.Scripting.Text.ClickEvent.OpenUrl(System.String)">
             <summary>Open a URL.</summary>
@@ -20262,6 +20856,30 @@
         </member>
         <member name="M:Mc.Scripting.Text.ClickEvent.ChangePage(System.Int32)">
             <summary>Change the book page.</summary>
+        </member>
+        <member name="M:Mc.Scripting.Text.ClickEvent.ShowDialog(Mc.Scripting.Dialogs.Dialog)">
+            <summary>Shows an inline dialog to the player who clicks (Paper <c>ClickEvent.showDialog</c>). The dialog travels inside the component.</summary>
+            <param name="dialog">The dialog.</param>
+        </member>
+        <member name="M:Mc.Scripting.Text.ClickEvent.ShowDialog(System.String)">
+            <summary>Shows a dialog of the <c>minecraft:dialog</c> registry (a data pack's dialog) to the player who clicks.</summary>
+            <param name="key">The registry key, <c>namespace:path</c> (the namespace may be omitted for <c>minecraft</c>).</param>
+            <exception cref="T:System.ArgumentException">The key is not a valid resource key.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Text.ClickEvent.Custom(System.String,Mc.Scripting.Nbt.NbtTag)">
+            <summary>
+            A click that the client reports to the server as a custom click action (Paper <c>ClickEvent.custom</c>): the server gets
+            <see cref="T:Mc.Scripting.Events.PlayerCustomClickEvent" /> with this id and payload. Ramjet does nothing with it by itself.
+            </summary>
+            <param name="id">The identifier of the action, <c>namespace:path</c>; <c>ramjet:callback/</c> is reserved for dialog callbacks.</param>
+            <param name="payload">Data sent back with the click (any tag: a compound, a string, a number), or null for none. Typed numbers become plain JSON numbers on the wire.</param>
+            <exception cref="T:System.ArgumentException">The id is not a valid resource key, or is reserved.</exception>
+        </member>
+        <member name="M:Mc.Scripting.Text.ClickEvent.CustomJson(System.String,System.String)">
+            <summary>Like <see cref="M:Mc.Scripting.Text.ClickEvent.Custom(System.String,Mc.Scripting.Nbt.NbtTag)" />, with the payload given as JSON text (any JSON value: <c>{"a":1}</c>, <c>"text"</c>, <c>5</c>).</summary>
+            <param name="id">The identifier of the action.</param>
+            <param name="payloadJson">The payload as JSON, or null for none.</param>
+            <exception cref="T:System.ArgumentException">The id is invalid or reserved, or the payload is not valid JSON.</exception>
         </member>
         <member name="T:Mc.Scripting.Text.HoverEvent">
             <summary>A hover event of a text component.</summary>

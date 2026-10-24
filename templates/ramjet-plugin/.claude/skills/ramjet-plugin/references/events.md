@@ -269,7 +269,7 @@ Every event of the plugin API. "Engine: fired" means the engine has a firing sit
 | `PlayerClientLoadedWorldEvent` | 421 | no | fired | - | Player:player, TimedOut:bool |
 | `PlayerClientOptionsChangeEvent` | 422 | no | fired | - | Player:player, OldLocale:Utf8String, NewLocale:Utf8String, OldViewDistance:int, NewViewDistance:int, OldChatVisibility:enum:ChatVisibility, NewChatVisibility:enum:ChatVisibility, OldChatColors:bool, NewChatColors:bool, OldSkinParts:byte, NewSkinParts:byte, OldMainHand:enum:MainArm, NewMainHand:enum:MainArm, OldTextFiltering:bool, NewTextFiltering:bool, OldAllowListing:bool, NewAllowListing:bool |
 | `PlayerChangedMainHandEvent` | 423 | no | fired | - | Player:player, OldHand:enum:MainArm, NewHand:enum:MainArm |
-| `PlayerCustomClickEvent` | 424 | no | fired | - | Player:player, Id:Utf8String, Payload:Utf8String |
+| `PlayerCustomClickEvent` | 424 | no | fired | - | Player:player, Id:Utf8String, Payload:Utf8String, PayloadJson:Utf8String |
 | `PlayerBundleItemSelectEvent` | 425 | yes | fired | - | Player:player, Slot:int, SelectedIndex:int |
 | `PlayerUseUnknownEntityEvent` | 426 | no | fired | - | Player:player, EntityId:int, Attack:bool, Hand:enum:Hand, ClickPos:Vec3d, HasClickPos:bool |
 | `PrePlayerAttackEntityEvent` | 427 | yes | fired | - | Player:player, Target:Entity, WillAttack:bool |
